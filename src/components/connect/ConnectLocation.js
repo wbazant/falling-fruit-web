@@ -1,18 +1,19 @@
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { fetchLocationData, setNewLocation } from '../../redux/locationSlice'
+import { fetchLocationData, initNewLocation } from '../../redux/locationSlice'
 
-const ConnectLocation = ({locationId}) => {
+const ConnectLocation = ({ locationId }) => {
   const dispatch = useDispatch()
+  const mapCenter = useSelector((state) => state.map.view.center)
 
   useEffect(() => {
     if (locationId === 'new') {
-      dispatch(setNewLocation())
+      dispatch(initNewLocation(mapCenter))
     } else {
       dispatch(fetchLocationData(locationId))
     }
-  }, [dispatch, locationId])
+  }, [dispatch, locationId, mapCenter])
   return null
 }
 

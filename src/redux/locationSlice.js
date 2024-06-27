@@ -17,6 +17,7 @@ const locationSlice = createSlice({
   initialState: {
     isLoading: false,
     location: null,
+    position: null, // {lat: number, lng: number}
     locationId: null,
   },
   reducers: {
@@ -24,11 +25,20 @@ const locationSlice = createSlice({
       state.isLoading = false
       state.location = null
       state.locationId = null
+      state.position = null
     },
-    setNewLocation: (state) => {
+    initNewLocation: (state, action) => {
       state.isLoading = false
       state.location = null
-      state.locationId = 'new'
+      if (state.locationId !== 'new') {
+        state.locationId = 'new'
+        state.position = action.payload
+      }
+    },
+    updatePosition: (state, action) => {
+      if (state.locationId === 'new') {
+        state.position = action.payload
+      }
     },
   },
   extraReducers: {
@@ -36,6 +46,7 @@ const locationSlice = createSlice({
       state.location = null
       state.locationId = `pending-${action.meta.arg}`
       state.isLoading = true
+      state.position = null
     },
     [fetchLocationData.fulfilled]: (state, action) => {
       state.isLoading = false
@@ -43,22 +54,25 @@ const locationSlice = createSlice({
       if (state.locationId === `pending-${action.payload.id}`) {
         state.location = action.payload
         state.locationId = parseInt(action.payload.id)
+        state.position = { lat: action.payload.lat, lng: action.payload.lng }
       }
     },
     [fetchLocationData.rejected]: (state, action) => {
       state.isLoading = false
       state.location = null
       state.locationId = null
+      state.position = null
       toast.error(`Error fetching location data: ${action.meta.arg}`)
     },
     [fetchReviewData.fulfilled]: (state, action) => {
       state.isLoading = false
       state.location = null
       state.locationId = parseInt(action.payload.location_id)
-    }
+      state.position = null
+    },
   },
 })
 
-export const { setNewLocation, clearLocation } = locationSlice.actions
+export const { initNewLocation, clearLocation, updatePosition } = locationSlice.actions
 
 export default locationSlice.reducer

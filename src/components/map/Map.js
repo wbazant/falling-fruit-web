@@ -1,15 +1,17 @@
 import { X } from '@styled-icons/boxicons-regular'
 import GoogleMapReact from 'google-map-react'
 import PropTypes from 'prop-types'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
 
+import { updatePosition } from '../../redux/locationSlice'
 import { setStreetView } from '../../redux/mapSlice'
 import ResetButton from '../ui/ResetButton'
 import Cluster from './Cluster'
 import Geolocation from './Geolocation'
 import Location from './Location'
+import { DraggableNewLocationMapPin } from './Pins'
 import Place from './Place'
 /**
  * Wrapper component around google-map-react.
@@ -68,14 +70,17 @@ const Map = ({
   layerTypes,
   showBusinesses,
   showStreetView,
+  newLocationPosition,
 }) => {
   const mapRef = useRef(null)
   const mapsRef = useRef(null)
   const locationMarkerRef = useRef(null)
-  const dispatch = useDispatch()
   const mapLocation = useSelector((state) => state.map.location)
   const mapStreetView = useSelector((state) => state.map.streetView)
   const [headingStatus, setHeadingStatus] = useState(false)
+  const [newLocationDraggedPosition, setNewLocationDraggedPosition] =
+    useState(newLocationPosition)
+  const dispatch = useDispatch()
 
   const setHeading = async (panoClient, markerLocation, panorama) => {
     try {
@@ -158,10 +163,13 @@ const Map = ({
     mapsRef.current = maps
   }
 
-  const closeStreetView = (event) => {
-    event.stopPropagation()
-    dispatch(setStreetView(false))
-  }
+  const closeStreetView = useCallback(
+    (event) => {
+      event.stopPropagation()
+      dispatch(setStreetView(false))
+    },
+    [dispatch],
+  )
 
   return (
     <>
@@ -249,6 +257,15 @@ const Map = ({
             label={showLabels ? location.typeName : undefined}
           />
         ))}
+        {newLocationDraggedPosition && (
+          <DraggableNewLocationMapPin
+            lat={newLocationDraggedPosition.lat}
+            lng={newLocationDraggedPosition.lng}
+            $geoService={mapsRef.current?.Geocoder}
+            onChange={setNewLocationDraggedPosition}
+            onDragEnd={(newPosition) => dispatch(updatePosition(newPosition))}
+          />
+        )}
       </GoogleMapReact>
     </>
   )
@@ -269,6 +286,10 @@ Map.propTypes = {
   layerTypes: PropTypes.arrayOf(PropTypes.string),
   showLabels: PropTypes.bool,
   showBusinesses: PropTypes.bool,
+  newLocationPosition: PropTypes.shape({
+    lat: PropTypes.number,
+    lng: PropTypes.number,
+  }),
 }
 
 export default Map

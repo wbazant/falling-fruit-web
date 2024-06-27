@@ -24,7 +24,7 @@ const MapPage = ({ isDesktop }) => {
   const history = useAppHistory()
   const dispatch = useDispatch()
 
-  const { locationId } = useSelector((state) => state.location)
+  const { locationId, position } = useSelector((state) => state.location)
   const isAddingLocation = locationId === 'new'
   const isViewingLocation = locationId !== null && locationId !== 'new'
 
@@ -77,7 +77,7 @@ const MapPage = ({ isDesktop }) => {
       }
     >
       {isLoading && <BottomLeftLoadingIndicator />}
-      {isAddingLocation ? (
+      {isAddingLocation && !isDesktop ? (
         <AddLocationPin />
       ) : (
         !isDesktop && <AddLocationButton onClick={handleAddLocationClick} />
@@ -96,6 +96,7 @@ const MapPage = ({ isDesktop }) => {
           typeName: getCommonName(location.type_ids[0]),
         }))}
         place={place}
+        newLocationPosition={isAddingLocation && isDesktop ? position : null}
         activeLocationId={locationId || hoveredLocationId}
         onViewChange={(newView) => {
           dispatch(viewChangeAndFetch(newView))
