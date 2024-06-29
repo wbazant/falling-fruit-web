@@ -257,7 +257,7 @@ export const LocationForm = ({
 
   const dispatch = useDispatch()
 
-  const { lat, lng } = useSelector((state) => state.map.view.center)
+  const { lat, lng } = useSelector((state) => state.location.position)
   const isLoggedIn = useSelector((state) => !!state.auth.user)
 
   // TODO: internationalize common name

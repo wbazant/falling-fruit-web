@@ -80,7 +80,10 @@ const Map = ({
   const mapStreetView = useSelector((state) => state.map.streetView)
   const [headingStatus, setHeadingStatus] = useState(false)
   const [newLocationDraggedPosition, setNewLocationDraggedPosition] =
-    useState(newLocationPosition)
+    useState(null)
+  useEffect(() => {
+    setNewLocationDraggedPosition(newLocationPosition)
+  }, [newLocationPosition])
   const dispatch = useDispatch()
 
   const setHeading = async (panoClient, markerLocation, panorama) => {
