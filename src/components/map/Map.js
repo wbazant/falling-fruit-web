@@ -59,6 +59,7 @@ const Map = ({
   place,
   locations,
   activeLocationId,
+  editingLocationId,
   clusters,
   onGeolocationClick,
   onClusterClick,
@@ -254,6 +255,7 @@ const Map = ({
             lat={location.lat}
             lng={location.lng}
             selected={location.id === activeLocationId}
+            editing={location.id === editingLocationId}
             label={showLabels ? location.typeName : undefined}
           />
         ))}
@@ -277,7 +279,7 @@ Map.propTypes = {
   geolocation: PropTypes.object,
   locations: PropTypes.arrayOf(PropTypes.object).isRequired,
   place: PropTypes.object,
-  selectedLocationId: PropTypes.number,
+  activeLocationId: PropTypes.number,
   clusters: PropTypes.arrayOf(PropTypes.object).isRequired,
   onViewChange: PropTypes.func.isRequired,
   onClusterClick: PropTypes.func.isRequired,
