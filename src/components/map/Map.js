@@ -71,7 +71,7 @@ const Map = ({
   layerTypes,
   showBusinesses,
   showStreetView,
-  newLocationPosition,
+  position,
 }) => {
   const mapRef = useRef(null)
   const mapsRef = useRef(null)
@@ -79,11 +79,10 @@ const Map = ({
   const mapLocation = useSelector((state) => state.map.location)
   const mapStreetView = useSelector((state) => state.map.streetView)
   const [headingStatus, setHeadingStatus] = useState(false)
-  const [newLocationDraggedPosition, setNewLocationDraggedPosition] =
-    useState(null)
+  const [draggedPosition, setDraggedPosition] = useState(null)
   useEffect(() => {
-    setNewLocationDraggedPosition(newLocationPosition)
-  }, [newLocationPosition])
+    setDraggedPosition(position)
+  }, [position])
   const dispatch = useDispatch()
 
   const setHeading = async (panoClient, markerLocation, panorama) => {
@@ -262,12 +261,12 @@ const Map = ({
             label={showLabels ? location.typeName : undefined}
           />
         ))}
-        {newLocationDraggedPosition && (
+        {draggedPosition && (
           <DraggableNewLocationMapPin
-            lat={newLocationDraggedPosition.lat}
-            lng={newLocationDraggedPosition.lng}
+            lat={draggedPosition.lat}
+            lng={draggedPosition.lng}
             $geoService={mapsRef.current?.Geocoder}
-            onChange={setNewLocationDraggedPosition}
+            onChange={setDraggedPosition}
             onDragEnd={(newPosition) => dispatch(updatePosition(newPosition))}
           />
         )}
@@ -291,7 +290,7 @@ Map.propTypes = {
   layerTypes: PropTypes.arrayOf(PropTypes.string),
   showLabels: PropTypes.bool,
   showBusinesses: PropTypes.bool,
-  newLocationPosition: PropTypes.shape({
+  position: PropTypes.shape({
     lat: PropTypes.number,
     lng: PropTypes.number,
   }),

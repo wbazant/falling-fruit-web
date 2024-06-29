@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { fetchLocationData, initNewLocation } from '../../redux/locationSlice'
 
-const ConnectLocation = ({ locationId }) => {
+const ConnectLocation = ({ locationId, isBeingEdited }) => {
   const dispatch = useDispatch()
   const mapCenter = useSelector((state) => state.map.view.center)
 
@@ -11,9 +11,10 @@ const ConnectLocation = ({ locationId }) => {
     if (locationId === 'new') {
       dispatch(initNewLocation(mapCenter))
     } else {
-      dispatch(fetchLocationData(locationId))
+      dispatch(fetchLocationData({ locationId, isBeingEdited }))
     }
-  }, [dispatch, locationId, mapCenter])
+  }, [dispatch, locationId, mapCenter, isBeingEdited])
+
   return null
 }
 

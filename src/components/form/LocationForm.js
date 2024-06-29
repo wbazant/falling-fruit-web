@@ -13,6 +13,7 @@ import { useIsDesktop } from '../../utils/useBreakpoint'
 import Button from '../ui/Button'
 import IconBesideText from '../ui/IconBesideText'
 import Label from '../ui/Label'
+import LoadingIndicator from '../ui/LoadingIndicator'
 import { TypeName } from '../ui/TypeName'
 import FormikAllSteps from './FormikAllSteps'
 import { FormikStepper, ProgressButtons, Step } from './FormikStepper'
@@ -129,12 +130,19 @@ const PositionFieldReadOnly = ({ lat, lng }) => (
   <IconBesideText tabIndex={0}>
     <Map size={20} />
     <p className="small">
-      {lat.toFixed(6)}, {lng.toFixed(6)}
+      {lat && lng ? `${lat.toFixed(6)}, ${lng.toFixed(6)}` : ''}
     </p>
   </IconBesideText>
 )
 
-const LocationStep = ({ typeOptions, lat, lng, isDesktop, editingId }) => (
+const LocationStep = ({
+  typeOptions,
+  lat,
+  lng,
+  isDesktop,
+  editingId,
+  isLoading,
+}) => (
   <>
     <Select
       name="types"
@@ -149,7 +157,9 @@ const LocationStep = ({ typeOptions, lat, lng, isDesktop, editingId }) => (
       invalidWhenUntouched
     />
     <Label>Position</Label>
-    {isDesktop ? (
+    {isLoading ? (
+      <LoadingIndicator />
+    ) : isDesktop ? (
       <PositionFieldReadOnly lat={lat} lng={lng} />
     ) : (
       <PositionFieldButton lat={lat} lng={lng} editingId={editingId} />
@@ -257,7 +267,7 @@ export const LocationForm = ({
 
   const dispatch = useDispatch()
 
-  const { lat, lng } = useSelector((state) => state.location.position)
+  const { position, isLoading } = useSelector((state) => state.location)
   const isLoggedIn = useSelector((state) => !!state.auth.user)
 
   // TODO: internationalize common name
@@ -279,10 +289,11 @@ export const LocationForm = ({
       <LocationStep
         key={1}
         typeOptions={typeOptions}
-        lat={lat}
-        lng={lng}
+        lat={position?.lat}
+        lng={position?.lng}
         isDesktop={isDesktop}
         editingId={editingId}
+        isLoading={isLoading}
       />
     </Step>,
     ...(editingId
@@ -310,9 +321,9 @@ export const LocationForm = ({
   }) => {
     const locationValues = {
       'g-recaptcha-response': recaptcha,
+      lat: position?.lat,
+      lng: position?.lng,
       ...formToLocation(location),
-      lat,
-      lng,
     }
 
     if (!isEmptyReview(review)) {

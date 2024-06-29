@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useRouteMatch } from 'react-router-dom'
 import styled from 'styled-components/macro'
 
 import {
@@ -31,22 +30,13 @@ const MapPage = ({ isDesktop }) => {
   const history = useAppHistory()
   const dispatch = useDispatch()
 
-  const { locationId, position } = useSelector((state) => state.location)
+  const {
+    locationId,
+    position,
+    isEditing: isEditingLocation,
+  } = useSelector((state) => state.location)
   const isAddingLocation = locationId === 'new'
   const isViewingLocation = locationId !== null && locationId !== 'new'
-  // TODO  move isEditingLocation to Redux
-  const locationRouteMatch = useRouteMatch({
-    path: ['/locations/:locationId/:nextSegment', '/locations/:locationId'],
-  })
-  const reviewRouteMatch = useRouteMatch({
-    path: '/reviews/:reviewId/edit',
-  })
-  let isEditingLocation
-  if (locationRouteMatch) {
-    isEditingLocation = locationRouteMatch.params.nextSegment === 'edit'
-  } else if (reviewRouteMatch) {
-    isEditingLocation = false
-  }
 
   const { getCommonName } = useTypesById()
   const settings = useSelector((state) => state.settings)
@@ -65,19 +55,15 @@ const MapPage = ({ isDesktop }) => {
     isEditingLocation && selectedLocations.length
       ? selectedLocations[0]
       : undefined
-  const latOfLocationBeingEdited = locationBeingEdited?.lat
-  const lngOfLocationBeingEdited = locationBeingEdited?.lng
+  console.log('locationBeingEdited unused', locationBeingEdited)
+
+  const latOfLocationBeingEdited = position?.lat
+  const lngOfLocationBeingEdited = position?.lng
   useEffect(() => {
     if (isAddingLocation) {
       dispatch(zoomInAndSave())
     }
   }, [dispatch, isAddingLocation])
-  // Unpack lat and lng so useEffect can compare on value equality
-  // ( after moving the map, locationBeingEdited might be an equivalent but different object)
-  // These are only available if the location being edited is on the screen
-  // Adding the if(lat...) makes the jump not happen once we scroll off the map
-  // but there is still a small problem: loading the map away from the center and then scrolling in produces a jump
-  // Ideally we would only like to zoom on location after clicking "edit location"
   useEffect(() => {
     if (isEditingLocation) {
       if (latOfLocationBeingEdited && lngOfLocationBeingEdited) {
@@ -91,12 +77,7 @@ const MapPage = ({ isDesktop }) => {
     } else {
       dispatch(restoreOldView())
     }
-  }, [
-    dispatch,
-    isEditingLocation,
-    latOfLocationBeingEdited,
-    lngOfLocationBeingEdited,
-  ])
+  }, [dispatch, isEditingLocation]) // eslint-disable-line
 
   const handleLocationClick = isAddingLocation
     ? undefined
@@ -134,7 +115,7 @@ const MapPage = ({ isDesktop }) => {
       ) : (
         !isDesktop && <AddLocationButton onClick={handleAddLocationClick} />
       )}
-      {isEditingLocation && <EditLocationPin />}
+      {isEditingLocation && !isDesktop && <EditLocationPin />}
       {!isDesktop && <TrackLocationButton isIcon />}
 
       {locationRequested && <ConnectedGeolocation />}
@@ -149,7 +130,7 @@ const MapPage = ({ isDesktop }) => {
           typeName: getCommonName(location.type_ids[0]),
         }))}
         place={place}
-        newLocationPosition={isAddingLocation && isDesktop ? position : null}
+        position={isAddingLocation && isDesktop ? position : null}
         activeLocationId={locationId || hoveredLocationId}
         editingLocationId={isEditingLocation ? locationId : null}
         onViewChange={(newView) => {
