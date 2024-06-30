@@ -41,6 +41,11 @@ const locationSlice = createSlice({
     updatePosition: (state, action) => {
       state.position = action.payload
     },
+    restoreLocationPosition: (state) => {
+      if (state.location && state.location.lat && state.location.lng) {
+        state.position = { lat: state.location.lat, lng: state.location.lng }
+      }
+    },
   },
   extraReducers: {
     [fetchLocationData.pending]: (state, action) => {
@@ -76,7 +81,11 @@ const locationSlice = createSlice({
   },
 })
 
-export const { initNewLocation, clearLocation, updatePosition } =
-  locationSlice.actions
+export const {
+  initNewLocation,
+  clearLocation,
+  updatePosition,
+  restoreLocationPosition,
+} = locationSlice.actions
 
 export default locationSlice.reducer
