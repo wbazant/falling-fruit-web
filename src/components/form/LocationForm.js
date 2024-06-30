@@ -159,7 +159,7 @@ const LocationStep = ({
     <Label>Position</Label>
     {isLoading ? (
       <LoadingIndicator />
-    ) : isDesktop ? (
+    ) : isDesktop || !editingId ? (
       <PositionFieldReadOnly lat={lat} lng={lng} />
     ) : (
       <PositionFieldButton lat={lat} lng={lng} editingId={editingId} />
