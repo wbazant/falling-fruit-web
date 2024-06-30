@@ -39,25 +39,22 @@ const locationSlice = createSlice({
       }
     },
     updatePosition: (state, action) => {
-      if (state.locationId === 'new') {
-        state.position = action.payload
-      }
+      state.position = action.payload
     },
   },
   extraReducers: {
     [fetchLocationData.pending]: (state, action) => {
       state.location = null
-      state.locationId = `pending-${action.meta.arg.locationId}`
+      state.locationId = parseInt(action.meta.arg.locationId)
       state.isLoading = true
       state.position = null
       state.isBeingEdited = action.meta.arg.isBeingEdited
     },
     [fetchLocationData.fulfilled]: (state, action) => {
       state.isLoading = false
-      // Accept the latest initiated fetch
-      if (state.locationId === `pending-${action.payload.id}`) {
+      // Accept the fetch if it's the most recent 'pending' one
+      if (state.locationId === parseInt(action.payload.id)) {
         state.location = action.payload
-        state.locationId = parseInt(action.payload.id)
         state.position = { lat: action.payload.lat, lng: action.payload.lng }
       }
     },

@@ -4,6 +4,15 @@ import styled from 'styled-components/macro'
 
 import PinSvg from './AddLocationPin.svg'
 
+const BaseMapPin = styled(Map)`
+  height: 48px;
+  z-index: 4;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: -20px;
+  filter: drop-shadow(0px 1px 5px rgba(0, 0, 0, 0.45));
+`
+
 const CenteredUnmovablePin = styled.div`
   position: absolute;
   top: 50%;
@@ -19,26 +28,9 @@ const AddLocationPin = styled(CenteredUnmovablePin).attrs({
   src: PinSvg,
 })``
 
-const MapPin = styled(Map)`
+const MapPin = styled(BaseMapPin)`
   // TODO: adjust intrusiveness of pin
-  height: 48px;
-  z-index: 4;
-
-  position: absolute;
-  transform: translate(-50%, -50%);
-  top: -20px;
-  filter: drop-shadow(0px 1px 5px rgba(0, 0, 0, 0.45));
   color: ${({ theme }) => theme.orange};
-`
-
-const NewLocationMapPin = styled(Map)`
-  height: 48px;
-  z-index: 4;
-  position: absolute;
-  transform: translate(-50%, -50%);
-  top: -20px;
-  filter: drop-shadow(0px 1px 5px rgba(0, 0, 0, 0.45));
-  color: ${({ theme }) => theme.blue};
 `
 
 const EditLocationPin = styled(CenteredUnmovablePin)`
@@ -51,12 +43,13 @@ EditLocationPin.defaultProps = {
   as: Map,
 }
 
-const DraggableNewLocationMapPin = ({
+const DraggableMapPin = ({
   onDragEnd,
   onChange,
   $geoService,
   lat,
   lng,
+  color,
 }) => {
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
@@ -104,11 +97,14 @@ const DraggableNewLocationMapPin = ({
   }, [isDragging, dragOffset]) //eslint-disable-line
 
   return (
-    <NewLocationMapPin
+    <BaseMapPin
       lat={lat}
       lng={lng}
       onMouseDown={handleMouseDown}
-      style={{ cursor: isDragging ? 'grabbing' : 'pointer' }} // 'grab' taken for panning
+      style={{
+        cursor: isDragging ? 'grabbing' : 'pointer', // 'grab' taken for panning
+        color: color,
+      }}
     />
   )
 }
@@ -125,7 +121,7 @@ const BackgroundMapPin = styled(Map)`
 export {
   AddLocationPin,
   BackgroundMapPin,
-  DraggableNewLocationMapPin,
+  DraggableMapPin,
   EditLocationPin,
   MapPin,
 }

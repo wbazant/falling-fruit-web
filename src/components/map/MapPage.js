@@ -33,7 +33,8 @@ const MapPage = ({ isDesktop }) => {
   const {
     locationId,
     position,
-    isEditing: isEditingLocation,
+    isLoading: locationIsLoading,
+    isBeingEdited: isEditingLocation,
   } = useSelector((state) => state.location)
   const isAddingLocation = locationId === 'new'
   const isViewingLocation = locationId !== null && locationId !== 'new'
@@ -49,13 +50,6 @@ const MapPage = ({ isDesktop }) => {
   const streetView = useSelector((state) => state.map.streetView)
   const view = useSelector((state) => state.map.view)
   const clusters = useSelector((state) => state.map.clusters)
-
-  const selectedLocations = allLocations.filter((x) => x.id === locationId)
-  const locationBeingEdited =
-    isEditingLocation && selectedLocations.length
-      ? selectedLocations[0]
-      : undefined
-  console.log('locationBeingEdited unused', locationBeingEdited)
 
   const latOfLocationBeingEdited = position?.lat
   const lngOfLocationBeingEdited = position?.lng
@@ -130,9 +124,13 @@ const MapPage = ({ isDesktop }) => {
           typeName: getCommonName(location.type_ids[0]),
         }))}
         place={place}
-        position={isAddingLocation && isDesktop ? position : null}
+        position={
+          (isAddingLocation || isEditingLocation) && isDesktop ? position : null
+        }
         activeLocationId={locationId || hoveredLocationId}
-        editingLocationId={isEditingLocation ? locationId : null}
+        editingLocationId={
+          isEditingLocation && !locationIsLoading ? locationId : null
+        }
         onViewChange={(newView) => {
           dispatch(viewChangeAndFetch(newView))
         }}
