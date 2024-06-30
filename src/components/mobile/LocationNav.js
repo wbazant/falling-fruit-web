@@ -1,7 +1,9 @@
 import { Check, X } from '@styled-icons/boxicons-regular'
+import { useDispatch } from 'react-redux'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components/macro'
 
+import { restoreLocationPosition } from '../../redux/locationSlice'
 import { useAppHistory } from '../../utils/useAppHistory'
 import { theme } from '../ui/GlobalStyle'
 import IconButton from '../ui/IconButton'
@@ -32,69 +34,56 @@ const xAndCheckIcons = (xLabel, xCallback, checkLabel, checkCallback) => (
 )
 const LocationNav = () => {
   const history = useAppHistory()
+  const dispatch = useDispatch()
+
+  const handleGoBack = (event) => {
+    event.stopPropagation()
+    history.goBack()
+  }
 
   return (
     <Switch>
       <Route path="/reviews/:reviewId/edit">
-        {() => (
-          <TopBarNav
-            onBack={(event) => {
-              event.stopPropagation()
-              return history.goBack()
-            }}
-            title="Editing Review"
-          />
-        )}
+        {() => <TopBarNav onBack={handleGoBack} title="Editing Review" />}
       </Route>
       <Route path="/locations/:locationId/review">
-        {() => (
-          <TopBarNav
-            onBack={(event) => {
-              event.stopPropagation()
-              return history.goBack()
-            }}
-            title="Adding review"
-          />
-        )}
+        {() => <TopBarNav onBack={handleGoBack} title="Adding review" />}
       </Route>
       <Route path="/locations/:locationId/edit/details">
-        {() => (
+        {({ match }) => (
           <TopBarNav
-            onBack={(event) => {
+            // we could have gotten here from the 'position' URL too
+            // but going back means stopping to edit the location
+            onBack={() => {
               event.stopPropagation()
-              return history.goBack()
+              return history.push(`/locations/${match.params.locationId}`)
             }}
             title="Editing location"
           />
         )}
       </Route>
       <Route path="/locations/:locationId/edit/position">
-        {({ match }) => {
-          const { pathname } = window.location
-          const geocoordMatch = pathname.substring(pathname.indexOf('@'))
-
-          return (
-            <TopBarNav
-              left={
-                <Instructions>
-                  Adjust location for the edited entry.
-                </Instructions>
-              }
-              rightIcons={xAndCheckIcons(
-                'Cancel adjust location',
-                () =>
-                  history.push(
-                    `/locations/${match.params.locationId}/edit/details/${geocoordMatch}`,
-                  ),
-                'Confirm adjust location',
-                () =>
-                  history.push(
-                    `/locations/${match.params.locationId}/edit/details`,
-                  ),
-              )}
-            />
-          )
-        }}
+        {({ match }) => (
+          <TopBarNav
+            left={
+              <Instructions>Adjust location for the edited entry.</Instructions>
+            }
+            rightIcons={xAndCheckIcons(
+              'Cancel adjust location',
+              () => {
+                dispatch(restoreLocationPosition())
+                return history.push(
+                  `/locations/${match.params.locationId}/edit/details`,
+                )
+              },
+              'Confirm adjust location',
+              () =>
+                history.push(
+                  `/locations/${match.params.locationId}/edit/details`,
+                ),
+            )}
+          />
+        )}
       </Route>
       <Route path="/locations/new/details">
         <TopBarNav
