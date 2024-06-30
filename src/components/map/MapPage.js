@@ -105,7 +105,7 @@ const MapPage = ({ isDesktop }) => {
     >
       {isLoading && <BottomLeftLoadingIndicator />}
       {isAddingLocation && !isDesktop && <AddLocationPin />}
-      {isViewingLocation && !isDesktop && (
+      {!locationId && !isDesktop && (
         <AddLocationButton onClick={handleAddLocationClick} />
       )}
       {isEditingLocation && !isAddingLocation && !isDesktop && (
