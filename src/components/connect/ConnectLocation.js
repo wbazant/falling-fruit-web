@@ -10,10 +10,14 @@ const ConnectLocation = ({ locationId, isBeingEdited }) => {
   useEffect(() => {
     if (locationId === 'new') {
       dispatch(initNewLocation(mapCenter))
-    } else {
+    }
+  }, [dispatch, locationId]) //eslint-disable-line
+
+  useEffect(() => {
+    if (locationId !== 'new') {
       dispatch(fetchLocationData({ locationId, isBeingEdited }))
     }
-  }, [dispatch, locationId, mapCenter, isBeingEdited])
+  }, [dispatch, locationId, isBeingEdited])
 
   return null
 }

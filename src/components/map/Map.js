@@ -7,12 +7,14 @@ import styled from 'styled-components/macro'
 
 import { updatePosition } from '../../redux/locationSlice'
 import { setStreetView } from '../../redux/mapSlice'
+import { theme } from '../ui/GlobalStyle'
 import ResetButton from '../ui/ResetButton'
 import Cluster from './Cluster'
 import Geolocation from './Geolocation'
 import Location from './Location'
-import { DraggableNewLocationMapPin } from './Pins'
+import { DraggableMapPin } from './Pins'
 import Place from './Place'
+
 /**
  * Wrapper component around google-map-react.
  * @param {string} apiKey - The google maps API key
@@ -262,12 +264,13 @@ const Map = ({
           />
         ))}
         {draggedPosition && (
-          <DraggableNewLocationMapPin
+          <DraggableMapPin
             lat={draggedPosition.lat}
             lng={draggedPosition.lng}
             $geoService={mapsRef.current?.Geocoder}
             onChange={setDraggedPosition}
             onDragEnd={(newPosition) => dispatch(updatePosition(newPosition))}
+            color={editingLocationId === 'new' ? theme.blue : theme.orange}
           />
         )}
       </GoogleMapReact>
