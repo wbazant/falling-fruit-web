@@ -1,23 +1,9 @@
-import { Map } from '@styled-icons/boxicons-solid'
 import PropTypes from 'prop-types'
 import { memo } from 'react'
 import styled from 'styled-components/macro'
 
 import ResetButton from '../ui/ResetButton'
-import Label from './Label'
-
-const MapPin = styled(Map)`
-  // TODO: adjust intrusiveness of pin
-  height: 48px;
-  z-index: 3;
-  color: ${({ theme }) => theme.orange};
-
-  position: absolute;
-  transform: translate(-50%, -50%);
-  top: -20px;
-  filter: drop-shadow(0px 1px 5px rgba(0, 0, 0, 0.45));
-  color: ${({ theme }) => theme.orange};
-`
+import { BackgroundMapPin, MapPin } from './Pins'
 
 /**
  * Component for a location displayed on the map.
@@ -42,9 +28,31 @@ const LocationButton = styled(ResetButton)`
   cursor: ${({ onClick }) => (onClick ? 'pointer' : 'unset')};
 `
 
-const Location = memo(({ label, selected, onClick, ...props }) => (
+const Label = styled.div`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.headerText};
+  margin-top: -5px;
+  /* Centers labels under each location */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Centers text inside the label */
+  text-align: center;
+  /* Prevents line breaks */
+  white-space: nowrap;
+  z-index: 1;
+
+  text-shadow:
+    -1px -1px 0 ${({ theme }) => theme.background},
+    1px -1px 0 ${({ theme }) => theme.background},
+    -1px 1px 0 ${({ theme }) => theme.background},
+    1px 1px 0 ${({ theme }) => theme.background};
+`
+
+const Location = memo(({ label, selected, editing, onClick, ...props }) => (
   <>
-    {selected && <MapPin />}
+    {selected && !editing && <MapPin />}
+    {editing && <BackgroundMapPin />}
     <LocationButton onClick={onClick} {...props} />
     <Label>{label}</Label>
   </>

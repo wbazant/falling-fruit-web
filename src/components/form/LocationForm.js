@@ -1,6 +1,7 @@
+import { Map } from '@styled-icons/boxicons-solid'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components/macro'
 
@@ -8,8 +9,11 @@ import { useTypesById } from '../../redux/useTypesById'
 import { fetchLocations } from '../../redux/viewChange'
 import { addLocation, editLocation } from '../../utils/api'
 import { useAppHistory } from '../../utils/useAppHistory'
+import { useIsDesktop } from '../../utils/useBreakpoint'
 import Button from '../ui/Button'
+import IconBesideText from '../ui/IconBesideText'
 import Label from '../ui/Label'
+import LoadingIndicator from '../ui/LoadingIndicator'
 import { TypeName } from '../ui/TypeName'
 import FormikAllSteps from './FormikAllSteps'
 import { FormikStepper, ProgressButtons, Step } from './FormikStepper'
@@ -116,7 +120,29 @@ const InlineSelects = styled.div`
   }
 `
 
-const LocationStep = ({ typeOptions }) => (
+const PositionFieldButton = ({ lat, lng, editingId }) => (
+  <Link to={`/locations/${editingId}/edit/position`}>
+    <PositionFieldReadOnly lat={lat} lng={lng} />
+  </Link>
+)
+
+const PositionFieldReadOnly = ({ lat, lng }) => (
+  <IconBesideText tabIndex={0}>
+    <Map size={20} />
+    <p className="small">
+      {lat && lng ? `${lat.toFixed(6)}, ${lng.toFixed(6)}` : ''}
+    </p>
+  </IconBesideText>
+)
+
+const LocationStep = ({
+  typeOptions,
+  lat,
+  lng,
+  isDesktop,
+  editingId,
+  isLoading,
+}) => (
   <>
     <Select
       name="types"
@@ -130,6 +156,14 @@ const LocationStep = ({ typeOptions }) => (
       required
       invalidWhenUntouched
     />
+    <Label>Position</Label>
+    {isLoading ? (
+      <LoadingIndicator />
+    ) : isDesktop || !editingId ? (
+      <PositionFieldReadOnly lat={lat} lng={lng} />
+    ) : (
+      <PositionFieldButton lat={lat} lng={lng} editingId={editingId} />
+    )}
     <Textarea
       name="description"
       label="Description"
@@ -229,10 +263,11 @@ export const LocationForm = ({
   const history = useAppHistory()
   const { state } = useLocation()
   const { typesById } = useTypesById()
+  const isDesktop = useIsDesktop()
 
   const dispatch = useDispatch()
 
-  const { lat, lng } = useSelector((state) => state.map.view.center)
+  const { position, isLoading } = useSelector((state) => state.location)
   const isLoggedIn = useSelector((state) => !!state.auth.user)
 
   // TODO: internationalize common name
@@ -251,7 +286,15 @@ export const LocationForm = ({
 
   const formikSteps = [
     <Step key={1} label="Step 1" validate={validateLocationStep}>
-      <LocationStep key={1} typeOptions={typeOptions} />
+      <LocationStep
+        key={1}
+        typeOptions={typeOptions}
+        lat={position?.lat}
+        lng={position?.lng}
+        isDesktop={isDesktop}
+        editingId={editingId}
+        isLoading={isLoading}
+      />
     </Step>,
     ...(editingId
       ? []
@@ -278,9 +321,9 @@ export const LocationForm = ({
   }) => {
     const locationValues = {
       'g-recaptcha-response': recaptcha,
+      lat: position?.lat,
+      lng: position?.lng,
       ...formToLocation(location),
-      lat,
-      lng,
     }
 
     if (!isEmptyReview(review)) {
