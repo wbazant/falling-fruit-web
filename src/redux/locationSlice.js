@@ -20,6 +20,7 @@ const locationSlice = createSlice({
     position: null, // {lat: number, lng: number}
     locationId: null,
     isBeingEdited: false,
+    form: null,
   },
   reducers: {
     clearLocation: (state) => {
@@ -28,6 +29,7 @@ const locationSlice = createSlice({
       state.locationId = null
       state.position = null
       state.isBeingEdited = false
+      state.form = null
     },
     initNewLocation: (state, action) => {
       state.isLoading = false
@@ -37,9 +39,13 @@ const locationSlice = createSlice({
         state.locationId = 'new'
         state.position = action.payload
       }
+      state.form = null
     },
     updatePosition: (state, action) => {
       state.position = action.payload
+    },
+    saveFormValues: (state, action) => {
+      state.form = action.payload
     },
   },
   extraReducers: {
@@ -49,6 +55,7 @@ const locationSlice = createSlice({
       state.isLoading = true
       state.position = null
       state.isBeingEdited = action.meta.arg.isBeingEdited
+      state.form = null
     },
     [fetchLocationData.fulfilled]: (state, action) => {
       state.isLoading = false
@@ -80,6 +87,7 @@ export const {
   initNewLocation,
   clearLocation,
   updatePosition,
+  saveFormValues,
 } = locationSlice.actions
 
 export default locationSlice.reducer

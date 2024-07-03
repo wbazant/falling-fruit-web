@@ -1,10 +1,12 @@
 import { Map } from '@styled-icons/boxicons-solid'
+import { useFormikContext } from 'formik'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import styled from 'styled-components/macro'
 
+import { saveFormValues } from '../../redux/locationSlice'
 import { useTypesById } from '../../redux/useTypesById'
 import { fetchLocations } from '../../redux/viewChange'
 import { addLocation, editLocation } from '../../utils/api'
@@ -120,11 +122,20 @@ const InlineSelects = styled.div`
   }
 `
 
-const PositionFieldButton = ({ lat, lng, editingId }) => (
-  <Link to={`/locations/${editingId}/edit/position`}>
-    <PositionFieldReadOnly lat={lat} lng={lng} />
-  </Link>
-)
+const PositionFieldButton = ({ lat, lng, editingId }) => {
+  const { values } = useFormikContext()
+  const dispatch = useDispatch()
+  return (
+    <Link
+      onClick={() => {
+        dispatch(saveFormValues(values))
+      }}
+      to={`/locations/${editingId}/edit/position`}
+    >
+      <PositionFieldReadOnly lat={lat} lng={lng} />
+    </Link>
+  )
+}
 
 const PositionFieldReadOnly = ({ lat, lng }) => (
   <IconBesideText tabIndex={0}>
@@ -256,9 +267,15 @@ export const locationToForm = ({
 export const LocationForm = ({
   editingId,
   onSubmit,
-  initialValues = INITIAL_LOCATION_VALUES,
+  initialValues,
   stepped,
 }) => {
+  const reduxFormValues = useSelector((state) => state.location.form)
+  const mergedInitialValues = {
+    ...INITIAL_LOCATION_VALUES,
+    ...initialValues,
+    ...reduxFormValues,
+  }
   // TODO: create a "going back" util
   const history = useAppHistory()
   const { state } = useLocation()
@@ -363,7 +380,7 @@ export const LocationForm = ({
       <StepDisplay
         validateOnChange={false}
         validate={validateLocation}
-        initialValues={initialValues}
+        initialValues={mergedInitialValues}
         validateOnMount
         onSubmit={isLoggedIn ? handleSubmit : handlePresubmit}
         // For all steps only
