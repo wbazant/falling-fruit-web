@@ -2,40 +2,43 @@ import { Map } from '@styled-icons/boxicons-solid'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components/macro'
 
-import PinSvg from './AddLocationPin.svg'
-
 const BaseMapPin = styled(Map)`
   height: 48px;
   z-index: 4;
   position: absolute;
   transform: translate(-50%, -50%);
-  top: -20px;
-  filter: drop-shadow(0px 1px 5px rgba(0, 0, 0, 0.45));
+  top: -20.16px;
 `
 
-const CenteredUnmovablePin = styled.div`
+const AddLocationPin = styled(Map)`
+  height: 57px;
+  color: ${({ theme }) => theme.blue};
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, -92%);
+  // Display on top of map
   z-index: 1;
+  // Allow clicking/dragging through the pin
+  pointer-events: none;
+  touch-action: none;
+`
+const EditLocationPin = styled(Map)`
+  height: 48px;
+  z-index: 4;
+
+  position: absolute;
+  transform: translate(-50%, -50%);
+  color: ${({ theme }) => theme.orange};
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -92%);
+  // Allow clicking/dragging through the pin
   pointer-events: none;
   touch-action: none;
 `
 
-const AddLocationPin = styled(CenteredUnmovablePin).attrs({
-  as: 'img',
-  src: PinSvg,
-})``
-
 const MapPin = styled(BaseMapPin)`
-  // TODO: adjust intrusiveness of pin
-  color: ${({ theme }) => theme.orange};
-`
-
-const EditLocationPin = styled(CenteredUnmovablePin)`
-  height: 48px;
-  filter: drop-shadow(0px 1px 5px rgba(0, 0, 0, 0.45));
   color: ${({ theme }) => theme.orange};
 `
 
