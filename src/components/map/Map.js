@@ -1,7 +1,7 @@
 import { X } from '@styled-icons/boxicons-regular'
 import GoogleMapReact from 'google-map-react'
 import PropTypes from 'prop-types'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
 
@@ -167,13 +167,10 @@ const Map = ({
     mapsRef.current = maps
   }
 
-  const closeStreetView = useCallback(
-    (event) => {
-      event.stopPropagation()
-      dispatch(setStreetView(false))
-    },
-    [dispatch],
-  )
+  const closeStreetView = (event) => {
+    event.stopPropagation()
+    dispatch(setStreetView(false))
+  }
 
   return (
     <>
