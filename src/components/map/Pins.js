@@ -2,15 +2,24 @@ import { Map } from '@styled-icons/boxicons-solid'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components/macro'
 
-const BaseMapPin = styled(Map)`
+const AddLocationPin = styled(Map)`
+  height: 57px;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  top: -23.94px;
+  color: ${({ theme }) => theme.blue};
+`
+
+const EditLocationPin = styled(Map)`
   height: 48px;
   z-index: 4;
   position: absolute;
   transform: translate(-50%, -50%);
   top: -20.16px;
+  color: ${({ theme }) => theme.orange};
 `
 
-const AddLocationPin = styled(Map)`
+const AddLocationCentralUnmovablePin = styled(Map)`
   height: 57px;
   color: ${({ theme }) => theme.blue};
   position: absolute;
@@ -23,7 +32,7 @@ const AddLocationPin = styled(Map)`
   pointer-events: none;
   touch-action: none;
 `
-const EditLocationPin = styled(Map)`
+const EditLocationCentralUnmovablePin = styled(Map)`
   height: 48px;
   z-index: 4;
 
@@ -38,11 +47,9 @@ const EditLocationPin = styled(Map)`
   touch-action: none;
 `
 
-const MapPin = styled(BaseMapPin)`
-  color: ${({ theme }) => theme.orange};
-`
+const MapPin = EditLocationPin
 
-EditLocationPin.defaultProps = {
+EditLocationCentralUnmovablePin.defaultProps = {
   as: Map,
 }
 
@@ -52,7 +59,7 @@ const DraggableMapPin = ({
   $geoService,
   lat,
   lng,
-  color,
+  isNewLocation,
 }) => {
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
@@ -99,32 +106,30 @@ const DraggableMapPin = ({
     }
   }, [isDragging, dragOffset]) //eslint-disable-line
 
+  const LocationPin = isNewLocation ? AddLocationPin : EditLocationPin
+
   return (
-    <BaseMapPin
+    <LocationPin
       lat={lat}
       lng={lng}
       onMouseDown={handleMouseDown}
       style={{
         cursor: isDragging ? 'grabbing' : 'pointer', // 'grab' taken for panning
-        color: color,
       }}
+      isNewLocation
     />
   )
 }
 
-const BackgroundMapPin = styled(Map)`
-  height: 48px;
+const BackgroundMapPin = styled(EditLocationPin)`
   z-index: 3;
-  position: absolute;
-  transform: translate(-50%, -50%);
-  top: -20px;
   color: ${({ theme }) => theme.transparentOrange};
 `
 
 export {
-  AddLocationPin,
+  AddLocationCentralUnmovablePin,
   BackgroundMapPin,
   DraggableMapPin,
-  EditLocationPin,
+  EditLocationCentralUnmovablePin,
   MapPin,
 }

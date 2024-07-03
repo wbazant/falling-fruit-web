@@ -17,7 +17,10 @@ import AddLocationButton from '../ui/AddLocationButton'
 import LoadingIndicator from '../ui/LoadingIndicator'
 import { ConnectedGeolocation } from './ConnectedGeolocation'
 import Map from './Map'
-import { AddLocationPin, EditLocationPin } from './Pins'
+import {
+  AddLocationCentralUnmovablePin,
+  EditLocationCentralUnmovablePin,
+} from './Pins'
 import TrackLocationButton from './TrackLocationButton'
 
 const BottomLeftLoadingIndicator = styled(LoadingIndicator)`
@@ -104,12 +107,12 @@ const MapPage = ({ isDesktop }) => {
       }
     >
       {isLoading && <BottomLeftLoadingIndicator />}
-      {isAddingLocation && !isDesktop && <AddLocationPin />}
+      {isAddingLocation && !isDesktop && <AddLocationCentralUnmovablePin />}
       {!locationId && !isDesktop && (
         <AddLocationButton onClick={handleAddLocationClick} />
       )}
       {isEditingLocation && !isAddingLocation && !isDesktop && (
-        <EditLocationPin />
+        <EditLocationCentralUnmovablePin />
       )}
       {!isDesktop && <TrackLocationButton isIcon />}
 
