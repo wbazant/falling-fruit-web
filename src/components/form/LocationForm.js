@@ -392,7 +392,7 @@ export const LocationForm = ({
               onClick={(e) => {
                 e.stopPropagation()
                 if (editingId) {
-                  history.goBack()
+                  history.push(`/locations/${editingId}`)
                 } else {
                   history.push(state?.fromPage ?? '/map')
                 }
