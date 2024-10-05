@@ -88,6 +88,7 @@ const Search = (props) => {
   const isDesktop = useIsDesktop()
   const filterOpen = useSelector((state) => state.filter.isOpenInMobileLayout)
   const selectedPlace = useSelector((state) => state.place.selectedPlace)
+  const lastMapView = useSelector((state) => state.viewport.lastMapView)
   // Reach's Combobox only passes the ComboboxOption's value to handleSelect, so we will
   // keep a map of the value to the place id, which handleSelect also needs
   const descriptionToPlaceId = useRef({})
@@ -154,6 +155,8 @@ const Search = (props) => {
       dispatch(
         selectPlace({
           place: getZoomedInView(latitude, longitude),
+          lastGoodBounds: lastMapView?.bounds,
+          lastGoodZoom: lastMapView?.zoom,
         }),
       )
     } else {
@@ -161,7 +164,13 @@ const Search = (props) => {
         description,
         descriptionToPlaceId.current[description],
       )
-      dispatch(selectPlace({ place: placeBounds }))
+      dispatch(
+        selectPlace({
+          place: placeBounds,
+          lastGoodBounds: lastMapView?.bounds,
+          lastGoodZoom: lastMapView?.zoom,
+        }),
+      )
     }
   }
   const handleFocus = () => {
