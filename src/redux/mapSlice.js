@@ -184,17 +184,7 @@ export const mapSlice = createSlice({
         state.googleMap.setCenter(center)
         state.googleMap.setZoom(newZoom)
       } else {
-        // Fallback to fitBounds if we don't have last good view data
         state.googleMap.fitBounds(bounds)
-
-        // Add a listener for the 'idle' event to set a maximum zoom level
-        const listener = state.googleMap.addListener('idle', () => {
-          if (state.googleMap.getZoom() > 15) {
-            state.googleMap.setZoom(15)
-          }
-          // Remove the listener after it's been triggered
-          maps.event.removeListener(listener)
-        })
       }
     },
   },

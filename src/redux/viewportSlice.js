@@ -7,7 +7,6 @@ export const viewportSlice = createSlice({
   },
   reducers: {
     updateLastMapView: (state, action) => {
-      console.log(action.payload)
       state.lastMapView = action.payload
     },
   },
