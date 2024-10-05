@@ -160,6 +160,15 @@ export const mapSlice = createSlice({
         { lat: ne.lat, lng: ne.lng },
       )
       state.googleMap.fitBounds(bounds)
+
+      // Add a listener for the 'idle' event to set a minimum zoom level
+      const listener = state.googleMap.addListener('idle', () => {
+        if (state.googleMap.getZoom() > 15) {
+          state.googleMap.setZoom(15)
+        }
+        // Remove the listener after it's been triggered
+        maps.event.removeListener(listener)
+      })
     },
   },
 })
