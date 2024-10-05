@@ -159,16 +159,43 @@ export const mapSlice = createSlice({
         { lat: sw.lat, lng: sw.lng },
         { lat: ne.lat, lng: ne.lng },
       )
-      state.googleMap.fitBounds(bounds)
 
-      // Add a listener for the 'idle' event to set a minimum zoom level
-      const listener = state.googleMap.addListener('idle', () => {
-        if (state.googleMap.getZoom() > 15) {
-          state.googleMap.setZoom(15)
-        }
-        // Remove the listener after it's been triggered
-        maps.event.removeListener(listener)
-      })
+      // Use the last good view to calculate the appropriate zoom
+      const { lastGoodBounds, lastGoodZoom } = action.payload
+      if (lastGoodBounds && lastGoodZoom) {
+        const lastGoodWidth = lastGoodBounds.east - lastGoodBounds.west
+        const lastGoodHeight = lastGoodBounds.north - lastGoodBounds.south
+        const newWidth = ne.lng - sw.lng
+        const newHeight = ne.lat - sw.lat
+
+        // Calculate the zoom difference based on the viewport size difference
+        const widthRatio = lastGoodWidth / newWidth
+        const heightRatio = lastGoodHeight / newHeight
+        const zoomDiff = Math.log2(Math.min(widthRatio, heightRatio))
+
+        // Calculate the new zoom level
+        const newZoom = Math.min(lastGoodZoom + zoomDiff, 15)
+
+        // Set the center and zoom
+        const center = new maps.LatLng(
+          (ne.lat + sw.lat) / 2,
+          (ne.lng + sw.lng) / 2,
+        )
+        state.googleMap.setCenter(center)
+        state.googleMap.setZoom(newZoom)
+      } else {
+        // Fallback to fitBounds if we don't have last good view data
+        state.googleMap.fitBounds(bounds)
+
+        // Add a listener for the 'idle' event to set a maximum zoom level
+        const listener = state.googleMap.addListener('idle', () => {
+          if (state.googleMap.getZoom() > 15) {
+            state.googleMap.setZoom(15)
+          }
+          // Remove the listener after it's been triggered
+          maps.event.removeListener(listener)
+        })
+      }
     },
   },
 })
