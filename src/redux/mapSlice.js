@@ -163,18 +163,13 @@ export const mapSlice = createSlice({
       // Use the last good view to calculate the appropriate zoom
       const { lastGoodBounds, lastGoodZoom } = action.payload
       if (lastGoodBounds && lastGoodZoom) {
-        const lastGoodWidth = lastGoodBounds.east - lastGoodBounds.west
-        const lastGoodHeight = lastGoodBounds.north - lastGoodBounds.south
         const newWidth = ne.lng - sw.lng
         const newHeight = ne.lat - sw.lat
 
-        // Calculate the zoom difference based on the viewport size difference
-        const widthRatio = lastGoodWidth / newWidth
-        const heightRatio = lastGoodHeight / newHeight
-        const zoomDiff = Math.log2(Math.min(widthRatio, heightRatio))
-
-        // Calculate the new zoom level
-        const newZoom = Math.min(lastGoodZoom + zoomDiff, 15)
+        // Calculate the necessary zoom based on the new viewport size
+        const widthZoom = Math.log2(360 / newWidth)
+        const heightZoom = Math.log2(180 / newHeight)
+        const newZoom = Math.floor(Math.min(widthZoom, heightZoom))
 
         // Set the center and zoom
         const center = new maps.LatLng(
