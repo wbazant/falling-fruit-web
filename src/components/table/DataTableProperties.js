@@ -25,8 +25,8 @@ const ResourceList = ({ url, key }) =>
   RESOURCES.map(
     ({ title, urlKey, icon }) =>
       url.includes(urlKey) && (
-        <TablePreviewLink href={url} target="_blank" rel="noreferrer">
-          <img src={icon} key={key} alt={`${title} logo`} />
+        <TablePreviewLink key={key} href={url} target="_blank" rel="noreferrer">
+          <img src={icon} alt={`${title} logo`} />
         </TablePreviewLink>
       ),
   )
