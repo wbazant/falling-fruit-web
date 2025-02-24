@@ -3,10 +3,18 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 import Backend from 'i18next-http-backend'
 import { initReactI18next, useTranslation } from 'react-i18next'
 
+import { theme } from './components/ui/GlobalStyle'
 import { Select } from './components/ui/Select'
 
 const setDocumentDir = (language) => {
   document.dir = ['ar', 'he'].includes(language) ? 'rtl' : 'ltr'
+
+  document.body.style.fontFamily =
+    language === 'el'
+      ? theme.fallbackFonts
+      : language === 'vi'
+        ? 'sans-serif'
+        : theme.fonts
 }
 
 export const LANGUAGE_CACHE_KEY = 'language'
@@ -30,7 +38,20 @@ const LanguageSelect = () => {
   const { i18n } = useTranslation()
   return (
     <Select
-      options={LANGUAGE_OPTIONS}
+      options={LANGUAGE_OPTIONS.map(({ value, label }) => ({
+        value,
+        label: (
+          <span
+            style={{
+              fontWeight: '500',
+              fontFamily: theme.fallbackFonts,
+              fontSize: '90%',
+            }}
+          >
+            {label}
+          </span>
+        ),
+      }))}
       value={LANGUAGE_OPTIONS.find((option) => option.value === i18n.language)}
       onChange={(option) => {
         i18n.changeLanguage(option.value, () => {

@@ -10,13 +10,18 @@ import { createGlobalStyle } from 'styled-components'
  */
 const MOBILE_MAX_WIDTH = 767
 
+// https://github.com/necolas/normalize.css/issues/665
+// Prefaced with Helvetica Neue since it's quite similar to Lato
+const FALLBACK_FONTS =
+  '"Helvetica Neue",-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif'
 const theme = {
   // media queries for mobile and desktop
   device: {
     mobile: `(max-width: ${MOBILE_MAX_WIDTH}px)`,
     desktop: `(min-width: ${MOBILE_MAX_WIDTH + 1}px)`,
   },
-  fonts: '"Lato", sans-serif',
+  fallbackFonts: FALLBACK_FONTS,
+  fonts: `"Lato", ${FALLBACK_FONTS}`,
   // text colors
   text: '#9b9b9b',
   secondaryText: '#5a5a5a',
