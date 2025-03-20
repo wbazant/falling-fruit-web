@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components'
 
 import Filter from '../filter/Filter'
 import Search from '../search/Search'
+import ShareIconButton from '../share/ShareIconButton'
 import TopBar from '../ui/TopBar'
 
 const StyledFilter = styled.div`
@@ -28,6 +29,7 @@ const NavigationBar = () => {
   return (
     <TopBar>
       <Search />
+      <ShareIconButton style={{ marginLeft: 'auto', marginRight: '10px' }} />
       <StyledFilter isOpen={filterOpen}>
         <Filter />
       </StyledFilter>
