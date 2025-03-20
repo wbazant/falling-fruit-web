@@ -20,6 +20,7 @@ const StyledOverlay = styled.div`
 
 const NavigationBar = () => {
   const filterOpen = useSelector((state) => state.filter.isOpenInMobileLayout)
+  const shareOpen = useSelector((state) => state.share.isOpenInMobileLayout)
   const { typesAccess } = useSelector((state) => state.type)
 
   if (typesAccess.isEmpty) {
@@ -31,6 +32,8 @@ const NavigationBar = () => {
       <Search />
       <StyledOverlay isOpen={filterOpen}>
         <Filter />
+      </StyledOverlay>
+      <StyledOverlay isOpen={shareOpen}>
         <Share />
       </StyledOverlay>
     </TopBar>
