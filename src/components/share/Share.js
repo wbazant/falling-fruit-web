@@ -24,6 +24,7 @@ const ShareTitle = styled.h3`
 const ShareUrlContainer = styled.div`
   display: flex;
   margin-bottom: 1rem;
+  align-items: center;
 `
 
 const ShareTextArea = styled.textarea`
@@ -32,8 +33,9 @@ const ShareTextArea = styled.textarea`
   border: 1px solid ${({ theme }) => theme.border};
   border-radius: 4px;
   resize: none;
-  height: 2.5rem;
+  height: 38px; /* Fixed height to match button */
   margin-right: 0.5rem;
+  vertical-align: middle;
 `
 
 const CopyButton = styled(Button)`
@@ -41,6 +43,8 @@ const CopyButton = styled(Button)`
   align-items: center;
   justify-content: center;
   padding: 0.5rem;
+  height: 38px; /* Fixed height to match textarea */
+  align-self: center;
 
   svg {
     width: 1.2rem;
