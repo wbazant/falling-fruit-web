@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components'
 
 import Filter from '../filter/Filter'
 import Search from '../search/Search'
+import Share from '../share/Share'
 import TopBar from '../ui/TopBar'
 
 const StyledOverlay = styled.div`
@@ -30,6 +31,7 @@ const NavigationBar = () => {
       <Search />
       <StyledOverlay isOpen={filterOpen}>
         <Filter />
+        <Share />
       </StyledOverlay>
     </TopBar>
   )
