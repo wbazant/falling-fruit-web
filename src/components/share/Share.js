@@ -1,8 +1,10 @@
 import { Copy as CopyIcon } from '@styled-icons/boxicons-regular'
 import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import styled from 'styled-components/macro'
 
+import { closeShare } from '../../redux/shareSlice'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
 
@@ -53,12 +55,14 @@ const CopyButton = styled(Button)`
 
 const Share = () => {
   const { t } = useTranslation()
+  const dispatch = useDispatch()
   const currentUrl = window.location.href
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(currentUrl)
       toast.success(t('share.copied', 'Copied to clipboard!'))
+      dispatch(closeShare())
     } catch (err) {
       console.error('Failed to copy URL: ', err)
       toast.error(t('share.copyFailed', 'Failed to copy URL'))
