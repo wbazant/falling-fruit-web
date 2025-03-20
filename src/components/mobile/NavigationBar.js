@@ -17,7 +17,7 @@ const StyledFilter = styled.div`
     `}
 `
 
-const SearchAndFilterTopBar = () => {
+const NavigationBar = () => {
   const filterOpen = useSelector((state) => state.filter.isOpenInMobileLayout)
   const { typesAccess } = useSelector((state) => state.type)
 
@@ -35,4 +35,4 @@ const SearchAndFilterTopBar = () => {
   )
 }
 
-export default SearchAndFilterTopBar
+export default NavigationBar
