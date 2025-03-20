@@ -27,15 +27,17 @@ const ShareUrlContainer = styled.div`
   align-items: center;
 `
 
-const ShareTextArea = styled.textarea`
+const ShareInput = styled.input`
   flex: 1;
   padding: 0.5rem;
   border: 1px solid ${({ theme }) => theme.border};
   border-radius: 4px;
-  resize: none;
   height: 38px; /* Fixed height to match button */
   margin-right: 0.5rem;
   vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const CopyButton = styled(Button)`
@@ -70,7 +72,8 @@ const Share = () => {
     <ShareContainer>
       <ShareTitle>{t('share.title', 'Share this view')}</ShareTitle>
       <ShareUrlContainer>
-        <ShareTextArea
+        <ShareInput
+          type="text"
           value={currentUrl}
           readOnly
           onClick={(e) => e.target.select()}
