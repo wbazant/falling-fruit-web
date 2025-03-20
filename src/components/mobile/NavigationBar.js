@@ -4,10 +4,9 @@ import styled, { css } from 'styled-components'
 
 import Filter from '../filter/Filter'
 import Search from '../search/Search'
-import ShareIconButton from '../share/ShareIconButton'
 import TopBar from '../ui/TopBar'
 
-const StyledFilter = styled.div`
+const StyledOverlay = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column-reverse;
@@ -29,10 +28,9 @@ const NavigationBar = () => {
   return (
     <TopBar>
       <Search />
-      <ShareIconButton style={{ marginLeft: 'auto', marginRight: '10px' }} />
-      <StyledFilter isOpen={filterOpen}>
+      <StyledOverlay isOpen={filterOpen}>
         <Filter />
-      </StyledFilter>
+      </StyledOverlay>
     </TopBar>
   )
 }
