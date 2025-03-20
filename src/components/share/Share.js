@@ -1,6 +1,6 @@
 import { Copy as CopyIcon } from '@styled-icons/boxicons-regular'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
 import styled from 'styled-components/macro'
 
 import Button from '../ui/Button'
@@ -50,16 +50,15 @@ const CopyButton = styled(Button)`
 
 const Share = () => {
   const { t } = useTranslation()
-  const [copySuccess, setCopySuccess] = useState(false)
   const currentUrl = window.location.href
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(currentUrl)
-      setCopySuccess(true)
-      setTimeout(() => setCopySuccess(false), 2000)
+      toast.success(t('share.copied', 'Copied to clipboard!'))
     } catch (err) {
       console.error('Failed to copy URL: ', err)
+      toast.error(t('share.copyFailed', 'Failed to copy URL'))
     }
   }
 
@@ -76,7 +75,6 @@ const Share = () => {
           <CopyIcon />
         </CopyButton>
       </ShareUrlContainer>
-      {copySuccess && <p>{t('share.copied', 'Copied to clipboard!')}</p>}
     </ShareContainer>
   )
 }
