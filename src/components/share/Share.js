@@ -4,18 +4,21 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components/macro'
 
 import Button from '../ui/Button'
-import Modal from '../ui/Modal'
 
 const ShareContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 1rem;
 `
 
 const ShareTitle = styled.h3`
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: ${({ theme }) => theme.primaryText};
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: ${({ theme }) => theme.secondaryText};
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+  @media ${({ theme }) => theme.device.mobile} {
+    margin-top: 0em;
+  }
 `
 
 const ShareUrlContainer = styled.div`
@@ -45,7 +48,7 @@ const CopyButton = styled(Button)`
   }
 `
 
-const Share = ({ isOpen, onClose }) => {
+const Share = () => {
   const { t } = useTranslation()
   const [copySuccess, setCopySuccess] = useState(false)
   const currentUrl = window.location.href
@@ -61,22 +64,20 @@ const Share = ({ isOpen, onClose }) => {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ShareContainer>
-        <ShareTitle>{t('share.title', 'Share this view')}</ShareTitle>
-        <ShareUrlContainer>
-          <ShareTextArea
-            value={currentUrl}
-            readOnly
-            onClick={(e) => e.target.select()}
-          />
-          <CopyButton onClick={handleCopy}>
-            <CopyIcon />
-          </CopyButton>
-        </ShareUrlContainer>
-        {copySuccess && <p>{t('share.copied', 'Copied to clipboard!')}</p>}
-      </ShareContainer>
-    </Modal>
+    <ShareContainer>
+      <ShareTitle>{t('share.title', 'Share this view')}</ShareTitle>
+      <ShareUrlContainer>
+        <ShareTextArea
+          value={currentUrl}
+          readOnly
+          onClick={(e) => e.target.select()}
+        />
+        <CopyButton onClick={handleCopy}>
+          <CopyIcon />
+        </CopyButton>
+      </ShareUrlContainer>
+      {copySuccess && <p>{t('share.copied', 'Copied to clipboard!')}</p>}
+    </ShareContainer>
   )
 }
 
