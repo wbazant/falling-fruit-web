@@ -223,19 +223,6 @@ const Search = (props) => {
 
         {!isDesktop && (
           <>
-            <ShareIconButton
-              pressed={shareOpen}
-              onClick={() => {
-                if (shareOpen) {
-                  dispatch(closeShare())
-                } else {
-                  dispatch(openShare())
-                  if (filterOpen) {
-                    dispatch(closeFilter())
-                  }
-                }
-              }}
-            />
             <FilterIconButton
               pressed={filterOpen}
               onClick={() => {
@@ -246,6 +233,19 @@ const Search = (props) => {
                   dispatch(fetchFilterCounts())
                   if (shareOpen) {
                     dispatch(closeShare())
+                  }
+                }
+              }}
+            />
+            <ShareIconButton
+              pressed={shareOpen}
+              onClick={() => {
+                if (shareOpen) {
+                  dispatch(closeShare())
+                } else {
+                  dispatch(openShare())
+                  if (filterOpen) {
+                    dispatch(closeFilter())
                   }
                 }
               }}
