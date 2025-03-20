@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import styled from 'styled-components/macro'
 
 import Button from '../ui/Button'
+import Input from '../ui/Input'
 
 const ShareContainer = styled.div`
   display: flex;
@@ -14,7 +15,7 @@ const ShareTitle = styled.h3`
   font-size: 0.875rem;
   font-weight: bold;
   color: ${({ theme }) => theme.secondaryText};
-  margin-top: 1.25em;
+  padding-top: 1em;
   margin-bottom: 0.5em;
   @media ${({ theme }) => theme.device.mobile} {
     margin-top: 0em;
@@ -23,16 +24,13 @@ const ShareTitle = styled.h3`
 
 const ShareUrlContainer = styled.div`
   display: flex;
-  margin-bottom: 1rem;
   align-items: center;
 `
 
-const ShareInput = styled.input`
+const ShareInput = styled(Input)`
   flex: 1;
-  padding: 0.5rem;
+  padding: 0.6rem;
   border: 1px solid ${({ theme }) => theme.border};
-  border-radius: 4px;
-  height: 38px; /* Fixed height to match button */
   margin-right: 0.5rem;
   vertical-align: middle;
   white-space: nowrap;
@@ -45,7 +43,6 @@ const CopyButton = styled(Button)`
   align-items: center;
   justify-content: center;
   padding: 0.5rem;
-  height: 38px; /* Fixed height to match textarea */
   align-self: center;
 
   svg {
