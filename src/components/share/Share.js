@@ -18,11 +18,6 @@ const ShareTitle = styled.h3`
   font-size: 0.875rem;
   font-weight: bold;
   color: ${({ theme }) => theme.secondaryText};
-  padding-top: 1em;
-  margin-bottom: 0.5em;
-  @media ${({ theme }) => theme.device.mobile} {
-    margin-top: 0em;
-  }
 `
 
 const ShareUrlContainer = styled.div`
@@ -32,13 +27,9 @@ const ShareUrlContainer = styled.div`
 
 const ShareInput = styled(Input)`
   flex: 1;
-  padding: 0.6rem;
-  border: 1px solid ${({ theme }) => theme.border};
+  padding: 0 0 0 0.5rem;
   margin-right: 0.5rem;
   vertical-align: middle;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `
 
 const CopyButton = styled(Button)`
@@ -65,6 +56,7 @@ const Share = () => {
       toast.success(t('share.url_copied'))
       dispatch(closeShare())
     } catch (err) {
+      console.error(err)
       toast.error(t('share.url_copy_failed'))
     }
   }
