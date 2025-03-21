@@ -1,6 +1,6 @@
 import { Copy as CopyIcon } from '@styled-icons/boxicons-regular'
 import { useTranslation } from 'react-i18next'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import styled from 'styled-components/macro'
 
@@ -56,7 +56,12 @@ const CopyButton = styled(Button)`
 const Share = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
-  const currentUrl = window.location.href
+  const mapType = useSelector((state) => state.settings.mapType)
+
+  // Create URL with mapType parameter
+  const url = new URL(window.location.href)
+  url.searchParams.set('mapType', mapType)
+  const currentUrl = url.toString()
 
   const handleCopy = async () => {
     try {
