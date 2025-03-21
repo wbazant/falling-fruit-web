@@ -9,6 +9,7 @@ import styled from 'styled-components/macro'
 
 import { closeShare } from '../../redux/shareSlice'
 import Button from '../ui/Button'
+import CloseButton from '../ui/CloseButton'
 import Input from '../ui/Input'
 import useShareUrl from './useShareUrl'
 
@@ -25,14 +26,9 @@ const ShareTitle = styled.h3`
   margin-right: 20px;
 `
 
-const CloseButton = styled.button`
-  position: absolute;
+const StyledCloseButton = styled(CloseButton)`
   top: 0;
   right: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -97,9 +93,9 @@ const Share = ({ onClose }) => {
     <ShareContainer>
       <ShareTitle>{t('share.title')}</ShareTitle>
       {onClose && (
-        <CloseButton onClick={onClose}>
+        <StyledCloseButton onClick={onClose}>
           <CloseIcon />
-        </CloseButton>
+        </StyledCloseButton>
       )}
       <ShareUrlContainer>
         <ShareInput
