@@ -45,7 +45,7 @@ const CopyButton = styled(Button)`
   }
 `
 
-const Share = () => {
+const Share = ({ onClose }) => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const currentUrl = useShareUrl()
@@ -54,7 +54,11 @@ const Share = () => {
     try {
       await navigator.clipboard.writeText(currentUrl)
       toast.success(t('share.url_copied'))
-      dispatch(closeShare())
+      if (onClose) {
+        onClose()
+      } else {
+        dispatch(closeShare())
+      }
     } catch (err) {
       console.error(err)
       toast.error(t('share.url_copy_failed'))

@@ -1,5 +1,5 @@
 import GoogleMapReact from 'google-map-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback,useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
@@ -15,6 +15,7 @@ import { updateLastMapView } from '../../redux/viewportSlice'
 import throttle from '../../utils/throttle'
 import { useAppHistory } from '../../utils/useAppHistory'
 import Share from '../share/Share'
+import ShareIconButton from '../share/ShareIconButton'
 import AddLocationButton from '../ui/AddLocationButton'
 import LoadingIndicator from '../ui/LoadingIndicator'
 import CloseStreetView from './CloseStreetView'
@@ -173,6 +174,7 @@ const MapPage = ({ isDesktop }) => {
   const handleViewChangeRef = useRef(() => void 0)
 
   const [draggedPosition, setDraggedPosition] = useState(null)
+  const [shareOpen, setShareOpen] = useState(false)
 
   const {
     initialView,
@@ -294,6 +296,10 @@ const MapPage = ({ isDesktop }) => {
   const zoomOut = () => {
     googleMap?.setZoom(currentZoom - 1)
   }
+
+  const toggleShare = useCallback(() => {
+    setShareOpen((prev) => !prev)
+  }, [])
   return (
     <div
       style={
@@ -335,9 +341,24 @@ const MapPage = ({ isDesktop }) => {
       </ZoomOutButton>
 
       {isDesktop && (
-        <ShareContainer>
-          <Share />
-        </ShareContainer>
+        <>
+          {shareOpen ? (
+            <ShareContainer>
+              <Share onClose={() => setShareOpen(false)} />
+            </ShareContainer>
+          ) : (
+            <div
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                zIndex: 1,
+              }}
+            >
+              <ShareIconButton onClick={toggleShare} />
+            </div>
+          )}
+        </>
       )}
 
       {isGeolocationOpen(geolocationState) && <ConnectGeolocation />}
