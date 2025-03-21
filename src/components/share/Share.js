@@ -1,4 +1,4 @@
-import { Copy as CopyIcon } from '@styled-icons/boxicons-regular'
+import { Copy as CopyIcon , X as CloseIcon } from '@styled-icons/boxicons-regular'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
@@ -12,12 +12,37 @@ import useShareUrl from './useShareUrl'
 const ShareContainer = styled.div`
   display: flex;
   flex-direction: column;
+  position: relative;
 `
 
 const ShareTitle = styled.h3`
   font-size: 0.875rem;
   font-weight: bold;
   color: ${({ theme }) => theme.secondaryText};
+  margin-right: 20px;
+`
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.secondaryText};
+
+  &:hover {
+    color: ${({ theme }) => theme.text};
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
 `
 
 const ShareUrlContainer = styled.div`
@@ -68,6 +93,9 @@ const Share = ({ onClose }) => {
   return (
     <ShareContainer>
       <ShareTitle>{t('share.title')}</ShareTitle>
+      <CloseButton onClick={onClose || (() => dispatch(closeShare()))}>
+        <CloseIcon />
+      </CloseButton>
       <ShareUrlContainer>
         <ShareInput
           type="text"
