@@ -14,6 +14,7 @@ import { fetchLocations } from '../../redux/viewChange'
 import { updateLastMapView } from '../../redux/viewportSlice'
 import throttle from '../../utils/throttle'
 import { useAppHistory } from '../../utils/useAppHistory'
+import Share from '../share/Share'
 import AddLocationButton from '../ui/AddLocationButton'
 import LoadingIndicator from '../ui/LoadingIndicator'
 import CloseStreetView from './CloseStreetView'
@@ -68,6 +69,18 @@ const ZoomInButton = styled(ZoomButton)`
 
 const ZoomOutButton = styled(ZoomButton)`
   top: calc(50% + 5px);
+`
+
+const ShareContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: white;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  width: 300px;
 `
 
 const EARTH_RADIUS = 6378137 // meters
@@ -320,6 +333,12 @@ const MapPage = ({ isDesktop }) => {
       >
         -
       </ZoomOutButton>
+
+      {isDesktop && (
+        <ShareContainer>
+          <Share />
+        </ShareContainer>
+      )}
 
       {isGeolocationOpen(geolocationState) && <ConnectGeolocation />}
 
