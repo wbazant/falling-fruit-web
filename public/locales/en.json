@@ -368,6 +368,11 @@
   "type": {
     "pending_review": "Pending review"
   },
+  "share": {
+    "title": "Share this view",
+    "copied": "Copied to clipboard!",
+    "copyFailed": "Failed to copy URL"
+  },
   "users": {
     "bio": "About you",
     "change_password": "Change my password",

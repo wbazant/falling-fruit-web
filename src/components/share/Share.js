@@ -61,17 +61,17 @@ const Share = () => {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(currentUrl)
-      toast.success(t('share.copied', 'Copied to clipboard!'))
+      toast.success(t('share.copied'))
       dispatch(closeShare())
     } catch (err) {
       console.error('Failed to copy URL: ', err)
-      toast.error(t('share.copyFailed', 'Failed to copy URL'))
+      toast.error(t('share.copyFailed'))
     }
   }
 
   return (
     <ShareContainer>
-      <ShareTitle>{t('share.title', 'Share this view')}</ShareTitle>
+      <ShareTitle>{t('share.title')}</ShareTitle>
       <ShareUrlContainer>
         <ShareInput
           type="text"
