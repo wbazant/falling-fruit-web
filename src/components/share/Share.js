@@ -1,4 +1,7 @@
-import { Copy as CopyIcon , X as CloseIcon } from '@styled-icons/boxicons-regular'
+import {
+  Copy as CopyIcon,
+  X as CloseIcon,
+} from '@styled-icons/boxicons-regular'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
@@ -93,9 +96,11 @@ const Share = ({ onClose }) => {
   return (
     <ShareContainer>
       <ShareTitle>{t('share.title')}</ShareTitle>
-      <CloseButton onClick={onClose || (() => dispatch(closeShare()))}>
-        <CloseIcon />
-      </CloseButton>
+      {onClose && (
+        <CloseButton onClick={onClose}>
+          <CloseIcon />
+        </CloseButton>
+      )}
       <ShareUrlContainer>
         <ShareInput
           type="text"
