@@ -1,12 +1,13 @@
 import { Copy as CopyIcon } from '@styled-icons/boxicons-regular'
 import { useTranslation } from 'react-i18next'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import styled from 'styled-components/macro'
 
 import { closeShare } from '../../redux/shareSlice'
 import Button from '../ui/Button'
 import Input from '../ui/Input'
+import useShareUrl from './useShareUrl'
 
 const ShareContainer = styled.div`
   display: flex;
@@ -56,12 +57,7 @@ const CopyButton = styled(Button)`
 const Share = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
-  const mapType = useSelector((state) => state.settings.mapType)
-
-  // Create URL with mapType parameter
-  const url = new URL(window.location.href)
-  url.searchParams.set('mapType', mapType)
-  const currentUrl = url.toString()
+  const currentUrl = useShareUrl()
 
   const handleCopy = async () => {
     try {
