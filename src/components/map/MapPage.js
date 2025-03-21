@@ -1,5 +1,5 @@
 import GoogleMapReact from 'google-map-react'
-import { useCallback,useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
@@ -62,6 +62,22 @@ const ZoomButton = styled.button`
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   opacity: ${(props) => (props.disabled ? 0.5 : 1)};
   z-index: 1;
+`
+
+const StyledIconButton = styled(ShareIconButton)`
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  ${({ isDesktop }) =>
+    isDesktop &&
+    `
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  `}
+  svg {
+    color: black;
+  }
 `
 
 const ZoomInButton = styled(ZoomButton)`
@@ -355,7 +371,7 @@ const MapPage = ({ isDesktop }) => {
                 zIndex: 1,
               }}
             >
-              <ShareIconButton onClick={toggleShare} />
+              <StyledIconButton size={40} onClick={toggleShare} />
             </div>
           )}
         </>

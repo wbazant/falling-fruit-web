@@ -1,6 +1,7 @@
+import { X } from '@styled-icons/boxicons-regular'
 import styled from 'styled-components/macro'
 
-const CloseButton = styled.button`
+const TopRightButton = styled.button`
   background: none;
   border: none;
   color: ${({ theme }) => theme.text};
@@ -10,5 +11,11 @@ const CloseButton = styled.button`
   right: 4px;
   top: 4px;
 `
+
+const CloseButton = (props) => (
+  <TopRightButton {...props}>
+    <X size={20} />
+  </TopRightButton>
+)
 
 export default CloseButton
