@@ -238,6 +238,7 @@ const Search = (props) => {
               }}
             />
             <ShareIconButton
+              size={45}
               pressed={shareOpen}
               onClick={() => {
                 if (shareOpen) {
