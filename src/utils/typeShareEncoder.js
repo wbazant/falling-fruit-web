@@ -37,7 +37,6 @@ class TypeShareEncoder {
     }
 
     if (encodedTypes === 'all') {
-      console.log(this.allTypeIds)
       return [...this.allTypeIds]
     }
 
@@ -53,11 +52,6 @@ class TypeShareEncoder {
     // Find any missing type IDs for debugging
     const missingTypeIds = this.allTypeIds.filter((id) => !typeIds.includes(id))
     if (missingTypeIds.length > 0) {
-      console.log('Not all types selected: missing type IDs', {
-        missingTypeIds,
-        providedTypeIds: typeIds,
-        allTypeIds: this.allTypeIds,
-      })
       return false
     }
 
