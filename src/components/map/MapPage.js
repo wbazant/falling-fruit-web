@@ -220,10 +220,13 @@ const MapPage = ({ isDesktop }) => {
   } = useSelector((state) => state.location)
   const {
     mapType,
-    mapLayers: layerTypes,
+    overlay,
     showLabels: settingsShowLabels,
     showBusinesses,
   } = useSelector((state) => state.settings)
+
+  // Convert overlay setting to mapLayers format expected by the map
+  const layerTypes = overlay ? [overlay] : []
 
   const { typesAccess } = useSelector((state) => state.type)
 

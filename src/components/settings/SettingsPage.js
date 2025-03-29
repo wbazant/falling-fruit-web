@@ -234,14 +234,14 @@ const SettingsPage = ({ desktop }) => {
               image: GoogleTransit,
             },
           ]}
-          value={settings.mapLayers.length === 0 ? null : settings.mapLayers[0]}
+          value={settings.overlay}
           onChange={(value) => {
-            if (value === settings.mapLayers[0]) {
+            if (value === settings.overlay) {
               value = null
             }
             dispatch(
               updateSettings({
-                mapLayers: value ? [value] : [],
+                overlay: value,
               }),
             )
           }}
