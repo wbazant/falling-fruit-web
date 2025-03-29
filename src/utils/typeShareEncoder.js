@@ -3,9 +3,9 @@
  * Optimizes URL length by using 'all' when all types are selected
  */
 class TypeShareEncoder {
-  constructor(allTypes) {
-    this.allTypes = allTypes
-    this.allTypeIds = allTypes.map((type) => type.id)
+  constructor(typesAccess) {
+    this.typesAccess = typesAccess
+    this.allTypeIds = typesAccess.selectableTypes().map((type) => type.id)
   }
 
   /**
