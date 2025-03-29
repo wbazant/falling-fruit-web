@@ -5,9 +5,8 @@ import { useSelector } from 'react-redux'
  * @returns {string} The shareable URL
  */
 const useShareUrl = () => {
-  const mapType = useSelector((state) => state.settings.mapType)
+  const { mapType } = useSelector((state) => state.settings)
 
-  // Create URL with mapType parameter
   const url = new URL(window.location.href)
   url.searchParams.set('mapType', mapType)
   return url.toString()
