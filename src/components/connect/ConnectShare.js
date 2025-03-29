@@ -18,6 +18,7 @@ const ConnectShare = () => {
   useEffect(() => {
     const mapType = searchParams.get('mapType')
     const showLabels = searchParams.get('showLabels')
+    const overlay = searchParams.get('overlay')
 
     const updates = {}
 
@@ -29,13 +30,24 @@ const ConnectShare = () => {
       updates.showLabels = true
     }
 
+    if (overlay) {
+      updates.overlay = overlay
+    }
+
     if (Object.keys(updates).length > 0) {
       // Update Redux state with parameters from URL
       dispatch(updateSettings(updates))
 
       // Remove the parameters from URL after processing
-      if (mapType) {history.removeParam('mapType')}
-      if (showLabels) {history.removeParam('showLabels')}
+      if (mapType) {
+        history.removeParam('mapType')
+      }
+      if (showLabels) {
+        history.removeParam('showLabels')
+      }
+      if (overlay) {
+        history.removeParam('overlay')
+      }
     }
   }, [searchParams, dispatch, history])
 
