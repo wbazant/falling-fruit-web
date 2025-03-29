@@ -12,7 +12,7 @@ class TypeShareEncoder {
   /**
    * Encodes type IDs for URL sharing
    * @param {number[]} typeIds - Array of type IDs
-   * @returns {string} Encoded string ('all', 'default', 'default-id1,id2,...', 'all-id1,id2,...', or comma-separated IDs)
+   * @returns {string} Encoded string ('all', 'default', 'default+id1,id2,...', 'all-id1,id2,...', or comma-separated IDs)
    */
   encode(typeIds) {
     if (!typeIds || typeIds.length === 0) {
@@ -36,7 +36,7 @@ class TypeShareEncoder {
       (id) => !defaultTypeIds.includes(id),
     )
     if (additionalTypeIds.length > 0 && this.isDefaultPlusAdditional(typeIds)) {
-      return `default-${additionalTypeIds.join(',')}`
+      return `default+${additionalTypeIds.join(',')}`
     }
 
     // Check if default selection
@@ -49,7 +49,7 @@ class TypeShareEncoder {
 
   /**
    * Decodes type string from URL to array of type IDs
-   * @param {string} encodedTypes - Encoded string ('all', 'default', 'default-id1,id2,...', 'all-id1,id2,...', or comma-separated IDs)
+   * @param {string} encodedTypes - Encoded string ('all', 'default', 'default+id1,id2,...', 'all-id1,id2,...', or comma-separated IDs)
    * @returns {number[]} Array of type IDs
    */
   decode(encodedTypes) {
@@ -65,8 +65,8 @@ class TypeShareEncoder {
       return this.getDefaultTypeIds()
     }
 
-    // Handle "default-id1,id2,..." format (default plus additional IDs)
-    if (encodedTypes.startsWith('default-')) {
+    // Handle "default+id1,id2,..." format (default plus additional IDs)
+    if (encodedTypes.startsWith('default+')) {
       const additionalIds = encodedTypes
         .substring(8)
         .split(',')
