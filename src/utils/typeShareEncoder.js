@@ -172,18 +172,6 @@ class TypeShareEncoder {
 
   /**
    * Checks if the provided type IDs represent default selection plus additional types
-   * @param {number[]} typeIds - Array of type IDs to check
-   * @returns {boolean} True if default selection plus additional types
-   */
-  isDefaultPlusAdditional(typeIds) {
-    const defaultTypeIds = this.getDefaultTypeIds()
-
-    // Check if all default types are included
-    return defaultTypeIds.every((id) => typeIds.includes(id))
-  }
-
-  /**
-   * Checks if the provided type IDs represent default selection plus additional types
    * and/or minus some default types
    * @param {number[]} typeIds - Array of type IDs to check
    * @returns {boolean} True if default plus/minus format is appropriate
