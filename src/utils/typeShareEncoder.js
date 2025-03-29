@@ -12,7 +12,7 @@ class TypeShareEncoder {
   /**
    * Encodes type IDs for URL sharing
    * @param {number[]} typeIds - Array of type IDs
-   * @returns {string} Encoded string ('all', 'default', 'all-id1,id2,...', or comma-separated IDs)
+   * @returns {string} Encoded string ('all', 'default', 'default-id1,id2,...', 'all-id1,id2,...', or comma-separated IDs)
    */
   encode(typeIds) {
     if (!typeIds || typeIds.length === 0) {
@@ -30,6 +30,15 @@ class TypeShareEncoder {
       return `all-${unselectedTypeIds.join(',')}`
     }
 
+    // Check if it's default plus additional types
+    const defaultTypeIds = this.getDefaultTypeIds()
+    const additionalTypeIds = typeIds.filter(
+      (id) => !defaultTypeIds.includes(id),
+    )
+    if (additionalTypeIds.length > 0 && this.isDefaultPlusAdditional(typeIds)) {
+      return `default-${additionalTypeIds.join(',')}`
+    }
+
     // Check if default selection
     if (this.isDefaultSelection(typeIds)) {
       return 'default'
@@ -40,7 +49,7 @@ class TypeShareEncoder {
 
   /**
    * Decodes type string from URL to array of type IDs
-   * @param {string} encodedTypes - Encoded string ('all', 'default', 'all-id1,id2,...', or comma-separated IDs)
+   * @param {string} encodedTypes - Encoded string ('all', 'default', 'default-id1,id2,...', 'all-id1,id2,...', or comma-separated IDs)
    * @returns {number[]} Array of type IDs
    */
   decode(encodedTypes) {
@@ -54,6 +63,15 @@ class TypeShareEncoder {
 
     if (encodedTypes === 'default') {
       return this.getDefaultTypeIds()
+    }
+
+    // Handle "default-id1,id2,..." format (default plus additional IDs)
+    if (encodedTypes.startsWith('default-')) {
+      const additionalIds = encodedTypes
+        .substring(8)
+        .split(',')
+        .map((id) => parseInt(id, 10))
+      return [...this.getDefaultTypeIds(), ...additionalIds]
     }
 
     // Handle "all-id1,id2,..." format (all except specified IDs)
@@ -118,6 +136,18 @@ class TypeShareEncoder {
    */
   getUnselectedTypeIds(selectedTypeIds) {
     return this.allTypeIds.filter((id) => !selectedTypeIds.includes(id))
+  }
+
+  /**
+   * Checks if the provided type IDs represent default selection plus additional types
+   * @param {number[]} typeIds - Array of type IDs to check
+   * @returns {boolean} True if default selection plus additional types
+   */
+  isDefaultPlusAdditional(typeIds) {
+    const defaultTypeIds = this.getDefaultTypeIds()
+
+    // Check if all default types are included
+    return defaultTypeIds.every((id) => typeIds.includes(id))
   }
 }
 
