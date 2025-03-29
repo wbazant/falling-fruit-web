@@ -27,7 +27,7 @@ class TypeShareEncoder {
     // Check if it's "all except a few" (up to 20 unselected types)
     const unselectedTypeIds = this.getUnselectedTypeIds(typeIds)
     if (unselectedTypeIds.length > 0 && unselectedTypeIds.length <= 20) {
-      return `all-${unselectedTypeIds.join(',')}`
+      return `all-${unselectedTypeIds.join('.')}`
     }
 
     // Check if it's default plus additional types, possibly minus some default types
@@ -41,9 +41,9 @@ class TypeShareEncoder {
 
     if (this.isDefaultPlusMinusFormat(typeIds)) {
       if (removedDefaultTypeIds.length > 0) {
-        return `default+${additionalTypeIds.join(',')}-${removedDefaultTypeIds.join(',')}`
+        return `default+${additionalTypeIds.join('.')}-${removedDefaultTypeIds.join('.')}`
       } else if (additionalTypeIds.length > 0) {
-        return `default+${additionalTypeIds.join(',')}`
+        return `default+${additionalTypeIds.join('.')}`
       }
     }
 
@@ -52,7 +52,7 @@ class TypeShareEncoder {
       return 'default'
     }
 
-    return typeIds.join(',')
+    return typeIds.join('.')
   }
 
   /**
@@ -82,12 +82,12 @@ class TypeShareEncoder {
       // Check if there's a minus part
       if (encodedTypes.includes('-')) {
         const [addPart, removePart] = encodedTypes.substring(8).split('-')
-        additionalIds = addPart.split(',').map((id) => parseInt(id, 10))
-        removedIds = removePart.split(',').map((id) => parseInt(id, 10))
+        additionalIds = addPart.split('.').map((id) => parseInt(id, 10))
+        removedIds = removePart.split('.').map((id) => parseInt(id, 10))
       } else {
         additionalIds = encodedTypes
           .substring(8)
-          .split(',')
+          .split('.')
           .map((id) => parseInt(id, 10))
       }
 
@@ -102,12 +102,12 @@ class TypeShareEncoder {
     if (encodedTypes.startsWith('all-')) {
       const excludedIds = encodedTypes
         .substring(4)
-        .split(',')
+        .split('.')
         .map((id) => parseInt(id, 10))
       return this.allTypeIds.filter((id) => !excludedIds.includes(id))
     }
 
-    return encodedTypes.split(',').map((id) => parseInt(id, 10))
+    return encodedTypes.split('.').map((id) => parseInt(id, 10))
   }
 
   /**
