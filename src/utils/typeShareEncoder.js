@@ -12,7 +12,7 @@ class TypeShareEncoder {
   /**
    * Encodes type IDs for URL sharing
    * @param {number[]} typeIds - Array of type IDs
-   * @returns {string} Encoded string ('all', 'default', 'default_id1,id2,...', 'default_id1,id2,...-id3,id4,...', 'all-id1,id2,...', or comma-separated IDs)
+   * @returns {string} Encoded string ('all', 'default', 'default.id1.id2...', 'default.id1.id2...-id3.id4...', 'all-id1.id2...', or dot-separated IDs)
    */
   encode(typeIds) {
     if (!typeIds || typeIds.length === 0) {
@@ -41,9 +41,9 @@ class TypeShareEncoder {
 
     if (this.isDefaultPlusMinusFormat(typeIds)) {
       if (removedDefaultTypeIds.length > 0) {
-        return `default_${additionalTypeIds.join('.')}-${removedDefaultTypeIds.join('.')}`
+        return `default.${additionalTypeIds.join('.')}-${removedDefaultTypeIds.join('.')}`
       } else if (additionalTypeIds.length > 0) {
-        return `default_${additionalTypeIds.join('.')}`
+        return `default.${additionalTypeIds.join('.')}`
       }
     }
 
@@ -57,7 +57,7 @@ class TypeShareEncoder {
 
   /**
    * Decodes type string from URL to array of type IDs
-   * @param {string} encodedTypes - Encoded string ('all', 'default', 'default_id1,id2,...', 'default_id1,id2,...-id3,id4,...', 'all-id1,id2,...', or comma-separated IDs)
+   * @param {string} encodedTypes - Encoded string ('all', 'default', 'default.id1.id2...', 'default.id1.id2...-id3.id4...', 'all-id1.id2...', or dot-separated IDs)
    * @returns {number[]} Array of type IDs
    */
   decode(encodedTypes) {
@@ -73,20 +73,28 @@ class TypeShareEncoder {
       return this.getDefaultTypeIds()
     }
 
-    // Handle "default_id1,id2,..." and "default_id1,id2,...-id3,id4,..." formats
-    if (encodedTypes.startsWith('default_')) {
+    // Handle "default_id1.id2..." and "default.id1.id2...-id3.id4..." formats
+    if (
+      encodedTypes.startsWith('default_') ||
+      encodedTypes.startsWith('default.')
+    ) {
       const defaultTypeIds = this.getDefaultTypeIds()
       let additionalIds = []
       let removedIds = []
 
+      // Determine the prefix length based on the separator
+      const prefixLength = encodedTypes.startsWith('default_') ? 8 : 8
+
       // Check if there's a minus part
       if (encodedTypes.includes('-')) {
-        const [addPart, removePart] = encodedTypes.substring(8).split('-')
+        const [addPart, removePart] = encodedTypes
+          .substring(prefixLength)
+          .split('-')
         additionalIds = addPart.split('.').map((id) => parseInt(id, 10))
         removedIds = removePart.split('.').map((id) => parseInt(id, 10))
       } else {
         additionalIds = encodedTypes
-          .substring(8)
+          .substring(prefixLength)
           .split('.')
           .map((id) => parseInt(id, 10))
       }
