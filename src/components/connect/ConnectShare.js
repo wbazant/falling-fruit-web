@@ -34,21 +34,13 @@ const ConnectShare = () => {
     }
 
     if (overlay) {
-      // Convert from URL format (bicycle/transit) to layer format (BicycleLayer/TransitLayer)
-      if (overlay === 'bicycle') {
-        settingsUpdates.overlay = 'BicycleLayer'
-      } else if (overlay === 'transit') {
-        settingsUpdates.overlay = 'TransitLayer'
-      } else {
-        settingsUpdates.overlay = overlay
-      }
+      settingsUpdates.overlay = overlay
     }
 
     if (muni === 'false') {
       filterUpdates.muni = false
     }
 
-    // Update Redux states with parameters from URL
     if (Object.keys(settingsUpdates).length > 0) {
       dispatch(updateSettings(settingsUpdates))
     }
@@ -57,7 +49,6 @@ const ConnectShare = () => {
       dispatch(updateSelection(filterUpdates))
     }
 
-    // Remove the parameters from URL after processing
     if (mapType) {
       history.removeParam('mapType')
     }

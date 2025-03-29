@@ -225,12 +225,12 @@ const SettingsPage = ({ desktop }) => {
           options={[
             {
               label: t('pages.settings.bicycle'),
-              value: 'BicyclingLayer',
+              value: 'bicycle',
               image: GoogleBicycling,
             },
             {
               label: t('pages.settings.transit'),
-              value: 'TransitLayer',
+              value: 'transit',
               image: GoogleTransit,
             },
           ]}
