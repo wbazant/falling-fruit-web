@@ -12,7 +12,7 @@ class TypeShareEncoder {
   /**
    * Encodes type IDs for URL sharing
    * @param {number[]} typeIds - Array of type IDs
-   * @returns {string} Encoded string ('all', 'default', 'default+id1,id2,...', 'all-id1,id2,...', or comma-separated IDs)
+   * @returns {string} Encoded string ('all', 'default', 'default+id1,id2,...', 'default+id1,id2,...-id3,id4,...', 'all-id1,id2,...', or comma-separated IDs)
    */
   encode(typeIds) {
     if (!typeIds || typeIds.length === 0) {
@@ -30,13 +30,21 @@ class TypeShareEncoder {
       return `all-${unselectedTypeIds.join(',')}`
     }
 
-    // Check if it's default plus additional types
+    // Check if it's default plus additional types, possibly minus some default types
     const defaultTypeIds = this.getDefaultTypeIds()
     const additionalTypeIds = typeIds.filter(
       (id) => !defaultTypeIds.includes(id),
     )
-    if (additionalTypeIds.length > 0 && this.isDefaultPlusAdditional(typeIds)) {
-      return `default+${additionalTypeIds.join(',')}`
+    const removedDefaultTypeIds = defaultTypeIds.filter(
+      (id) => !typeIds.includes(id),
+    )
+
+    if (this.isDefaultPlusMinusFormat(typeIds)) {
+      if (removedDefaultTypeIds.length > 0) {
+        return `default+${additionalTypeIds.join(',')}-${removedDefaultTypeIds.join(',')}`
+      } else if (additionalTypeIds.length > 0) {
+        return `default+${additionalTypeIds.join(',')}`
+      }
     }
 
     // Check if default selection
@@ -49,7 +57,7 @@ class TypeShareEncoder {
 
   /**
    * Decodes type string from URL to array of type IDs
-   * @param {string} encodedTypes - Encoded string ('all', 'default', 'default+id1,id2,...', 'all-id1,id2,...', or comma-separated IDs)
+   * @param {string} encodedTypes - Encoded string ('all', 'default', 'default+id1,id2,...', 'default+id1,id2,...-id3,id4,...', 'all-id1,id2,...', or comma-separated IDs)
    * @returns {number[]} Array of type IDs
    */
   decode(encodedTypes) {
@@ -65,13 +73,29 @@ class TypeShareEncoder {
       return this.getDefaultTypeIds()
     }
 
-    // Handle "default+id1,id2,..." format (default plus additional IDs)
+    // Handle "default+id1,id2,..." and "default+id1,id2,...-id3,id4,..." formats
     if (encodedTypes.startsWith('default+')) {
-      const additionalIds = encodedTypes
-        .substring(8)
-        .split(',')
-        .map((id) => parseInt(id, 10))
-      return [...this.getDefaultTypeIds(), ...additionalIds]
+      const defaultTypeIds = this.getDefaultTypeIds()
+      let additionalIds = []
+      let removedIds = []
+
+      // Check if there's a minus part
+      if (encodedTypes.includes('-')) {
+        const [addPart, removePart] = encodedTypes.substring(8).split('-')
+        additionalIds = addPart.split(',').map((id) => parseInt(id, 10))
+        removedIds = removePart.split(',').map((id) => parseInt(id, 10))
+      } else {
+        additionalIds = encodedTypes
+          .substring(8)
+          .split(',')
+          .map((id) => parseInt(id, 10))
+      }
+
+      // Start with default types, add additional types, remove specified types
+      return [
+        ...defaultTypeIds.filter((id) => !removedIds.includes(id)),
+        ...additionalIds,
+      ]
     }
 
     // Handle "all-id1,id2,..." format (all except specified IDs)
@@ -148,6 +172,29 @@ class TypeShareEncoder {
 
     // Check if all default types are included
     return defaultTypeIds.every((id) => typeIds.includes(id))
+  }
+
+  /**
+   * Checks if the provided type IDs represent default selection plus additional types
+   * and/or minus some default types
+   * @param {number[]} typeIds - Array of type IDs to check
+   * @returns {boolean} True if default plus/minus format is appropriate
+   */
+  isDefaultPlusMinusFormat(typeIds) {
+    const defaultTypeIds = this.getDefaultTypeIds()
+    const additionalTypeIds = typeIds.filter(
+      (id) => !defaultTypeIds.includes(id),
+    )
+    const removedDefaultTypeIds = defaultTypeIds.filter(
+      (id) => !typeIds.includes(id),
+    )
+
+    // Use this format if there are additional types or some default types are removed
+    // but not if too many changes (in which case direct listing might be more efficient)
+    return (
+      (additionalTypeIds.length > 0 || removedDefaultTypeIds.length > 0) &&
+      additionalTypeIds.length + removedDefaultTypeIds.length <= 20
+    )
   }
 }
 
