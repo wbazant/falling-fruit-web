@@ -27,7 +27,9 @@ const useShareUrl = () => {
           : overlay
     url.searchParams.set('overlay', urlOverlay)
   }
-  url.searchParams.set('muni', muni.toString())
+  if (!muni) {
+    url.searchParams.set('muni', 'false')
+  }
   return url.toString()
 }
 

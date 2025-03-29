@@ -42,8 +42,8 @@ const ConnectShare = () => {
       }
     }
 
-    if (muni === 'true' || muni === 'false') {
-      updates.muni = muni === 'true'
+    if (muni === 'false') {
+      updates.muni = false
     }
 
     if (Object.keys(updates).length > 0) {
