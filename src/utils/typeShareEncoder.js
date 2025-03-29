@@ -79,17 +79,16 @@ class TypeShareEncoder {
       return this.getDefaultTypeIds()
     }
 
-    // Handle "default_id1.id2..." and "default.id1.id2...-id3.id4..." formats
+    // Handle "default-id1.id2..." and "default.id1.id2...-id3.id4..." formats
     if (
-      encodedTypes.startsWith('default_') ||
+      encodedTypes.startsWith('default-') ||
       encodedTypes.startsWith('default.')
     ) {
       const defaultTypeIds = this.getDefaultTypeIds()
       let additionalIds = []
       let removedIds = []
 
-      // Determine the prefix length based on the separator
-      const prefixLength = encodedTypes.startsWith('default_') ? 8 : 8
+      const prefixLength = 7
 
       // Check if there's a minus part
       if (encodedTypes.includes('-')) {
