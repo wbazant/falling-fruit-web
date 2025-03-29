@@ -50,11 +50,25 @@ class TypeShareEncoder {
    */
   isAllTypesSelected(typeIds) {
     if (!typeIds || typeIds.length !== this.allTypeIds.length) {
+      console.log('Not all types selected: length mismatch', {
+        providedLength: typeIds ? typeIds.length : 0,
+        allTypesLength: this.allTypeIds.length,
+      })
       return false
     }
 
-    // Check if every type ID from allTypeIds is in typeIds
-    return this.allTypeIds.every((id) => typeIds.includes(id))
+    // Find any missing type IDs for debugging
+    const missingTypeIds = this.allTypeIds.filter((id) => !typeIds.includes(id))
+    if (missingTypeIds.length > 0) {
+      console.log('Not all types selected: missing type IDs', {
+        missingTypeIds,
+        providedTypeIds: typeIds,
+        allTypeIds: this.allTypeIds,
+      })
+      return false
+    }
+
+    return true
   }
 }
 
