@@ -90,9 +90,10 @@ class TypeShareEncoder {
    * @returns {number[]} Array of default type IDs
    */
   getDefaultTypeIds() {
-    // This would typically come from a configuration or be determined by business logic
-    // For now, returning an empty array as placeholder
-    return []
+    // Duplicate logic from fetchAndLocalizeTypes.fulfilled in filterSlice.js
+    return this.typesAccess
+      .selectableTypesWithCategories('forager', 'freegan')
+      .map((t) => t.id)
   }
 }
 
