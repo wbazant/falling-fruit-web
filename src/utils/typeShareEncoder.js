@@ -40,11 +40,17 @@ class TypeShareEncoder {
     )
 
     if (this.isDefaultPlusMinusFormat(typeIds)) {
-      if (removedDefaultTypeIds.length > 0) {
-        return `default.${additionalTypeIds.join('.')}-${removedDefaultTypeIds.join('.')}`
-      } else if (additionalTypeIds.length > 0) {
-        return `default.${additionalTypeIds.join('.')}`
+      let result = 'default'
+
+      if (additionalTypeIds.length > 0) {
+        result += `.${additionalTypeIds.join('.')}`
       }
+
+      if (removedDefaultTypeIds.length > 0) {
+        result += `-${removedDefaultTypeIds.join('.')}`
+      }
+
+      return result
     }
 
     // Check if default selection
