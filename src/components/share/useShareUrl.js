@@ -1,5 +1,7 @@
 import { useSelector } from 'react-redux'
 
+import TypeShareEncoder from '../../utils/typeShareEncoder'
+
 /**
  * Custom hook to generate a shareable URL with the current map type, labels setting, and overlay
  * @returns {string} The shareable URL
@@ -9,6 +11,9 @@ const useShareUrl = () => {
     (state) => state.settings,
   )
   const { muni, types } = useSelector((state) => state.filter)
+  const allTypes = useSelector((state) => state.types.allTypes)
+
+  const typeEncoder = new TypeShareEncoder(allTypes)
 
   const url = new URL(window.location.href)
   if (mapType !== 'roadmap') {
@@ -27,7 +32,7 @@ const useShareUrl = () => {
     url.searchParams.set('showBusinesses', 'true')
   }
   if (types && types.length > 0) {
-    url.searchParams.set('types', types.join(','))
+    url.searchParams.set('types', typeEncoder.encode(types))
   }
   return url.toString()
 }

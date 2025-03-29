@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { updateSettings } from '../../redux/settingsSlice'
 import { updateSelection } from '../../redux/updateSelection'
+import TypeShareEncoder from '../../utils/typeShareEncoder'
 import { useAppHistory } from '../../utils/useAppHistory'
 
 /**
@@ -14,6 +15,7 @@ const ConnectShare = () => {
   const location = useLocation()
   const history = useAppHistory()
   const dispatch = useDispatch()
+  const allTypes = useSelector((state) => state.types.allTypes)
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
@@ -22,7 +24,7 @@ const ConnectShare = () => {
     const overlay = searchParams.get('overlay')
     const muni = searchParams.get('muni')
     const showBusinesses = searchParams.get('showBusinesses')
-    const types = searchParams.get('types')
+    const encodedTypes = searchParams.get('types')
 
     const settingsUpdates = {}
     const filterUpdates = {}
@@ -47,8 +49,9 @@ const ConnectShare = () => {
       filterUpdates.muni = false
     }
 
-    if (types) {
-      filterUpdates.types = types.split(',')
+    if (encodedTypes) {
+      const typeEncoder = new TypeShareEncoder(allTypes)
+      filterUpdates.types = typeEncoder.decode(encodedTypes)
     }
 
     if (Object.keys(settingsUpdates).length > 0) {
@@ -74,10 +77,10 @@ const ConnectShare = () => {
     if (showBusinesses) {
       history.removeParam('showBusinesses')
     }
-    if (types) {
+    if (encodedTypes) {
       history.removeParam('types')
     }
-  }, [location.search, dispatch, history])
+  }, [location.search, dispatch, history, allTypes])
 
   return null
 }
