@@ -13,9 +13,9 @@ const ConnectShare = () => {
   const location = useLocation()
   const history = useAppHistory()
   const dispatch = useDispatch()
-  const searchParams = new URLSearchParams(location.search)
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(location.search)
     const mapType = searchParams.get('mapType')
     const showLabels = searchParams.get('showLabels')
     const overlay = searchParams.get('overlay')
@@ -56,7 +56,7 @@ const ConnectShare = () => {
         history.removeParam('overlay')
       }
     }
-  }, [searchParams, dispatch, history])
+  }, [location.search, dispatch, history])
 
   return null
 }
