@@ -226,7 +226,13 @@ const MapPage = ({ isDesktop }) => {
   } = useSelector((state) => state.settings)
 
   // Convert overlay setting to mapLayers format expected by the map
-  const layerTypes = overlay ? [overlay] : []
+  const getLayerType = (overlayType) => {
+    if (overlayType === 'bicycle') {return 'BicycleLayer'}
+    if (overlayType === 'transit') {return 'TransitLayer'}
+    return overlayType
+  }
+
+  const layerTypes = overlay ? [getLayerType(overlay)] : []
 
   const { typesAccess } = useSelector((state) => state.type)
 

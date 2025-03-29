@@ -17,7 +17,14 @@ const useShareUrl = () => {
     url.searchParams.set('showLabels', 'true')
   }
   if (overlay) {
-    url.searchParams.set('overlay', overlay)
+    // Use bicycle/transit in URL instead of BicycleLayer/TransitLayer
+    const urlOverlay =
+      overlay === 'BicycleLayer'
+        ? 'bicycle'
+        : overlay === 'TransitLayer'
+          ? 'transit'
+          : overlay
+    url.searchParams.set('overlay', urlOverlay)
   }
   return url.toString()
 }

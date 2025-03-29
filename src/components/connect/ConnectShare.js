@@ -31,7 +31,14 @@ const ConnectShare = () => {
     }
 
     if (overlay) {
-      updates.overlay = overlay
+      // Convert from URL format (bicycle/transit) to layer format (BicycleLayer/TransitLayer)
+      if (overlay === 'bicycle') {
+        updates.overlay = 'BicycleLayer'
+      } else if (overlay === 'transit') {
+        updates.overlay = 'TransitLayer'
+      } else {
+        updates.overlay = overlay
+      }
     }
 
     if (Object.keys(updates).length > 0) {
