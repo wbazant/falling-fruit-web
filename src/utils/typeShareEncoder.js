@@ -1,6 +1,7 @@
 /**
  * Utility for encoding and decoding type IDs in share URLs
  * Optimizes URL length by using 'all' when all types are selected
+ * or 'default' for default selection
  */
 class TypeShareEncoder {
   constructor(typesAccess) {
@@ -11,7 +12,7 @@ class TypeShareEncoder {
   /**
    * Encodes type IDs for URL sharing
    * @param {number[]} typeIds - Array of type IDs
-   * @returns {string} Encoded string ('all' or comma-separated IDs)
+   * @returns {string} Encoded string ('all', 'default', or comma-separated IDs)
    */
   encode(typeIds) {
     if (!typeIds || typeIds.length === 0) {
@@ -23,12 +24,17 @@ class TypeShareEncoder {
       return 'all'
     }
 
+    // Check if default selection
+    if (this.isDefaultSelection(typeIds)) {
+      return 'default'
+    }
+
     return typeIds.join(',')
   }
 
   /**
    * Decodes type string from URL to array of type IDs
-   * @param {string} encodedTypes - Encoded string ('all' or comma-separated IDs)
+   * @param {string} encodedTypes - Encoded string ('all', 'default', or comma-separated IDs)
    * @returns {number[]} Array of type IDs
    */
   decode(encodedTypes) {
@@ -38,6 +44,10 @@ class TypeShareEncoder {
 
     if (encodedTypes === 'all') {
       return [...this.allTypeIds]
+    }
+
+    if (encodedTypes === 'default') {
+      return this.getDefaultTypeIds()
     }
 
     return encodedTypes.split(',').map((id) => parseInt(id, 10))
@@ -56,6 +66,33 @@ class TypeShareEncoder {
     }
 
     return true
+  }
+
+  /**
+   * Checks if the provided type IDs represent the default selection
+   * @param {number[]} typeIds - Array of type IDs to check
+   * @returns {boolean} True if default selection
+   */
+  isDefaultSelection(typeIds) {
+    const defaultTypeIds = this.getDefaultTypeIds()
+
+    // Check if arrays have the same length
+    if (typeIds.length !== defaultTypeIds.length) {
+      return false
+    }
+
+    // Check if all default types are included
+    return defaultTypeIds.every((id) => typeIds.includes(id))
+  }
+
+  /**
+   * Returns the default type IDs
+   * @returns {number[]} Array of default type IDs
+   */
+  getDefaultTypeIds() {
+    // This would typically come from a configuration or be determined by business logic
+    // For now, returning an empty array as placeholder
+    return []
   }
 }
 
