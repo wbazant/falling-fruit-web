@@ -9,6 +9,7 @@ import ConnectNewLocation from './ConnectNewLocation'
 import ConnectOverscroll from './ConnectOverscroll'
 import ConnectPath from './ConnectPath'
 import ConnectReview from './ConnectReview'
+import ConnectShare from './ConnectShare'
 import ConnectTypes from './ConnectTypes'
 import DisconnectInitLocation from './DisconnectInitLocation'
 import DisconnectLocation from './DisconnectLocation'
@@ -212,6 +213,16 @@ const connectRoutes = [
    */
   <Route key="connect-i18n-viz" path="*">
     <ConnectI18nViz />
+  </Route>,
+
+  /*
+   * ConnectShare
+   * why: ?mapType=xyz should update the map type in Redux state
+   *
+   * action: recognize mapType parameter, update Redux state, and remove parameter from URL
+   */
+  <Route key="connect-share" path="*">
+    <ConnectShare />
   </Route>,
 ]
 
