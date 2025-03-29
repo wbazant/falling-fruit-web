@@ -22,6 +22,7 @@ const ConnectShare = () => {
     const overlay = searchParams.get('overlay')
     const muni = searchParams.get('muni')
     const showBusinesses = searchParams.get('showBusinesses')
+    const types = searchParams.get('types')
 
     const settingsUpdates = {}
     const filterUpdates = {}
@@ -46,6 +47,10 @@ const ConnectShare = () => {
       filterUpdates.muni = false
     }
 
+    if (types) {
+      filterUpdates.types = types.split(',')
+    }
+
     if (Object.keys(settingsUpdates).length > 0) {
       dispatch(updateSettings(settingsUpdates))
     }
@@ -68,6 +73,9 @@ const ConnectShare = () => {
     }
     if (showBusinesses) {
       history.removeParam('showBusinesses')
+    }
+    if (types) {
+      history.removeParam('types')
     }
   }, [location.search, dispatch, history])
 

@@ -8,7 +8,7 @@ const useShareUrl = () => {
   const { mapType, showLabels, overlay, showBusinesses } = useSelector(
     (state) => state.settings,
   )
-  const { muni } = useSelector((state) => state.filter)
+  const { muni, types } = useSelector((state) => state.filter)
 
   const url = new URL(window.location.href)
   if (mapType !== 'roadmap') {
@@ -25,6 +25,9 @@ const useShareUrl = () => {
   }
   if (showBusinesses) {
     url.searchParams.set('showBusinesses', 'true')
+  }
+  if (types && types.length > 0) {
+    url.searchParams.set('types', types.join(','))
   }
   return url.toString()
 }
