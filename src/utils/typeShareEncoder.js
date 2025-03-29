@@ -71,56 +71,81 @@ class TypeShareEncoder {
       return []
     }
 
-    if (encodedTypes === 'all') {
-      return [...this.allTypeIds]
-    }
+    let remaining = encodedTypes
+    let result = []
+    let state = 'initial'
 
-    if (encodedTypes === 'default') {
-      return this.getDefaultTypeIds()
-    }
+    // Process the string incrementally, changing state as we go
+    while (remaining.length > 0) {
+      if (state === 'initial') {
+        if (remaining === 'all') {
+          return [...this.allTypeIds]
+        } else if (remaining === 'default') {
+          return this.getDefaultTypeIds()
+        } else if (remaining.startsWith('all-')) {
+          // All types except excluded ones
+          state = 'exclude'
+          remaining = remaining.substring(4)
+          result = [...this.allTypeIds]
+        } else if (remaining.startsWith('default-')) {
+          // Default types minus some
+          state = 'remove'
+          remaining = remaining.substring(8)
+          result = [...this.getDefaultTypeIds()]
+        } else if (remaining.startsWith('default.')) {
+          // Default types plus additional
+          state = 'add'
+          remaining = remaining.substring(8)
+          result = [...this.getDefaultTypeIds()]
+        } else if (remaining.startsWith('default')) {
+          // Just default with nothing after
+          return this.getDefaultTypeIds()
+        } else {
+          // Simple list of IDs
+          state = 'list'
+        }
+      } else if (state === 'exclude') {
+        // Process excluded IDs
+        const excludedIds = remaining.split('.').map((id) => parseInt(id, 10))
+        result = result.filter((id) => !excludedIds.includes(id))
+        remaining = ''
+      } else if (state === 'add') {
+        // Process additional IDs, watching for minus sign
+        if (remaining.includes('-')) {
+          const [addPart, removePart] = remaining.split('-')
 
-    // Handle "default-id1.id2..." and "default.id1.id2...-id3.id4..." formats
-    if (
-      encodedTypes.startsWith('default-') ||
-      encodedTypes.startsWith('default.')
-    ) {
-      const defaultTypeIds = this.getDefaultTypeIds()
-      let additionalIds = []
-      let removedIds = []
+          // Add additional IDs
+          if (addPart) {
+            const additionalIds = addPart
+              .split('.')
+              .map((id) => parseInt(id, 10))
+            result = [...result, ...additionalIds]
+          }
 
-      const prefixLength = 7
-
-      // Check if there's a minus part
-      if (encodedTypes.includes('-')) {
-        const [addPart, removePart] = encodedTypes
-          .substring(prefixLength)
-          .split('-')
-        additionalIds = addPart.split('.').map((id) => parseInt(id, 10))
-        removedIds = removePart.split('.').map((id) => parseInt(id, 10))
-      } else {
-        additionalIds = encodedTypes
-          .substring(prefixLength)
-          .split('.')
-          .map((id) => parseInt(id, 10))
+          // Switch to remove state
+          state = 'remove'
+          remaining = removePart
+        } else {
+          // Just additional IDs
+          const additionalIds = remaining
+            .split('.')
+            .map((id) => parseInt(id, 10))
+          result = [...result, ...additionalIds]
+          remaining = ''
+        }
+      } else if (state === 'remove') {
+        // Process IDs to remove
+        const removedIds = remaining.split('.').map((id) => parseInt(id, 10))
+        result = result.filter((id) => !removedIds.includes(id))
+        remaining = ''
+      } else if (state === 'list') {
+        // Simple list of IDs
+        result = remaining.split('.').map((id) => parseInt(id, 10))
+        remaining = ''
       }
-
-      // Start with default types, add additional types, remove specified types
-      return [
-        ...defaultTypeIds.filter((id) => !removedIds.includes(id)),
-        ...additionalIds,
-      ]
     }
 
-    // Handle "all-id1,id2,..." format (all except specified IDs)
-    if (encodedTypes.startsWith('all-')) {
-      const excludedIds = encodedTypes
-        .substring(4)
-        .split('.')
-        .map((id) => parseInt(id, 10))
-      return this.allTypeIds.filter((id) => !excludedIds.includes(id))
-    }
-
-    return encodedTypes.split('.').map((id) => parseInt(id, 10))
+    return result
   }
 
   /**
