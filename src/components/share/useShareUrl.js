@@ -11,9 +11,9 @@ const useShareUrl = () => {
     (state) => state.settings,
   )
   const { muni, types } = useSelector((state) => state.filter)
-  const allTypes = useSelector((state) => state.types.allTypes)
+  const typesAccess = useSelector((state) => state.type.typesAccess)
 
-  const typeEncoder = new TypeShareEncoder(allTypes)
+  const typeEncoder = new TypeShareEncoder(typesAccess)
 
   const url = new URL(window.location.href)
   if (mapType !== 'roadmap') {

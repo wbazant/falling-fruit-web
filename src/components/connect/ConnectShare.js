@@ -15,7 +15,7 @@ const ConnectShare = () => {
   const location = useLocation()
   const history = useAppHistory()
   const dispatch = useDispatch()
-  const allTypes = useSelector((state) => state.types.allTypes)
+  const typesAccess = useSelector((state) => state.type.typesAccess)
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
@@ -50,7 +50,7 @@ const ConnectShare = () => {
     }
 
     if (encodedTypes) {
-      const typeEncoder = new TypeShareEncoder(allTypes)
+      const typeEncoder = new TypeShareEncoder(typesAccess)
       filterUpdates.types = typeEncoder.decode(encodedTypes)
     }
 
@@ -80,7 +80,7 @@ const ConnectShare = () => {
     if (encodedTypes) {
       history.removeParam('types')
     }
-  }, [location.search, dispatch, history, allTypes])
+  }, [location.search, dispatch, history, typesAccess])
 
   return null
 }
