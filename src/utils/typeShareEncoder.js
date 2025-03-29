@@ -2,7 +2,7 @@
  * Utility for encoding and decoding type IDs in share URLs
  * Optimizes URL length by using 'all' when all types are selected
  */
-export class TypeShareEncoder {
+class TypeShareEncoder {
   constructor(allTypes) {
     this.allTypes = allTypes
     this.allTypeIds = allTypes.map((type) => type.id)
