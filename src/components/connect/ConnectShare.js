@@ -19,6 +19,7 @@ const ConnectShare = () => {
     const mapType = searchParams.get('mapType')
     const showLabels = searchParams.get('showLabels')
     const overlay = searchParams.get('overlay')
+    const muni = searchParams.get('muni')
 
     const updates = {}
 
@@ -41,6 +42,10 @@ const ConnectShare = () => {
       }
     }
 
+    if (muni === 'true' || muni === 'false') {
+      updates.muni = muni === 'true'
+    }
+
     if (Object.keys(updates).length > 0) {
       // Update Redux state with parameters from URL
       dispatch(updateSettings(updates))
@@ -54,6 +59,9 @@ const ConnectShare = () => {
       }
       if (overlay) {
         history.removeParam('overlay')
+      }
+      if (muni) {
+        history.removeParam('muni')
       }
     }
   }, [location.search, dispatch, history])

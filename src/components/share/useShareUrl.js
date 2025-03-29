@@ -8,6 +8,7 @@ const useShareUrl = () => {
   const { mapType, showLabels, overlay } = useSelector(
     (state) => state.settings,
   )
+  const { muni } = useSelector((state) => state.filter)
 
   const url = new URL(window.location.href)
   if (mapType !== 'roadmap') {
@@ -26,6 +27,7 @@ const useShareUrl = () => {
           : overlay
     url.searchParams.set('overlay', urlOverlay)
   }
+  url.searchParams.set('muni', muni.toString())
   return url.toString()
 }
 
