@@ -8,7 +8,10 @@ const useShareUrl = () => {
   const { mapType } = useSelector((state) => state.settings)
 
   const url = new URL(window.location.href)
-  url.searchParams.set('mapType', mapType)
+  // Only set mapType if it's not the default value (roadmap)
+  if (mapType !== 'roadmap') {
+    url.searchParams.set('mapType', mapType)
+  }
   return url.toString()
 }
 
