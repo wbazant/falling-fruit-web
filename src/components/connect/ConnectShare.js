@@ -17,68 +17,67 @@ const ConnectShare = () => {
   const dispatch = useDispatch()
   const typesAccess = useSelector((state) => state.type.typesAccess)
 
+  // Handle settings parameters
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search)
     const mapType = searchParams.get('mapType')
     const showLabels = searchParams.get('showLabels')
     const overlay = searchParams.get('overlay')
-    const muni = searchParams.get('muni')
     const showBusinesses = searchParams.get('showBusinesses')
-    const encodedTypes = searchParams.get('types')
 
     const settingsUpdates = {}
-    const filterUpdates = {}
 
     if (mapType) {
       settingsUpdates.mapType = mapType
+      history.removeParam('mapType')
     }
 
     if (showLabels === 'true') {
       settingsUpdates.showLabels = true
+      history.removeParam('showLabels')
     }
 
     if (showBusinesses === 'true') {
       settingsUpdates.showBusinesses = true
+      history.removeParam('showBusinesses')
     }
 
     if (overlay) {
       settingsUpdates.overlay = overlay
-    }
-
-    if (muni === 'false') {
-      filterUpdates.muni = false
-    }
-
-    if (encodedTypes) {
-      const typeEncoder = new TypeShareEncoder(typesAccess)
-      filterUpdates.types = typeEncoder.decode(encodedTypes)
+      history.removeParam('overlay')
     }
 
     if (Object.keys(settingsUpdates).length > 0) {
       dispatch(updateSettings(settingsUpdates))
     }
+  }, [location.search, dispatch, history])
+
+  // Handle filter parameters - depends on typesAccess being loaded
+  useEffect(() => {
+    // Skip if typesAccess is empty (not yet loaded)
+    if (typesAccess.isEmpty) {
+      return
+    }
+
+    const searchParams = new URLSearchParams(location.search)
+    const muni = searchParams.get('muni')
+    const encodedTypes = searchParams.get('types')
+
+    const filterUpdates = {}
+
+    if (muni === 'false') {
+      filterUpdates.muni = false
+      history.removeParam('muni')
+    }
+
+    if (encodedTypes) {
+      const typeEncoder = new TypeShareEncoder(typesAccess)
+      filterUpdates.types = typeEncoder.decode(encodedTypes)
+      history.removeParam('types')
+    }
 
     if (Object.keys(filterUpdates).length > 0) {
       dispatch(updateSelection(filterUpdates))
-    }
-
-    if (mapType) {
-      history.removeParam('mapType')
-    }
-    if (showLabels) {
-      history.removeParam('showLabels')
-    }
-    if (overlay) {
-      history.removeParam('overlay')
-    }
-    if (muni) {
-      history.removeParam('muni')
-    }
-    if (showBusinesses) {
-      history.removeParam('showBusinesses')
-    }
-    if (encodedTypes) {
-      history.removeParam('types')
     }
   }, [location.search, dispatch, history, typesAccess])
 
