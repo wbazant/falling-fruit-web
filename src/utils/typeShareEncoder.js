@@ -12,7 +12,7 @@ class TypeShareEncoder {
   /**
    * Encodes type IDs for URL sharing
    * @param {number[]} typeIds - Array of type IDs
-   * @returns {string} Encoded string ('all', 'default', 'default+id1,id2,...', 'default+id1,id2,...-id3,id4,...', 'all-id1,id2,...', or comma-separated IDs)
+   * @returns {string} Encoded string ('all', 'default', 'default_id1,id2,...', 'default_id1,id2,...-id3,id4,...', 'all-id1,id2,...', or comma-separated IDs)
    */
   encode(typeIds) {
     if (!typeIds || typeIds.length === 0) {
@@ -41,9 +41,9 @@ class TypeShareEncoder {
 
     if (this.isDefaultPlusMinusFormat(typeIds)) {
       if (removedDefaultTypeIds.length > 0) {
-        return `default+${additionalTypeIds.join('.')}-${removedDefaultTypeIds.join('.')}`
+        return `default_${additionalTypeIds.join('.')}-${removedDefaultTypeIds.join('.')}`
       } else if (additionalTypeIds.length > 0) {
-        return `default+${additionalTypeIds.join('.')}`
+        return `default_${additionalTypeIds.join('.')}`
       }
     }
 
@@ -57,7 +57,7 @@ class TypeShareEncoder {
 
   /**
    * Decodes type string from URL to array of type IDs
-   * @param {string} encodedTypes - Encoded string ('all', 'default', 'default+id1,id2,...', 'default+id1,id2,...-id3,id4,...', 'all-id1,id2,...', or comma-separated IDs)
+   * @param {string} encodedTypes - Encoded string ('all', 'default', 'default_id1,id2,...', 'default_id1,id2,...-id3,id4,...', 'all-id1,id2,...', or comma-separated IDs)
    * @returns {number[]} Array of type IDs
    */
   decode(encodedTypes) {
@@ -73,8 +73,8 @@ class TypeShareEncoder {
       return this.getDefaultTypeIds()
     }
 
-    // Handle "default+id1,id2,..." and "default+id1,id2,...-id3,id4,..." formats
-    if (encodedTypes.startsWith('default+')) {
+    // Handle "default_id1,id2,..." and "default_id1,id2,...-id3,id4,..." formats
+    if (encodedTypes.startsWith('default_')) {
       const defaultTypeIds = this.getDefaultTypeIds()
       let additionalIds = []
       let removedIds = []
