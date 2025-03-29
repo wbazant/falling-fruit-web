@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
  * @returns {string} The shareable URL
  */
 const useShareUrl = () => {
-  const { mapType, showLabels, overlay } = useSelector(
+  const { mapType, showLabels, overlay, showBusinesses } = useSelector(
     (state) => state.settings,
   )
   const { muni } = useSelector((state) => state.filter)
@@ -18,17 +18,13 @@ const useShareUrl = () => {
     url.searchParams.set('showLabels', 'true')
   }
   if (overlay) {
-    // Use bicycle/transit in URL instead of BicycleLayer/TransitLayer
-    const urlOverlay =
-      overlay === 'BicycleLayer'
-        ? 'bicycle'
-        : overlay === 'TransitLayer'
-          ? 'transit'
-          : overlay
-    url.searchParams.set('overlay', urlOverlay)
+    url.searchParams.set('overlay', overlay)
   }
   if (!muni) {
     url.searchParams.set('muni', 'false')
+  }
+  if (showBusinesses) {
+    url.searchParams.set('showBusinesses', 'true')
   }
   return url.toString()
 }

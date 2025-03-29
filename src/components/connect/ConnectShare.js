@@ -21,6 +21,7 @@ const ConnectShare = () => {
     const showLabels = searchParams.get('showLabels')
     const overlay = searchParams.get('overlay')
     const muni = searchParams.get('muni')
+    const showBusinesses = searchParams.get('showBusinesses')
 
     const settingsUpdates = {}
     const filterUpdates = {}
@@ -31,6 +32,10 @@ const ConnectShare = () => {
 
     if (showLabels === 'true') {
       settingsUpdates.showLabels = true
+    }
+
+    if (showBusinesses === 'true') {
+      settingsUpdates.showBusinesses = true
     }
 
     if (overlay) {
@@ -60,6 +65,9 @@ const ConnectShare = () => {
     }
     if (muni) {
       history.removeParam('muni')
+    }
+    if (showBusinesses) {
+      history.removeParam('showBusinesses')
     }
   }, [location.search, dispatch, history])
 
