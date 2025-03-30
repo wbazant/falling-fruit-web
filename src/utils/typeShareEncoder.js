@@ -85,7 +85,7 @@ class TypeShareEncoder {
 
     // Initialize state based on prefix
     if (encodedTypes.startsWith('all-')) {
-      state = 'exclude'
+      state = 'remove'
       result = [...this.allTypeIds]
       i = 4 // Skip 'all-'
     } else if (encodedTypes.startsWith('default-')) {
@@ -99,7 +99,7 @@ class TypeShareEncoder {
     } else if (encodedTypes.startsWith('default')) {
       return this.getDefaultTypeIds()
     } else {
-      state = 'list'
+      state = 'add'
     }
 
     // Process one character at a time
@@ -111,9 +111,9 @@ class TypeShareEncoder {
         if (currentToken) {
           const id = parseInt(currentToken, 10)
 
-          if (state === 'add' || state === 'list') {
+          if (state === 'add') {
             result.push(id)
-          } else if (state === 'exclude' || state === 'remove') {
+          } else if (state === 'remove') {
             result = result.filter((typeId) => typeId !== id)
           }
 
@@ -136,9 +136,9 @@ class TypeShareEncoder {
     if (currentToken) {
       const id = parseInt(currentToken, 10)
 
-      if (state === 'add' || state === 'list') {
+      if (state === 'add') {
         result.push(id)
-      } else if (state === 'exclude' || state === 'remove') {
+      } else if (state === 'remove') {
         result = result.filter((typeId) => typeId !== id)
       }
     }
