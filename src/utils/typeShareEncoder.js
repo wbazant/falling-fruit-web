@@ -77,28 +77,22 @@ class TypeShareEncoder {
     let i = 0
 
     // Initialize state based on prefix
-    if (encodedTypes.startsWith('all')) {
+    if (encodedTypes === 'all') {
+      return [...this.allTypeIds]
+    } else if (encodedTypes.startsWith('all-')) {
       result = [...this.allTypeIds]
-
-      if (encodedTypes === 'all') {
-        return result
-      }
-
-      // Skip 'all' and any delimiter
-      i =
-        encodedTypes.charAt(4) === '-' || encodedTypes.charAt(4) === '.' ? 5 : 3
-      state = encodedTypes.charAt(4) === '-' ? 'remove' : 'add'
-    } else if (encodedTypes.startsWith('default')) {
+      i = 4 // Skip 'all-'
+      state = 'remove'
+    } else if (encodedTypes === 'default') {
+      return [...this.getDefaultTypeIds()]
+    } else if (encodedTypes.startsWith('default.')) {
       result = [...this.getDefaultTypeIds()]
-
-      if (encodedTypes === 'default') {
-        return result
-      }
-
-      // Skip 'default' and any delimiter
-      i =
-        encodedTypes.charAt(7) === '-' || encodedTypes.charAt(7) === '.' ? 8 : 7
-      state = encodedTypes.charAt(7) === '-' ? 'remove' : 'add'
+      i = 8 // Skip 'default.'
+      state = 'add'
+    } else if (encodedTypes.startsWith('default-')) {
+      result = [...this.getDefaultTypeIds()]
+      i = 8 // Skip 'default-'
+      state = 'remove'
     }
 
     // Process one character at a time
