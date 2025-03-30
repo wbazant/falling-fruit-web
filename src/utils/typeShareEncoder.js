@@ -71,35 +71,34 @@ class TypeShareEncoder {
       return []
     }
 
-    // Handle special cases first
-    if (encodedTypes === 'all') {
-      return [...this.allTypeIds]
-    } else if (encodedTypes === 'default') {
-      return this.getDefaultTypeIds()
-    }
-
     let result = []
-    let state = 'initial'
+    let state = 'add'
     let currentToken = ''
     let i = 0
 
     // Initialize state based on prefix
-    if (encodedTypes.startsWith('all-')) {
-      state = 'remove'
+    if (encodedTypes.startsWith('all')) {
       result = [...this.allTypeIds]
-      i = 4 // Skip 'all-'
-    } else if (encodedTypes.startsWith('default-')) {
-      state = 'remove'
-      result = [...this.getDefaultTypeIds()]
-      i = 8 // Skip 'default-'
-    } else if (encodedTypes.startsWith('default.')) {
-      state = 'add'
-      result = [...this.getDefaultTypeIds()]
-      i = 8 // Skip 'default.'
+
+      if (encodedTypes === 'all') {
+        return result
+      }
+
+      // Skip 'all' and any delimiter
+      i =
+        encodedTypes.charAt(4) === '-' || encodedTypes.charAt(4) === '.' ? 5 : 3
+      state = encodedTypes.charAt(4) === '-' ? 'remove' : 'add'
     } else if (encodedTypes.startsWith('default')) {
-      return this.getDefaultTypeIds()
-    } else {
-      state = 'add'
+      result = [...this.getDefaultTypeIds()]
+
+      if (encodedTypes === 'default') {
+        return result
+      }
+
+      // Skip 'default' and any delimiter
+      i =
+        encodedTypes.charAt(7) === '-' || encodedTypes.charAt(7) === '.' ? 8 : 7
+      state = encodedTypes.charAt(7) === '-' ? 'remove' : 'add'
     }
 
     // Process one character at a time
