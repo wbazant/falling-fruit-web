@@ -62,7 +62,16 @@ class TypeShareEncoder {
       }
     }
 
+    // Log the complete families
     console.log('Complete families in selection:', completeFamilies)
+
+    // Log the type objects for each selected type ID
+    const selectedTypes = selectedTypeIds.map((id) => ({
+      id,
+      type: this.typesAccess.getType(id),
+    }))
+    console.log('Selected type objects:', selectedTypes)
+
     return completeFamilies
   }
 
