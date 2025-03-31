@@ -80,52 +80,37 @@ class TypeShareEncoder {
       i = 3
     } else if (encodedTypes.startsWith('default')) {
       result = [...this.getDefaultTypeIds()]
-      i = 7 // Skip 'default.'
+      i = 7
     } else {
       result = []
       i = 0
     }
 
-    // Process one character at a time
+    const processToken = () => {
+      if (currentToken) {
+        const id = parseInt(currentToken, 10)
+        if (state === 'add') {
+          result.push(id)
+        } else if (state === 'remove') {
+          result = result.filter((typeId) => typeId !== id)
+        }
+        currentToken = ''
+      }
+    }
+
     while (i < encodedTypes.length) {
       const char = encodedTypes[i]
-
-      if (char === '.' || char === '-') {
-        // Process the current token when we hit a delimiter
-        if (currentToken) {
-          const id = parseInt(currentToken, 10)
-
-          if (state === 'add') {
-            result.push(id)
-          } else if (state === 'remove') {
-            result = result.filter((typeId) => typeId !== id)
-          }
-
-          currentToken = ''
-        }
-
-        // Change state if we hit a minus sign
-        if (char === '-') {
-          state = 'remove'
-        }
+      if (char === '.') {
+        processToken()
+      } else if (char === '-') {
+        processToken()
+        state = 'remove'
       } else {
-        // Build the current token
         currentToken += char
       }
-
       i++
     }
-
-    // Process the final token if there is one
-    if (currentToken) {
-      const id = parseInt(currentToken, 10)
-
-      if (state === 'add') {
-        result.push(id)
-      } else if (state === 'remove') {
-        result = result.filter((typeId) => typeId !== id)
-      }
-    }
+    processToken()
 
     return result
   }
