@@ -71,28 +71,19 @@ class TypeShareEncoder {
       return []
     }
 
-    let result = []
     let state = 'add'
     let currentToken = ''
-    let i = 0
-
-    // Initialize state based on prefix
-    if (encodedTypes === 'all') {
-      return [...this.allTypeIds]
-    } else if (encodedTypes.startsWith('all-')) {
+    let result
+    let i
+    if (encodedTypes.startsWith('all')) {
       result = [...this.allTypeIds]
-      i = 4 // Skip 'all-'
-      state = 'remove'
-    } else if (encodedTypes === 'default') {
-      return [...this.getDefaultTypeIds()]
-    } else if (encodedTypes.startsWith('default.')) {
+      i = 3
+    } else if (encodedTypes.startsWith('default')) {
       result = [...this.getDefaultTypeIds()]
-      i = 8 // Skip 'default.'
-      state = 'add'
-    } else if (encodedTypes.startsWith('default-')) {
-      result = [...this.getDefaultTypeIds()]
-      i = 8 // Skip 'default-'
-      state = 'remove'
+      i = 7 // Skip 'default.'
+    } else {
+      result = []
+      i = 0
     }
 
     // Process one character at a time
