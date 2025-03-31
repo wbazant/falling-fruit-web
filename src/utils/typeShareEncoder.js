@@ -7,6 +7,63 @@ class TypeShareEncoder {
   constructor(typesAccess) {
     this.typesAccess = typesAccess
     this.allTypeIds = typesAccess.selectableTypes().map((type) => type.id)
+    this.familiesByHeadId = this.buildFamiliesByHeadId()
+  }
+
+  /**
+   * Builds a map of head type IDs to their complete family (descendants)
+   * Only includes ultimate heads (types without parents)
+   * @returns {Object} Map of head ID to array of descendant IDs
+   */
+  buildFamiliesByHeadId() {
+    const familiesByHeadId = {}
+    const rootTypes = this.typesAccess
+      .selectableTypes()
+      .filter((type) => type.parentId === 0)
+
+    for (const rootType of rootTypes) {
+      const familyIds = this.getCompleteFamily(rootType.id)
+      familiesByHeadId[rootType.id] = familyIds
+    }
+
+    return familiesByHeadId
+  }
+
+  /**
+   * Gets all descendants of a type (complete family)
+   * @param {number} typeId - The head type ID
+   * @returns {number[]} Array of all descendant IDs including the head ID
+   */
+  getCompleteFamily(typeId) {
+    const result = [typeId]
+    const childrenIds = this.typesAccess.childrenById[typeId] || []
+
+    for (const childId of childrenIds) {
+      result.push(...this.getCompleteFamily(childId))
+    }
+
+    return result
+  }
+
+  /**
+   * Logs all families that are completely included in the selection
+   * @param {number[]} selectedTypeIds - Array of selected type IDs
+   */
+  logCompleteFamiliesInSelection(selectedTypeIds) {
+    const completeFamilies = []
+
+    for (const [headId, familyIds] of Object.entries(this.familiesByHeadId)) {
+      if (familyIds.every((id) => selectedTypeIds.includes(Number(id)))) {
+        completeFamilies.push({
+          headId: Number(headId),
+          headName: this.typesAccess.getCommonName(Number(headId)),
+          familySize: familyIds.length,
+        })
+      }
+    }
+
+    console.log('Complete families in selection:', completeFamilies)
+    return completeFamilies
   }
 
   /**
@@ -111,6 +168,9 @@ class TypeShareEncoder {
       i++
     }
     processToken()
+
+    // Log complete families in the selection
+    this.logCompleteFamiliesInSelection(result)
 
     return result
   }
