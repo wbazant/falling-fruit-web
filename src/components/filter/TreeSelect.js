@@ -59,6 +59,7 @@ const TreeSelect = ({ types, onChange, selectTree }) => {
       const isSelected = node.isSelected
       updateNodeAndDescendants(node, !isSelected)
       updateAncestors(node)
+      console.log(newTypes)
 
       onChange(Array.from(newTypes))
     },

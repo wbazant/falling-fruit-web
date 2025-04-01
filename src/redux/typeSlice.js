@@ -9,7 +9,9 @@ export const fetchAndLocalizeTypes = createAsyncThunk(
   'type/fetchAndLocalizeTypes',
   async (language) => {
     const types = await getTypes()
-    return typesAccessInLanguage(types, language)
+    const ta = typesAccessInLanguage(types, language)
+    window.ta = ta
+    return ta
   },
 )
 

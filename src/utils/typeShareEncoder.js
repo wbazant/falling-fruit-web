@@ -25,6 +25,7 @@ class TypeShareEncoder {
       const familyIds = this.getCompleteFamily(rootType.id)
       familiesByHeadId[rootType.id] = familyIds
     }
+    console.log({ rootTypes, abies: familiesByHeadId[2017] })
 
     return familiesByHeadId
   }
@@ -51,6 +52,10 @@ class TypeShareEncoder {
    */
   logCompleteFamiliesInSelection(selectedTypeIds) {
     const completeFamilies = []
+    console.log(selectedTypeIds)
+    for (const selectedTypeId of selectedTypeIds) {
+      console.log(this.typesAccess.getType(Number(selectedTypeId)))
+    }
 
     for (const [headId, familyIds] of Object.entries(this.familiesByHeadId)) {
       if (familyIds.every((id) => selectedTypeIds.includes(Number(id)))) {
@@ -62,16 +67,7 @@ class TypeShareEncoder {
       }
     }
 
-    // Log the complete families
     console.log('Complete families in selection:', completeFamilies)
-
-    // Log the type objects for each selected type ID
-    const selectedTypes = selectedTypeIds.map((id) => ({
-      id,
-      type: this.typesAccess.getType(id),
-    }))
-    console.log('Selected type objects:', selectedTypes)
-
     return completeFamilies
   }
 
