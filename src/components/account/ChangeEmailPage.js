@@ -12,14 +12,16 @@ import {
   FormButtonWrapper,
   FormInputWrapper,
 } from '../auth/AuthWrappers'
-import { Input } from '../form/FormikWrappers'
+import { Checkbox, Input } from '../form/FormikWrappers'
 import Button from '../ui/Button'
+import LabeledRow from '../ui/LabeledRow'
 import LoadingIndicator from '../ui/LoadingIndicator'
 import { Page } from '../ui/PageTemplate'
 
-const formToUser = ({ email, password }) => ({
+const formToUser = ({ email, password, announcements_email }) => ({
   email,
   password,
+  announcements_email,
 })
 
 const ChangeEmailPage = () => {
@@ -39,14 +41,16 @@ const ChangeEmailPage = () => {
 
   return (
     <Page>
-      <h1>{t('users.change_email')}</h1>
+      <h1>{t('users.change_email_settings')}</h1>
 
       {user ? (
         <>
           <Formik
             initialValues={{
+              current_email: user.email,
               email: '',
               password: '',
+              announcements_email: user.announcements_email,
             }}
             validationSchema={Yup.object({
               email: Yup.string().email().required(),
@@ -59,6 +63,13 @@ const ChangeEmailPage = () => {
             {({ errors, dirty, isValid, isSubmitting }) => (
               <Form>
                 <FormInputWrapper>
+                  <Input
+                    name="current_email"
+                    type="email"
+                    label={t('users.current_email')}
+                    disabled
+                  />
+
                   <Input
                     name="email"
                     type="email"
@@ -74,7 +85,7 @@ const ChangeEmailPage = () => {
                   <Input
                     name="password"
                     type="password"
-                    label={t('users.current_password')}
+                    label={t('glossary.password')}
                     autocomplete="current-password"
                   />
                   {errors.password && (
@@ -83,6 +94,15 @@ const ChangeEmailPage = () => {
                     </ErrorMessage>
                   )}
                 </FormInputWrapper>
+                <LabeledRow
+                  label={
+                    <label htmlFor="announcements_email">
+                      {t('users.options.announcements_email')}
+                    </label>
+                  }
+                  left={<Checkbox name="announcements_email" />}
+                  style={{ margin: '16px 0 8px 0' }}
+                />
                 <FormButtonWrapper>
                   <Button
                     secondary

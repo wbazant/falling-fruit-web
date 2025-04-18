@@ -376,8 +376,11 @@
   },
   "users": {
     "bio": "About you",
+    "change_email_settings": "Change email settings",
     "change_password": "Change my password",
     "current_password": "Current password",
+    "current_email": "Current email",
+    "new_email": "New email",
     "edit_account": "Edit account",
     "forgot_password": "Reset your password",
     "joined_on": "Joined on {{date}}",

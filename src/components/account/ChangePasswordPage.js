@@ -64,6 +64,17 @@ const ChangePasswordPage = () => {
               <Form>
                 <FormInputWrapper>
                   <Input
+                    invalidWhenUntouched
+                    name="password"
+                    type="password"
+                    label={t('users.current_password')}
+                  />
+                  {errors.password && (
+                    <ErrorMessage>
+                      {t(errors.password.key, errors.password.options)}
+                    </ErrorMessage>
+                  )}
+                  <Input
                     name="new_password"
                     type="password"
                     label={t('users.new_password')}
@@ -95,18 +106,6 @@ const ChangePasswordPage = () => {
                         errors.new_password_confirm.key,
                         errors.new_password_confirm.options,
                       )}
-                    </ErrorMessage>
-                  )}
-
-                  <Input
-                    invalidWhenUntouched
-                    name="password"
-                    type="password"
-                    label={t('users.current_password')}
-                  />
-                  {errors.password && (
-                    <ErrorMessage>
-                      {t(errors.password.key, errors.password.options)}
                     </ErrorMessage>
                   )}
                 </FormInputWrapper>

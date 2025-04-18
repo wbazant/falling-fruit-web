@@ -8,9 +8,8 @@ import { editProfile, logout } from '../../redux/authSlice'
 import { pathWithCurrentView } from '../../utils/appUrl'
 import { useAppHistory } from '../../utils/useAppHistory'
 import { FormButtonWrapper, FormInputWrapper } from '../auth/AuthWrappers'
-import { Checkbox, Input, Textarea } from '../form/FormikWrappers'
+import { Input, Textarea } from '../form/FormikWrappers'
 import Button from '../ui/Button'
-import LabeledRow from '../ui/LabeledRow'
 import LoadingIndicator from '../ui/LoadingIndicator'
 import { Page } from '../ui/PageTemplate'
 
@@ -55,7 +54,6 @@ const AccountPage = () => {
             initialValues={userToForm(user)}
             validationSchema={Yup.object({
               name: Yup.string(),
-              email: Yup.string().email().required(),
               bio: Yup.string(),
             })}
             onSubmit={handleSubmit}
@@ -64,24 +62,8 @@ const AccountPage = () => {
               <Form>
                 <FormInputWrapper>
                   <Input type="text" name="name" label={t('glossary.name')} />
-
-                  <Input
-                    type="text"
-                    name="email"
-                    label={t('glossary.email')}
-                    disabled
-                  />
                   <Textarea name="bio" label={t('users.bio')} />
                 </FormInputWrapper>
-                <LabeledRow
-                  label={
-                    <label htmlFor="announcements_email">
-                      {t('users.options.announcements_email')}
-                    </label>
-                  }
-                  left={<Checkbox name="announcements_email" />}
-                  style={{ margin: '16px 0 8px 0' }}
-                />
                 <div style={{ margin: '16px 0' }}>
                   <Link to="/users/change-password">
                     {t('users.change_password')}
@@ -89,7 +71,7 @@ const AccountPage = () => {
                 </div>
                 <div style={{ margin: '16px 0' }}>
                   <Link to="/users/change-email">
-                    {t('users.change_email')}
+                    {t('users.change_email_settings')}
                   </Link>
                 </div>
 
