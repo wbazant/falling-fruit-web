@@ -7,16 +7,16 @@ import * as Yup from 'yup'
 import { editProfile, logout } from '../../redux/authSlice'
 import { pathWithCurrentView } from '../../utils/appUrl'
 import { useAppHistory } from '../../utils/useAppHistory'
+import {
+  ErrorMessage,
+  FormButtonWrapper,
+  FormInputWrapper,
+} from '../auth/AuthWrappers'
 import { Checkbox, Input, Textarea } from '../form/FormikWrappers'
 import Button from '../ui/Button'
 import LabeledRow from '../ui/LabeledRow'
 import LoadingIndicator from '../ui/LoadingIndicator'
 import { Page } from '../ui/PageTemplate'
-import {
-  ErrorMessage,
-  FormButtonWrapper,
-  FormInputWrapper,
-} from './AuthWrappers'
 
 const formToUser = ({
   email,
