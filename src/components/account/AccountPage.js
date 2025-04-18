@@ -172,7 +172,6 @@ const AccountPage = () => {
                     {t('users.save_changes')}
                   </Button>
                 </FormButtonWrapper>
-                {/* TODO: allow user to delete account. Need design */}
               </Form>
             )}
           </Formik>
