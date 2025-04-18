@@ -6,6 +6,7 @@ import * as Yup from 'yup'
 
 import { editProfile } from '../../redux/authSlice'
 import { pathWithCurrentView } from '../../utils/appUrl'
+import { useAppHistory } from '../../utils/useAppHistory'
 import {
   ErrorMessage,
   FormButtonWrapper,
@@ -26,6 +27,7 @@ const ChangePasswordPage = () => {
   const { user, isLoading } = useSelector((state) => state.auth)
   const isLoggedIn = !!user
   const { t } = useTranslation()
+  const history = useAppHistory()
 
   if (!isLoggedIn && !isLoading) {
     return <Redirect to={pathWithCurrentView('/users/sign_in')} />
@@ -109,14 +111,18 @@ const ChangePasswordPage = () => {
                   )}
                 </FormInputWrapper>
                 <FormButtonWrapper>
-                  <Button secondary type="reset">
-                    {t('form.button.reset')}
+                  <Button
+                    secondary
+                    type="button"
+                    onClick={() => history.push('/users/edit')}
+                  >
+                    {t('form.button.cancel')}
                   </Button>
                   <Button
                     type="submit"
                     disabled={!dirty || !isValid || isSubmitting}
                   >
-                    {t('users.save_changes')}
+                    {t('form.button.submit')}
                   </Button>
                 </FormButtonWrapper>
               </Form>
