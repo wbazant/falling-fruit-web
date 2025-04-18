@@ -1,6 +1,7 @@
 import { Route } from 'react-router-dom'
 
 import AccountPage from './AccountPage'
+import ChangeEmailPage from './ChangeEmailPage'
 import ChangePasswordPage from './ChangePasswordPage'
 
 const pages = [
@@ -11,6 +12,10 @@ const pages = [
   {
     path: '/users/change-password',
     component: ChangePasswordPage,
+  },
+  {
+    path: '/users/change-email',
+    component: ChangeEmailPage,
   },
 ]
 

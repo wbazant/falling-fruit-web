@@ -1,17 +1,13 @@
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link,Redirect } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import * as Yup from 'yup'
 
 import { editProfile, logout } from '../../redux/authSlice'
 import { pathWithCurrentView } from '../../utils/appUrl'
 import { useAppHistory } from '../../utils/useAppHistory'
-import {
-  ErrorMessage,
-  FormButtonWrapper,
-  FormInputWrapper,
-} from '../auth/AuthWrappers'
+import { FormButtonWrapper, FormInputWrapper } from '../auth/AuthWrappers'
 import { Checkbox, Input, Textarea } from '../form/FormikWrappers'
 import Button from '../ui/Button'
 import LabeledRow from '../ui/LabeledRow'
@@ -61,15 +57,10 @@ const AccountPage = () => {
               name: Yup.string(),
               email: Yup.string().email().required(),
               bio: Yup.string(),
-              password: Yup.string().when(['email'], (email, schema) =>
-                email !== user.email
-                  ? schema.required({ key: 'form.error.missing_password' })
-                  : schema,
-              ),
             })}
             onSubmit={handleSubmit}
           >
-            {({ errors, dirty, isValid, isSubmitting }) => (
+            {({ dirty, isValid, isSubmitting }) => (
               <Form>
                 <FormInputWrapper>
                   <Input type="text" name="name" label={t('glossary.name')} />
@@ -78,9 +69,8 @@ const AccountPage = () => {
                     type="text"
                     name="email"
                     label={t('glossary.email')}
-                    required
+                    disabled
                   />
-
                   <Textarea name="bio" label={t('users.bio')} />
                 </FormInputWrapper>
                 <LabeledRow
@@ -92,24 +82,17 @@ const AccountPage = () => {
                   left={<Checkbox name="announcements_email" />}
                   style={{ margin: '16px 0 8px 0' }}
                 />
-                <FormInputWrapper>
-                  <Input
-                    invalidWhenUntouched
-                    name="password"
-                    type="password"
-                    label={t('users.current_password')}
-                  />
-                  {errors.password && (
-                    <ErrorMessage>
-                      {t(errors.password.key, errors.password.options)}
-                    </ErrorMessage>
-                  )}
-                </FormInputWrapper>
                 <div style={{ margin: '16px 0' }}>
                   <Link to="/users/change-password">
                     {t('users.change_password')}
                   </Link>
                 </div>
+                <div style={{ margin: '16px 0' }}>
+                  <Link to="/users/change-email">
+                    {t('users.change_email')}
+                  </Link>
+                </div>
+
                 <FormButtonWrapper>
                   <Button secondary type="reset">
                     {t('form.button.reset')}
