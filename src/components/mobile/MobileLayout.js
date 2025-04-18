@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { matchPath, Route, Switch, useLocation } from 'react-router-dom'
 
 import aboutRoutes from '../about/aboutRoutes'
+import accountRoutes from '../account/accountRoutes'
 import activityRoutes from '../activity/activityRoutes'
 import authRoutes from '../auth/authRoutes'
 import connectRoutes from '../connect/connectRoutes'
@@ -122,6 +123,7 @@ const MobileLayout = () => {
                 {activityRoutes}
                 {aboutRoutes}
                 {authRoutes}
+                {accountRoutes}
                 {profileRoutes}
                 <Route path={['/map', '/locations', '/list', '/settings']}>
                   <Switch>
