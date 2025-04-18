@@ -1,11 +1,16 @@
 import { Route } from 'react-router-dom'
 
 import AccountPage from './AccountPage'
+import ChangePasswordPage from './ChangePasswordPage'
 
 const pages = [
   {
     path: '/users/edit',
     component: AccountPage,
+  },
+  {
+    path: '/users/change-password',
+    component: ChangePasswordPage,
   },
 ]
 

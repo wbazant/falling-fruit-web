@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { Redirect } from 'react-router-dom'
+import { Link,Redirect } from 'react-router-dom'
 import * as Yup from 'yup'
 
 import { editProfile, logout } from '../../redux/authSlice'
@@ -18,20 +18,10 @@ import LabeledRow from '../ui/LabeledRow'
 import LoadingIndicator from '../ui/LoadingIndicator'
 import { Page } from '../ui/PageTemplate'
 
-const formToUser = ({
-  email,
-  name,
-  bio,
-  new_password,
-  password_confirmation,
-  announcements_email,
-  range,
-}) => ({
+const formToUser = ({ email, name, bio, announcements_email, range }) => ({
   email,
   name: name || null,
   bio: bio || null,
-  password: new_password || null,
-  password_confirmation: password_confirmation || null,
   announcements_email: announcements_email,
   range: range,
 })
@@ -40,9 +30,6 @@ const userToForm = (user) => ({
   ...user,
   name: user.name ?? '',
   bio: user.bio ?? '',
-  new_password: '',
-  new_password_confirm: '',
-  password_confirmation: '',
   announcements_email: user.announcements_email,
 })
 
@@ -74,18 +61,10 @@ const AccountPage = () => {
               name: Yup.string(),
               email: Yup.string().email().required(),
               bio: Yup.string(),
-              new_password: Yup.string().min(6),
-              new_password_confirm: Yup.string()
-                .oneOf([Yup.ref('new_password')])
-                .when('new_password', (new_password, schema) =>
-                  new_password ? schema.required() : schema,
-                ),
-              password: Yup.string().when(
-                ['new_password', 'email'],
-                (new_password, email, schema) =>
-                  new_password || email !== user.email
-                    ? schema.required({ key: 'form.error.missing_password' })
-                    : schema,
+              password: Yup.string().when(['email'], (email, schema) =>
+                email !== user.email
+                  ? schema.required({ key: 'form.error.missing_password' })
+                  : schema,
               ),
             })}
             onSubmit={handleSubmit}
@@ -115,41 +94,6 @@ const AccountPage = () => {
                 />
                 <FormInputWrapper>
                   <Input
-                    name="new_password"
-                    type="password"
-                    label={t('users.new_password')}
-                    autocomplete="new-password"
-                  />
-                  {errors.new_password && (
-                    <ErrorMessage>
-                      {errors.new_password.key === 'form.error.confirmation' &&
-                        t('form.error.confirmation')}
-                      {errors.new_password.key === 'form.error.too_short' &&
-                        t('form.error.too_short', {
-                          min: errors.new_password.options.min,
-                        })}
-                      {errors.new_password.key ===
-                        'form.error.missing_password' &&
-                        t('form.error.missing_password')}
-                    </ErrorMessage>
-                  )}
-
-                  <Input
-                    name="new_password_confirm"
-                    type="password"
-                    label={t('users.new_password_confirmation')}
-                    autocomplete="new-password"
-                  />
-                  {errors.new_password_confirm && (
-                    <ErrorMessage>
-                      {t(
-                        errors.new_password_confirm.key,
-                        errors.new_password_confirm.options,
-                      )}
-                    </ErrorMessage>
-                  )}
-
-                  <Input
                     invalidWhenUntouched
                     name="password"
                     type="password"
@@ -161,6 +105,11 @@ const AccountPage = () => {
                     </ErrorMessage>
                   )}
                 </FormInputWrapper>
+                <div style={{ margin: '16px 0' }}>
+                  <Link to="/users/change-password">
+                    {t('users.change_password')}
+                  </Link>
+                </div>
                 <FormButtonWrapper>
                   <Button secondary type="reset">
                     {t('form.button.reset')}
