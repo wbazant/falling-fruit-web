@@ -47,8 +47,7 @@ const ChangeEmailPage = () => {
         <>
           <Formik
             initialValues={{
-              current_email: user.email,
-              email: '',
+              email: user.email,
               password: '',
               announcements_email: user.announcements_email,
             }}
@@ -64,16 +63,9 @@ const ChangeEmailPage = () => {
               <Form>
                 <FormInputWrapper>
                   <Input
-                    name="current_email"
-                    type="email"
-                    label={t('users.current_email')}
-                    disabled
-                  />
-
-                  <Input
                     name="email"
                     type="email"
-                    label={t('users.new_email')}
+                    label={t('users.email')}
                     autocomplete="email"
                   />
                   {errors.email && (
