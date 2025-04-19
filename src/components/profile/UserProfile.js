@@ -79,6 +79,9 @@ const UserProfile = () => {
           </time>
         </p>
       </IconBesideText>
+      <div style={{ marginTop: '20px' }}>
+        <a href={`/changes/${id}`}>Recent changes</a>
+      </div>
     </Page>
   )
 }

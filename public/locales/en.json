@@ -376,7 +376,9 @@
   },
   "users": {
     "bio": "About you",
-    "change_email_settings": "Change email settings",
+    "email_settings": "Email settings",
+    "password_settings": "Password settings",
+    "my_recent_changes": "My recent changes",
     "change_password": "Change my password",
     "current_password": "Current password",
     "current_email": "Current email",

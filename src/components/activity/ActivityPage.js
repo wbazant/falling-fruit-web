@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'
 import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
 import {
@@ -33,14 +34,25 @@ const SkeletonLoader = ({ count = 3 }) => (
   </SkeletonWrapper>
 )
 
+const useUserState = () => {
+  const { userId: userIdParam } = useParams()
+  const userId = !isNaN(parseInt(userIdParam)) ? parseInt(userIdParam) : 'all'
+
+  const { locationChanges = [], isLoading = false } = useSelector(
+    (state) => state.activity.users[userId] || {},
+  )
+
+  return { userId, locationChanges, isLoading }
+}
+
 const ActivityPage = () => {
   const dispatch = useDispatch()
+  const { userId, locationChanges, isLoading } = useUserState()
 
   const loadMoreRef = useRef()
   const { t } = useTranslation()
 
   const { typesAccess } = useSelector((state) => state.type)
-  const { locationChanges, isLoading } = useSelector((state) => state.activity)
   const { anchorElementId } = useSelector((state) => state.activity)
 
   const changesReady = !typesAccess.isEmpty
@@ -57,10 +69,17 @@ const ActivityPage = () => {
 
   useEffect(() => {
     if (changesReady) {
+      dispatch(fetchMoreLocationChanges(userId))
+    }
+  }, [dispatch, changesReady, userId])
+
+  useEffect(() => {
+    if (changesReady) {
+      // Store the necessary state values in refs to avoid using hooks in callbacks
       const observer = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
-            dispatch(fetchMoreLocationChanges())
+            dispatch(fetchMoreLocationChanges(userId))
           }
         },
         { threshold: 1.0 },
@@ -78,7 +97,7 @@ const ActivityPage = () => {
         }
       }
     }
-  }, [dispatch, changesReady])
+  }, [dispatch, changesReady, userId])
 
   const groupedData = transformActivityData(locationChanges, typesAccess)
 

@@ -41,7 +41,7 @@ const ChangeEmailPage = () => {
 
   return (
     <Page>
-      <h1>{t('users.change_email_settings')}</h1>
+      <h1>{t('users.email_settings')}</h1>
 
       {user ? (
         <>
@@ -65,7 +65,7 @@ const ChangeEmailPage = () => {
                   <Input
                     name="email"
                     type="email"
-                    label={t('users.email')}
+                    label={t('glossary.email')}
                     autocomplete="email"
                   />
                   {errors.email && (

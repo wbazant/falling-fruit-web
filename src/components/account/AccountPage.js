@@ -45,7 +45,7 @@ const AccountPage = () => {
 
   return (
     <Page>
-      <h1>{t('users.edit_account')}</h1>
+      <h1>{t('glossary.account')}</h1>
 
       {user ? (
         <>
@@ -64,16 +64,6 @@ const AccountPage = () => {
                   <Input type="text" name="name" label={t('glossary.name')} />
                   <Textarea name="bio" label={t('users.bio')} />
                 </FormInputWrapper>
-                <div style={{ margin: '16px 0' }}>
-                  <Link to="/users/change-password">
-                    {t('users.change_password')}
-                  </Link>
-                </div>
-                <div style={{ margin: '16px 0' }}>
-                  <Link to="/users/change-email">
-                    {t('users.change_email_settings')}
-                  </Link>
-                </div>
 
                 <FormButtonWrapper>
                   <Button secondary type="reset">
@@ -83,13 +73,25 @@ const AccountPage = () => {
                     type="submit"
                     disabled={!dirty || !isValid || isSubmitting}
                   >
-                    {t('users.save_changes')}
+                    {isSubmitting
+                      ? t('form.button.submitting')
+                      : t('form.button.submit')}
                   </Button>
                 </FormButtonWrapper>
               </Form>
             )}
           </Formik>
-          <br />
+          <div style={{ margin: '16px 0' }}>
+            <Link to="/users/change-password">
+              {t('users.password_settings')}
+            </Link>
+          </div>
+          <div style={{ margin: '16px 0' }}>
+            <Link to="/users/change-email">{t('users.email_settings')}</Link>
+          </div>
+          <div style={{ margin: '16px 0' }}>
+            <Link to="/users/changes">{t('users.my_recent_changes')}</Link>
+          </div>
           <Button
             onClick={() => {
               dispatch(logout())
