@@ -15,11 +15,24 @@ export const fetchMoreLocationChanges =
     const userState = state.activity.users[userId] || {}
     const latest = userState.fetchedUntilDate || new Date().toISOString()
 
-    // Default day range for 'all' users
-    let dayRange = 7
+    // Check if we're already loading data for this user
+    if (userState.isLoading) {
+      return Promise.resolve()
+    }
 
-    // For specific users, use their joining date to determine how far back to go
+    const params = { latest, offset: 0 }
+
+    // Only calculate earliest date for 'all' users (7 days earlier than latest)
+    if (userId === 'all') {
+      const earliest = new Date(
+        new Date(latest).getTime() - 7 * 24 * 60 * 60 * 1000,
+      ).toISOString()
+      params.earliest = earliest
+    }
     if (userId !== 'all') {
+      params.user_id = userId
+
+      // For specific users, we need to get their data for the state
       try {
         // Import the getUserById function dynamically to avoid circular dependencies
         const { getUserById } = await import('../utils/api')
@@ -33,63 +46,9 @@ export const fetchMoreLocationChanges =
         } else if (!state.activity.users[userId].userData) {
           dispatch(activitySlice.actions.setUserData({ userId, userData }))
         }
-
-        if (userData && userData.created_at) {
-          // Calculate days since user joined
-          const joinDate = new Date(userData.created_at)
-          const now = new Date()
-          const daysSinceJoined = Math.ceil(
-            (now - joinDate) / (24 * 60 * 60 * 1000),
-          )
-
-          // Use a reasonable chunk size based on how long they've been a member
-          // Newer users: fetch in smaller chunks, older users: larger chunks
-          if (daysSinceJoined <= 30) {
-            dayRange = 7 // One week chunks for very new users
-          } else if (daysSinceJoined <= 180) {
-            dayRange = 30 // One month chunks for users joined within 6 months
-          } else {
-            dayRange = 90 // Three month chunks for long-time users
-          }
-        } else {
-          dayRange = 90 // Default for specific user if we can't get their join date
-        }
       } catch (error) {
         console.error('Error fetching user data:', error)
-        dayRange = 90 // Fallback to default if there's an error
       }
-    }
-
-    const earliest = new Date(
-      new Date(latest).getTime() - dayRange * 24 * 60 * 60 * 1000,
-    ).toISOString()
-
-    // Determine minimum date - either user's join date or Jan 1, 2014 for 'all' users
-    let minDate = new Date('2014-01-01T00:00:00.000Z')
-
-    if (
-      userId !== 'all' &&
-      state.activity.users[userId]?.userData?.created_at
-    ) {
-      // Use the user's join date as the minimum date
-      const userJoinDate = new Date(
-        state.activity.users[userId].userData.created_at,
-      )
-      minDate = userJoinDate > minDate ? userJoinDate : minDate
-    }
-
-    if (new Date(earliest) < minDate) {
-      return Promise.resolve()
-    }
-
-    // Check if we're already loading data for this user
-    if (userState.isLoading) {
-      return Promise.resolve()
-    }
-
-    const params = { earliest, latest, offset: 0 }
-    if (userId !== 'all') {
-      params.user_id = userId
     }
 
     return dispatch(fetchLocationChanges(params))
