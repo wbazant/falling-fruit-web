@@ -9,54 +9,34 @@ const fetchLocationChanges = createAsyncThunk(
   getLocationsChanges,
 )
 
-export const fetchMoreLocationChangesUser =
-  (userId) => (dispatch, getState) => {
-    const state = getState()
-    const userState = state.activity.users[userId] || {}
-    const latest = userState.fetchedUntilDate || new Date().toISOString()
+export const getUserActivity = (userId) => (dispatch) =>
+  dispatch(fetchLocationChanges({ user_id: userId }))
 
-    const params = {
-      latest,
-      user_id: userId,
-    }
-
-    return dispatch(fetchLocationChanges(params))
-  }
-
-export const fetchMoreLocationChangesAll = () => (dispatch, getState) => {
+export const fetchMoreLocationChanges = () => (dispatch, getState) => {
   const state = getState()
-  const userState = state.activity.users.all || {}
-  const latest = userState.fetchedUntilDate || new Date().toISOString()
+  const latest =
+    state.activity.users.all.fetchedUntilDate || new Date().toISOString()
   const earliest = new Date(
     new Date(latest).getTime() - 7 * 24 * 60 * 60 * 1000,
   ).toISOString()
 
-  const params = {
-    latest,
-    earliest,
-  }
-
-  return dispatch(fetchLocationChanges(params))
+  return dispatch(fetchLocationChanges({ earliest, latest }))
 }
 
 const activitySlice = createSlice({
   name: 'activity',
   initialState: {
-    users: {},
+    users: {
+      all: {
+        isLoading: true,
+        locationChanges: [],
+      },
+    },
     anchorElementId: null,
   },
   reducers: {
     setAnchorElementId: (state, action) => {
       state.anchorElementId = action.payload
-    },
-    initializeUserState: (state, action) => {
-      const { userId, userData } = action.payload
-      state.users[userId] = {
-        isLoading: false,
-        locationChanges: [],
-        fetchedUntilDate: null,
-        userData,
-      }
     },
   },
   extraReducers: {
@@ -106,7 +86,6 @@ const activitySlice = createSlice({
   },
 })
 
-export const { setAnchorElementId, setUserId, initializeUserState } =
-  activitySlice.actions
+export const { setAnchorElementId } = activitySlice.actions
 
 export default activitySlice.reducer

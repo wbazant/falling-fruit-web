@@ -5,10 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
-import {
-  fetchMoreLocationChangesUser,
-  setAnchorElementId,
-} from '../../redux/activitySlice'
+import { getUserActivity } from '../../redux/activitySlice'
 import { transformActivityData } from '../../utils/transformActivityData'
 import { InfoPage } from '../ui/PageTemplate'
 import ChangesPeriod from './ChangesPeriod'
@@ -36,32 +33,22 @@ const SkeletonLoader = ({ count = 3 }) => (
 
 const UserActivityPage = () => {
   const dispatch = useDispatch()
-  const { userId } = useParams()
+  let { userId } = useParams()
+  userId = parseInt(userId)
 
-  const { locationChanges = [], isLoading = false } = useSelector(
+  const { locationChanges = [], isLoading = true } = useSelector(
     (state) => state.activity.users[userId] || {},
   )
 
   const { t } = useTranslation()
 
   const { typesAccess } = useSelector((state) => state.type)
-  const { anchorElementId } = useSelector((state) => state.activity)
 
   const changesReady = !typesAccess.isEmpty
 
   useEffect(() => {
-    if (anchorElementId) {
-      const periodElement = document.getElementById(`${anchorElementId}`)
-      if (periodElement) {
-        periodElement.scrollIntoView()
-        dispatch(setAnchorElementId(null))
-      }
-    }
-  }, [anchorElementId, dispatch])
-
-  useEffect(() => {
     if (changesReady) {
-      dispatch(fetchMoreLocationChangesUser(userId))
+      dispatch(getUserActivity(userId))
     }
   }, [dispatch, changesReady, userId])
 

@@ -5,12 +5,12 @@ import UserActivityPage from './UserActivityPage'
 
 const pages = [
   {
-    path: '/changes',
-    component: ActivityPage,
-  },
-  {
     path: '/changes/:userId',
     component: UserActivityPage,
+  },
+  {
+    path: '/changes',
+    component: ActivityPage,
   },
 ]
 

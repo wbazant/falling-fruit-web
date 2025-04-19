@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 import {
-  fetchMoreLocationChangesAll,
+  fetchMoreLocationChanges,
   setAnchorElementId,
 } from '../../redux/activitySlice'
 import { transformActivityData } from '../../utils/transformActivityData'
@@ -38,7 +38,7 @@ const ActivityPage = () => {
   const loadMoreRef = useRef()
   const { t } = useTranslation()
 
-  const { locationChanges = [], isLoading = false } = useSelector(
+  const { locationChanges, isLoading } = useSelector(
     (state) => state.activity.users.all,
   )
 
@@ -59,7 +59,7 @@ const ActivityPage = () => {
 
   useEffect(() => {
     if (changesReady) {
-      dispatch(fetchMoreLocationChangesAll())
+      dispatch(fetchMoreLocationChanges())
     }
   }, [dispatch, changesReady])
 
@@ -69,7 +69,7 @@ const ActivityPage = () => {
       const observer = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
-            dispatch(fetchMoreLocationChangesAll())
+            dispatch(fetchMoreLocationChanges())
           }
         },
         { threshold: 1.0 },
