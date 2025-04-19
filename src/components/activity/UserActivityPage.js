@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'
 import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
 import {
@@ -33,15 +34,16 @@ const SkeletonLoader = ({ count = 3 }) => (
   </SkeletonWrapper>
 )
 
-const ActivityPage = () => {
+const UserActivityPage = () => {
   const dispatch = useDispatch()
-  const userId = 'all'
-  const loadMoreRef = useRef()
-  const { t } = useTranslation()
+  const { userId: userIdParam } = useParams()
+  const userId = !isNaN(parseInt(userIdParam)) ? parseInt(userIdParam) : 'all'
 
   const { locationChanges = [], isLoading = false } = useSelector(
     (state) => state.activity.users[userId] || {},
   )
+
+  const { t } = useTranslation()
 
   const { typesAccess } = useSelector((state) => state.type)
   const { anchorElementId } = useSelector((state) => state.activity)
@@ -64,32 +66,6 @@ const ActivityPage = () => {
     }
   }, [dispatch, changesReady, userId])
 
-  useEffect(() => {
-    if (changesReady) {
-      // Store the necessary state values in refs to avoid using hooks in callbacks
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting) {
-            dispatch(fetchMoreLocationChanges(userId))
-          }
-        },
-        { threshold: 1.0 },
-      )
-
-      const currentRef = loadMoreRef.current
-
-      if (currentRef) {
-        observer.observe(currentRef)
-      }
-
-      return () => {
-        if (currentRef) {
-          observer.unobserve(currentRef)
-        }
-      }
-    }
-  }, [dispatch, changesReady, userId])
-
   const groupedData = transformActivityData(locationChanges, typesAccess)
 
   return (
@@ -99,7 +75,6 @@ const ActivityPage = () => {
         groupedData.map((period) => (
           <ChangesPeriod key={period.daysAgo} period={period} />
         ))}
-      <div ref={loadMoreRef}></div>
       {isLoading && (
         <SkeletonLoader count={locationChanges.length === 0 ? 5 : 1} />
       )}
@@ -107,4 +82,4 @@ const ActivityPage = () => {
   )
 }
 
-export default ActivityPage
+export default UserActivityPage
