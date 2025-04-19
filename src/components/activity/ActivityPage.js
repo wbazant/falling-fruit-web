@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 import {
-  fetchMoreLocationChanges,
+  fetchMoreLocationChangesAll,
   setAnchorElementId,
 } from '../../redux/activitySlice'
 import { transformActivityData } from '../../utils/transformActivityData'
@@ -59,7 +59,7 @@ const ActivityPage = () => {
 
   useEffect(() => {
     if (changesReady) {
-      dispatch(fetchMoreLocationChanges('all'))
+      dispatch(fetchMoreLocationChangesAll())
     }
   }, [dispatch, changesReady])
 
@@ -69,7 +69,7 @@ const ActivityPage = () => {
       const observer = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
-            dispatch(fetchMoreLocationChanges('all'))
+            dispatch(fetchMoreLocationChangesAll())
           }
         },
         { threshold: 1.0 },

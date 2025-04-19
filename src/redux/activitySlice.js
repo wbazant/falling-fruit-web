@@ -9,20 +9,31 @@ const fetchLocationChanges = createAsyncThunk(
   getLocationsChanges,
 )
 
-export const fetchMoreLocationChanges = (userId) => (dispatch, getState) => {
-  const state = getState()
-  const userState = state.activity.users[userId] || {}
-  const latest = userState.fetchedUntilDate || new Date().toISOString()
+export const fetchMoreLocationChangesUser =
+  (userId) => (dispatch, getState) => {
+    const state = getState()
+    const userState = state.activity.users[userId] || {}
+    const latest = userState.fetchedUntilDate || new Date().toISOString()
 
-  const params = { latest }
-  if (userId === 'all') {
-    const earliest = new Date(
-      new Date(latest).getTime() - 7 * 24 * 60 * 60 * 1000,
-    ).toISOString()
-    params.earliest = earliest
+    const params = {
+      latest,
+      user_id: userId,
+    }
+
+    return dispatch(fetchLocationChanges(params))
   }
-  if (userId !== 'all') {
-    params.user_id = userId
+
+export const fetchMoreLocationChangesAll = () => (dispatch, getState) => {
+  const state = getState()
+  const userState = state.activity.users.all || {}
+  const latest = userState.fetchedUntilDate || new Date().toISOString()
+  const earliest = new Date(
+    new Date(latest).getTime() - 7 * 24 * 60 * 60 * 1000,
+  ).toISOString()
+
+  const params = {
+    latest,
+    earliest,
   }
 
   return dispatch(fetchLocationChanges(params))

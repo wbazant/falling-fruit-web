@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
 import {
-  fetchMoreLocationChanges,
+  fetchMoreLocationChangesUser,
   setAnchorElementId,
 } from '../../redux/activitySlice'
 import { transformActivityData } from '../../utils/transformActivityData'
@@ -61,7 +61,7 @@ const UserActivityPage = () => {
 
   useEffect(() => {
     if (changesReady) {
-      dispatch(fetchMoreLocationChanges(userId))
+      dispatch(fetchMoreLocationChangesUser(userId))
     }
   }, [dispatch, changesReady, userId])
 
