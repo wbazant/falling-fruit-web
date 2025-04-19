@@ -35,12 +35,11 @@ const SkeletonLoader = ({ count = 3 }) => (
 
 const ActivityPage = () => {
   const dispatch = useDispatch()
-  const userId = 'all' // Hardcoded as this is the main activity page
   const loadMoreRef = useRef()
   const { t } = useTranslation()
 
   const { locationChanges = [], isLoading = false } = useSelector(
-    (state) => state.activity.users[userId] || {},
+    (state) => state.activity.users.all,
   )
 
   const { typesAccess } = useSelector((state) => state.type)
@@ -60,9 +59,9 @@ const ActivityPage = () => {
 
   useEffect(() => {
     if (changesReady) {
-      dispatch(fetchMoreLocationChanges(userId))
+      dispatch(fetchMoreLocationChanges('all'))
     }
-  }, [dispatch, changesReady, userId])
+  }, [dispatch, changesReady])
 
   useEffect(() => {
     if (changesReady) {
@@ -70,7 +69,7 @@ const ActivityPage = () => {
       const observer = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
-            dispatch(fetchMoreLocationChanges(userId))
+            dispatch(fetchMoreLocationChanges('all'))
           }
         },
         { threshold: 1.0 },
@@ -88,7 +87,7 @@ const ActivityPage = () => {
         }
       }
     }
-  }, [dispatch, changesReady, userId])
+  }, [dispatch, changesReady])
 
   const groupedData = transformActivityData(locationChanges, typesAccess)
 
