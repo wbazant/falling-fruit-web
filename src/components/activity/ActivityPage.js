@@ -74,7 +74,7 @@ const ActivityPage = () => {
   }, [dispatch, changesReady, userId])
 
   useEffect(() => {
-    if (changesReady) {
+    if (changesReady && userId === 'all') {
       // Store the necessary state values in refs to avoid using hooks in callbacks
       const observer = new IntersectionObserver(
         (entries) => {
@@ -108,7 +108,7 @@ const ActivityPage = () => {
         groupedData.map((period) => (
           <ChangesPeriod key={period.daysAgo} period={period} />
         ))}
-      <div ref={loadMoreRef}></div>
+      {userId === 'all' && <div ref={loadMoreRef}></div>}
       {isLoading && (
         <SkeletonLoader count={locationChanges.length === 0 ? 5 : 1} />
       )}
