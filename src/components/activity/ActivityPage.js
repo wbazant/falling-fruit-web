@@ -35,7 +35,7 @@ const SkeletonLoader = ({ count = 3 }) => (
 
 const ActivityPage = () => {
   const dispatch = useDispatch()
-  const userId = 'all'
+  const userId = 'all' // Hardcoded as this is the main activity page
   const loadMoreRef = useRef()
   const { t } = useTranslation()
 

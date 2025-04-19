@@ -36,8 +36,7 @@ const SkeletonLoader = ({ count = 3 }) => (
 
 const UserActivityPage = () => {
   const dispatch = useDispatch()
-  const { userId: userIdParam } = useParams()
-  const userId = !isNaN(parseInt(userIdParam)) ? parseInt(userIdParam) : 'all'
+  const { userId } = useParams()
 
   const { locationChanges = [], isLoading = false } = useSelector(
     (state) => state.activity.users[userId] || {},
