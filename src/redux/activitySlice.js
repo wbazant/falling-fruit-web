@@ -45,11 +45,14 @@ const activitySlice = createSlice({
       fetchedUntilDate: null,
     },
     changesByUser: {},
-    lastBrowsedSectionId: null,
+    lastBrowsedSection: {
+      id: null,
+      userId: null,
+    },
   },
   reducers: {
-    setLastBrowsedSectionId: (state, action) => {
-      state.lastBrowsedSectionId = action.payload
+    setLastBrowsedSection: (state, action) => {
+      state.lastBrowsedSection = action.payload
     },
   },
   extraReducers: {
@@ -97,6 +100,6 @@ const activitySlice = createSlice({
   },
 })
 
-export const { setLastBrowsedSectionId } = activitySlice.actions
+export const { setLastBrowsedSection } = activitySlice.actions
 
 export default activitySlice.reducer

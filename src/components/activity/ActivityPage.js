@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import {
   fetchMoreLocationChanges,
-  setLastBrowsedSectionId,
+  setLastBrowsedSection,
 } from '../../redux/activitySlice'
 import { transformActivityData } from '../../utils/transformActivityData'
 import { InfoPage } from '../ui/PageTemplate'
@@ -22,19 +22,22 @@ const ActivityPage = () => {
   )
 
   const { typesAccess } = useSelector((state) => state.type)
-  const { lastBrowsedSectionId } = useSelector((state) => state.activity)
+  const { lastBrowsedSection } = useSelector((state) => state.activity)
 
   const changesReady = !typesAccess.isEmpty
 
   useEffect(() => {
-    if (lastBrowsedSectionId) {
-      const periodElement = document.getElementById(`${lastBrowsedSectionId}`)
+    if (lastBrowsedSection.id && lastBrowsedSection.userId === null) {
+      const periodElement = document.getElementById(`${lastBrowsedSection.id}`)
       if (periodElement) {
         periodElement.scrollIntoView()
-        dispatch(setLastBrowsedSectionId(null))
+        dispatch(setLastBrowsedSection({ id: null, userId: null }))
       }
+    } else if (lastBrowsedSection.id) {
+      // Reset if we're on the wrong page
+      dispatch(setLastBrowsedSection({ id: null, userId: null }))
     }
-  }, [lastBrowsedSectionId, dispatch])
+  }, [lastBrowsedSection, dispatch])
 
   useEffect(() => {
     if (changesReady) {

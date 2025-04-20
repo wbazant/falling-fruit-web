@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 
 import {
   getUserActivity,
-  setLastBrowsedSectionId,
+  setLastBrowsedSection,
 } from '../../redux/activitySlice'
 import { transformActivityData } from '../../utils/transformActivityData'
 import { InfoPage } from '../ui/PageTemplate'
@@ -17,7 +17,7 @@ const UserActivityPage = () => {
   let { userId } = useParams()
   userId = parseInt(userId)
 
-  const { changesByUser, lastBrowsedSectionId } = useSelector(
+  const { changesByUser, lastBrowsedSection } = useSelector(
     (state) => state.activity,
   )
   const changes = changesByUser[userId]
@@ -29,14 +29,17 @@ const UserActivityPage = () => {
   const changesReady = !typesAccess.isEmpty
 
   useEffect(() => {
-    if (lastBrowsedSectionId) {
-      const periodElement = document.getElementById(`${lastBrowsedSectionId}`)
+    if (lastBrowsedSection.id && lastBrowsedSection.userId === userId) {
+      const periodElement = document.getElementById(`${lastBrowsedSection.id}`)
       if (periodElement) {
         periodElement.scrollIntoView()
-        dispatch(setLastBrowsedSectionId(null))
+        dispatch(setLastBrowsedSection({ id: null, userId: null }))
       }
+    } else if (lastBrowsedSection.id) {
+      // Reset if we're on the wrong page
+      dispatch(setLastBrowsedSection({ id: null, userId: null }))
     }
-  }, [lastBrowsedSectionId, dispatch])
+  }, [lastBrowsedSection, dispatch, userId])
 
   useEffect(() => {
     if (changesReady) {
