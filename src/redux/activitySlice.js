@@ -42,7 +42,6 @@ const activitySlice = createSlice({
     allIsLoading: true,
     allFetchedUntilDate: null,
     userLocationChanges: {},
-    userIsLoading: {},
     userFetchedUntilDate: {},
     anchorElementId: null,
   },
@@ -57,7 +56,6 @@ const activitySlice = createSlice({
       if (!state.userLocationChanges[userId]) {
         state.userLocationChanges[userId] = []
       }
-      state.userIsLoading[userId] = true
     },
     [fetchLocationChangesUser.fulfilled]: (state, action) => {
       const { earliest } = action.meta.arg
@@ -76,13 +74,8 @@ const activitySlice = createSlice({
             ),
           ).toISOString()
         : earliest
-
-      state.userIsLoading[userId] = false
     },
     [fetchLocationChangesUser.rejected]: (state, action) => {
-      const userId = action.meta.arg.user_id
-      state.userIsLoading[userId] = false
-
       toast.error(
         i18next.t('error_message.api.fetch_location_changes_failed', {
           message:

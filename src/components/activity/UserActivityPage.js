@@ -17,9 +17,7 @@ const UserActivityPage = () => {
   const locationChanges = useSelector(
     (state) => state.activity.userLocationChanges[userId] || [],
   )
-  const isLoading = useSelector(
-    (state) => state.activity.userIsLoading[userId] || true,
-  )
+  const isLoading = locationChanges.length === 0
 
   const { t } = useTranslation()
 
