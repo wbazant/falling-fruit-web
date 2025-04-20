@@ -26,7 +26,7 @@ const UserProfile = () => {
   const { t, i18n } = useTranslation()
   const [userData, setUserData] = useState({})
   const [isLoading, setIsLoading] = useState(true)
-  const { anchorElementId } = useSelector((state) => state.activity)
+  const { lastBrowsedSectionId } = useSelector((state) => state.activity)
 
   useEffect(() => {
     async function fetchUserData() {
@@ -53,7 +53,7 @@ const UserProfile = () => {
         <BackButton
           onClick={(event) => {
             event.stopPropagation()
-            anchorElementId ? history.push('/changes') : history.goBack()
+            lastBrowsedSectionId ? history.push('/changes') : history.goBack()
           }}
         >
           <ArrowBack />

@@ -45,11 +45,11 @@ const activitySlice = createSlice({
       fetchedUntilDate: null,
     },
     userLocationChanges: {},
-    anchorElementId: null,
+    lastBrowsedSectionId: null,
   },
   reducers: {
     setAnchorElementId: (state, action) => {
-      state.anchorElementId = action.payload
+      state.lastBrowsedSectionId = action.payload
     },
   },
   extraReducers: {

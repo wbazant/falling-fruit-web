@@ -24,19 +24,19 @@ const ActivityPage = () => {
   )
 
   const { typesAccess } = useSelector((state) => state.type)
-  const { anchorElementId } = useSelector((state) => state.activity)
+  const { lastBrowsedSectionId } = useSelector((state) => state.activity)
 
   const changesReady = !typesAccess.isEmpty
 
   useEffect(() => {
-    if (anchorElementId) {
-      const periodElement = document.getElementById(`${anchorElementId}`)
+    if (lastBrowsedSectionId) {
+      const periodElement = document.getElementById(`${lastBrowsedSectionId}`)
       if (periodElement) {
         periodElement.scrollIntoView()
         dispatch(setAnchorElementId(null))
       }
     }
-  }, [anchorElementId, dispatch])
+  }, [lastBrowsedSectionId, dispatch])
 
   useEffect(() => {
     if (changesReady) {
