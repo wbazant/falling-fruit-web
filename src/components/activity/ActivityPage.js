@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import Skeleton from 'react-loading-skeleton'
 import { useDispatch, useSelector } from 'react-redux'
-import styled from 'styled-components'
 
 import {
   fetchMoreLocationChanges,
@@ -11,27 +9,7 @@ import {
 import { transformActivityData } from '../../utils/transformActivityData'
 import { InfoPage } from '../ui/PageTemplate'
 import ChangesPeriod from './ChangesPeriod'
-
-const SkeletonWrapper = styled.div`
-  margin-bottom: 16px;
-`
-
-const SkeletonGroup = styled.div`
-  margin-bottom: 20px;
-`
-
-const SkeletonLoader = ({ count = 3 }) => (
-  <SkeletonWrapper>
-    {Array.from({ length: count }).map((_, index) => (
-      <SkeletonGroup key={index}>
-        <Skeleton width="40%" height={20} style={{ marginBottom: 8 }} />
-        <Skeleton width="80%" height={20} style={{ marginBottom: 8 }} />
-        <Skeleton width="55%" height={20} style={{ marginBottom: 8 }} />
-        <Skeleton width="70%" height={20} />
-      </SkeletonGroup>
-    ))}
-  </SkeletonWrapper>
-)
+import SkeletonLoader from './SkeletonLoader'
 
 const ActivityPage = () => {
   const dispatch = useDispatch()
