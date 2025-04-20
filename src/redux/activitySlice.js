@@ -16,10 +16,10 @@ const fetchLocationChangesAll = createAsyncThunk(
 
 export const getUserActivity = (userId) => (dispatch, getState) => {
   const state = getState()
-  const userLocationChanges = state.activity.userLocationChanges[userId]
+  const { changesByUser } = state.activity
 
-  if (userLocationChanges) {
-    return Promise.resolve(userLocationChanges)
+  if (changesByUser[userId]) {
+    return Promise.resolve(changesByUser[userId])
   } else {
     return dispatch(fetchLocationChangesUser({ user_id: userId }))
   }
@@ -44,18 +44,18 @@ const activitySlice = createSlice({
       isLoading: true,
       fetchedUntilDate: null,
     },
-    userLocationChanges: {},
+    changesByUser: {},
     lastBrowsedSectionId: null,
   },
   reducers: {
-    setAnchorElementId: (state, action) => {
+    setLastBrowsedSectionId: (state, action) => {
       state.lastBrowsedSectionId = action.payload
     },
   },
   extraReducers: {
     [fetchLocationChangesUser.fulfilled]: (state, action) => {
       const userId = action.meta.arg.user_id
-      state.userLocationChanges[userId] = action.payload
+      state.changesByUser[userId] = action.payload
     },
     [fetchLocationChangesUser.rejected]: (state, action) => {
       toast.error(
@@ -97,6 +97,6 @@ const activitySlice = createSlice({
   },
 })
 
-export const { setAnchorElementId } = activitySlice.actions
+export const { setLastBrowsedSectionId } = activitySlice.actions
 
 export default activitySlice.reducer

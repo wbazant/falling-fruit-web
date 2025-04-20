@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { MIN_LOCATION_ZOOM } from '../../constants/map'
-import { setAnchorElementId } from '../../redux/activitySlice'
+import { setLastBrowsedSectionId } from '../../redux/activitySlice'
 import { viewToString } from '../../utils/appUrl'
 import { useIsDesktop } from '../../utils/useBreakpoint'
 
@@ -161,7 +161,7 @@ const ChangesPeriod = ({ period }) => {
   const dispatch = useDispatch()
   const isDesktop = useIsDesktop()
   const onClickLink = useCallback(
-    () => dispatch(setAnchorElementId(period.daysAgo.toString())),
+    () => dispatch(setLastBrowsedSectionId(period.daysAgo.toString())),
     [dispatch, period.daysAgo],
   )
   const { t } = useTranslation()

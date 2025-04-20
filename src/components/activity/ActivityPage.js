@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import {
   fetchMoreLocationChanges,
-  setAnchorElementId,
+  setLastBrowsedSectionId,
 } from '../../redux/activitySlice'
 import { transformActivityData } from '../../utils/transformActivityData'
 import { InfoPage } from '../ui/PageTemplate'
@@ -16,9 +16,7 @@ const ActivityPage = () => {
   const loadMoreRef = useRef()
   const { t } = useTranslation()
 
-  const locationChanges = useSelector(
-    (state) => state.activity.recentChanges.data,
-  )
+  const changes = useSelector((state) => state.activity.recentChanges.data)
   const isLoading = useSelector(
     (state) => state.activity.recentChanges.isLoading,
   )
@@ -33,7 +31,7 @@ const ActivityPage = () => {
       const periodElement = document.getElementById(`${lastBrowsedSectionId}`)
       if (periodElement) {
         periodElement.scrollIntoView()
-        dispatch(setAnchorElementId(null))
+        dispatch(setLastBrowsedSectionId(null))
       }
     }
   }, [lastBrowsedSectionId, dispatch])
@@ -70,19 +68,17 @@ const ActivityPage = () => {
     }
   }, [dispatch, changesReady])
 
-  const groupedData = transformActivityData(locationChanges, typesAccess)
+  const groupedData = transformActivityData(changes, typesAccess)
 
   return (
     <InfoPage>
       <h1>{t('pages.changes.recent_changes')}</h1>
-      {locationChanges.length > 0 &&
+      {changes.length > 0 &&
         groupedData.map((period) => (
           <ChangesPeriod key={period.daysAgo} period={period} />
         ))}
       <div ref={loadMoreRef}></div>
-      {isLoading && (
-        <SkeletonLoader count={locationChanges.length === 0 ? 5 : 1} />
-      )}
+      {isLoading && <SkeletonLoader count={changes.length === 0 ? 5 : 1} />}
     </InfoPage>
   )
 }

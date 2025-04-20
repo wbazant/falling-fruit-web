@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
-import { getUserActivity } from '../../redux/activitySlice'
+import {
+  getUserActivity,
+  setLastBrowsedSectionId,
+} from '../../redux/activitySlice'
 import { transformActivityData } from '../../utils/transformActivityData'
 import { InfoPage } from '../ui/PageTemplate'
 import ChangesPeriod from './ChangesPeriod'
@@ -14,10 +17,10 @@ const UserActivityPage = () => {
   let { userId } = useParams()
   userId = parseInt(userId)
 
-  const locationChanges = useSelector(
-    (state) => state.activity.userLocationChanges[userId] || [],
+  const { changesByUser, lastBrowsedSectionId } = useSelector(
+    (state) => state.activity,
   )
-  const isLoading = locationChanges.length === 0
+  const changes = changesByUser[userId]
 
   const { t } = useTranslation()
 
@@ -26,23 +29,29 @@ const UserActivityPage = () => {
   const changesReady = !typesAccess.isEmpty
 
   useEffect(() => {
+    if (lastBrowsedSectionId) {
+      const periodElement = document.getElementById(`${lastBrowsedSectionId}`)
+      if (periodElement) {
+        periodElement.scrollIntoView()
+        dispatch(setLastBrowsedSectionId(null))
+      }
+    }
+  }, [lastBrowsedSectionId, dispatch])
+
+  useEffect(() => {
     if (changesReady) {
       dispatch(getUserActivity(userId))
     }
   }, [dispatch, changesReady, userId])
 
-  const groupedData = transformActivityData(locationChanges, typesAccess)
-
   return (
     <InfoPage>
       <h1>{t('pages.changes.recent_changes')}</h1>
-      {locationChanges.length > 0 &&
-        groupedData.map((period) => (
+      {changes !== undefined &&
+        transformActivityData(changes, typesAccess).map((period) => (
           <ChangesPeriod key={period.daysAgo} period={period} />
         ))}
-      {isLoading && (
-        <SkeletonLoader count={locationChanges.length === 0 ? 5 : 1} />
-      )}
+      {changes === undefined && <SkeletonLoader count={5} />}
     </InfoPage>
   )
 }
