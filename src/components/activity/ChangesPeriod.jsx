@@ -157,7 +157,7 @@ const formatPeriodName = (daysAgo, t) => {
   }
 }
 
-const ChangesPeriod = ({ period }) => {
+const ChangesPeriod = ({ period, userId }) => {
   const dispatch = useDispatch()
   const isDesktop = useIsDesktop()
   const onClickLink = useCallback(
@@ -165,10 +165,10 @@ const ChangesPeriod = ({ period }) => {
       dispatch(
         setLastBrowsedSection({
           id: period.daysAgo.toString(),
-          userId: null,
+          userId: userId,
         }),
       ),
-    [dispatch, period.daysAgo],
+    [dispatch, period.daysAgo, userId],
   )
   const { t } = useTranslation()
 

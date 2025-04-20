@@ -29,14 +29,11 @@ const UserActivityPage = () => {
   const changesReady = !typesAccess.isEmpty
 
   useEffect(() => {
-    if (lastBrowsedSection.id && lastBrowsedSection.userId === userId) {
+    if (lastBrowsedSection.id) {
       const periodElement = document.getElementById(`${lastBrowsedSection.id}`)
-      if (periodElement) {
+      if (periodElement && lastBrowsedSection.userId === userId) {
         periodElement.scrollIntoView()
-        dispatch(setLastBrowsedSection({ id: null, userId: null }))
       }
-    } else if (lastBrowsedSection.id) {
-      // Reset if we're on the wrong page
       dispatch(setLastBrowsedSection({ id: null, userId: null }))
     }
   }, [lastBrowsedSection, dispatch, userId])
@@ -52,7 +49,7 @@ const UserActivityPage = () => {
       <h1>{t('pages.changes.recent_changes')}</h1>
       {changes !== undefined &&
         transformActivityData(changes, typesAccess).map((period) => (
-          <ChangesPeriod key={period.daysAgo} period={period} />
+          <ChangesPeriod key={period.daysAgo} period={period} userId={userId} />
         ))}
       {changes === undefined && <SkeletonLoader count={5} />}
     </InfoPage>

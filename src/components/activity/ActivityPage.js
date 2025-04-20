@@ -27,14 +27,11 @@ const ActivityPage = () => {
   const changesReady = !typesAccess.isEmpty
 
   useEffect(() => {
-    if (lastBrowsedSection.id && lastBrowsedSection.userId === null) {
+    if (lastBrowsedSection.id) {
       const periodElement = document.getElementById(`${lastBrowsedSection.id}`)
-      if (periodElement) {
+      if (periodElement && lastBrowsedSection.userId === null) {
         periodElement.scrollIntoView()
-        dispatch(setLastBrowsedSection({ id: null, userId: null }))
       }
-    } else if (lastBrowsedSection.id) {
-      // Reset if we're on the wrong page
       dispatch(setLastBrowsedSection({ id: null, userId: null }))
     }
   }, [lastBrowsedSection, dispatch])

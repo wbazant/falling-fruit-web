@@ -49,7 +49,7 @@ const SidePane = () => {
     isBeingEdited: isEditingLocation,
     fromSettings,
   } = useSelector((state) => state.location)
-  const { lastBrowsedSectionId } = useSelector((state) => state.activity)
+  const { lastBrowsedSection } = useSelector((state) => state.activity)
 
   const goToMap = (event) => {
     event.stopPropagation()
@@ -104,8 +104,13 @@ const SidePane = () => {
                         onClick={
                           fromSettings
                             ? goToSettings
-                            : lastBrowsedSectionId
-                              ? () => history.push('/changes')
+                            : lastBrowsedSection.id
+                              ? () =>
+                                  history.push(
+                                    lastBrowsedSection.userId
+                                      ? `/changes/${lastBrowsedSection.userId}`
+                                      : '/changes',
+                                  )
                               : goToMap
                         }
                       >
