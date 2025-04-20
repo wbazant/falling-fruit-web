@@ -42,7 +42,6 @@ const activitySlice = createSlice({
     allIsLoading: true,
     allFetchedUntilDate: null,
     userLocationChanges: {},
-    userFetchedUntilDate: {},
     anchorElementId: null,
   },
   reducers: {
@@ -51,29 +50,9 @@ const activitySlice = createSlice({
     },
   },
   extraReducers: {
-    [fetchLocationChangesUser.pending]: (state, action) => {
-      const userId = action.meta.arg.user_id
-      if (!state.userLocationChanges[userId]) {
-        state.userLocationChanges[userId] = []
-      }
-    },
     [fetchLocationChangesUser.fulfilled]: (state, action) => {
-      const { earliest } = action.meta.arg
       const userId = action.meta.arg.user_id
-
-      if (!state.userLocationChanges[userId]) {
-        state.userLocationChanges[userId] = []
-      }
-
-      state.userLocationChanges[userId].push(...action.payload)
-      state.userFetchedUntilDate[userId] = state.userFetchedUntilDate[userId]
-        ? new Date(
-            Math.min(
-              new Date(state.userFetchedUntilDate[userId]),
-              new Date(earliest),
-            ),
-          ).toISOString()
-        : earliest
+      state.userLocationChanges[userId] = action.payload
     },
     [fetchLocationChangesUser.rejected]: (state, action) => {
       toast.error(
