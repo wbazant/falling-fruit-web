@@ -9,8 +9,22 @@ const fetchLocationChanges = createAsyncThunk(
   getLocationsChanges,
 )
 
-export const getUserActivity = (userId) => (dispatch) =>
-  dispatch(fetchLocationChanges({ user_id: userId }))
+export const getUserActivity = (userId) => (dispatch, getState) => {
+  const state = getState()
+  const userData = state.activity.users[userId] || state.activity.users.all
+
+  // Only fetch if we don't have data or if it's the first load (no fetchedUntilDate)
+  if (
+    !userData ||
+    !userData.locationChanges.length ||
+    !userData.fetchedUntilDate
+  ) {
+    return dispatch(fetchLocationChanges({ user_id: userId }))
+  }
+
+  // Return a resolved promise to maintain the same interface
+  return Promise.resolve(userData.locationChanges)
+}
 
 export const fetchMoreLocationChanges = () => (dispatch, getState) => {
   const state = getState()
