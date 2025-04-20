@@ -4,8 +4,13 @@ import { toast } from 'react-toastify'
 
 import { getLocationsChanges } from '../utils/api'
 
-const fetchLocationChanges = createAsyncThunk(
-  'activity/fetchLocationChanges',
+const fetchLocationChangesUser = createAsyncThunk(
+  'activity/fetchLocationChangesUser',
+  getLocationsChanges,
+)
+
+const fetchLocationChangesAll = createAsyncThunk(
+  'activity/fetchLocationChangesAll',
   getLocationsChanges,
 )
 
@@ -16,7 +21,7 @@ export const getUserActivity = (userId) => (dispatch, getState) => {
   if (userData) {
     return Promise.resolve(userData.locationChanges)
   } else {
-    return dispatch(fetchLocationChanges({ user_id: userId }))
+    return dispatch(fetchLocationChangesUser({ user_id: userId }))
   }
 }
 
@@ -28,7 +33,7 @@ export const fetchMoreLocationChanges = () => (dispatch, getState) => {
     new Date(latest).getTime() - 7 * 24 * 60 * 60 * 1000,
   ).toISOString()
 
-  return dispatch(fetchLocationChanges({ earliest, latest }))
+  return dispatch(fetchLocationChangesAll({ earliest, latest }))
 }
 
 const activitySlice = createSlice({
@@ -48,8 +53,8 @@ const activitySlice = createSlice({
     },
   },
   extraReducers: {
-    [fetchLocationChanges.pending]: (state, action) => {
-      const userId = action.meta.arg.user_id || 'all'
+    [fetchLocationChangesUser.pending]: (state, action) => {
+      const userId = action.meta.arg.user_id
       if (!state.users[userId]) {
         state.users[userId] = {
           isLoading: true,
@@ -60,9 +65,9 @@ const activitySlice = createSlice({
         state.users[userId].isLoading = true
       }
     },
-    [fetchLocationChanges.fulfilled]: (state, action) => {
+    [fetchLocationChangesUser.fulfilled]: (state, action) => {
       const { earliest } = action.meta.arg
-      const userId = action.meta.arg.user_id || 'all'
+      const userId = action.meta.arg.user_id
       const userState = state.users[userId]
 
       if (userState) {
@@ -79,10 +84,50 @@ const activitySlice = createSlice({
         userState.isLoading = false
       }
     },
-    [fetchLocationChanges.rejected]: (state, action) => {
-      const userId = action.meta.arg?.user_id || 'all'
+    [fetchLocationChangesUser.rejected]: (state, action) => {
+      const userId = action.meta.arg.user_id
       if (state.users[userId]) {
         state.users[userId].isLoading = false
+      }
+      toast.error(
+        i18next.t('error_message.api.fetch_location_changes_failed', {
+          message:
+            action.error.message || i18next.t('error_message.unknown_error'),
+        }),
+      )
+    },
+    [fetchLocationChangesAll.pending]: (state) => {
+      if (!state.users.all) {
+        state.users.all = {
+          isLoading: true,
+          locationChanges: [],
+          fetchedUntilDate: null,
+        }
+      } else {
+        state.users.all.isLoading = true
+      }
+    },
+    [fetchLocationChangesAll.fulfilled]: (state, action) => {
+      const { earliest } = action.meta.arg
+      const userState = state.users.all
+
+      if (userState) {
+        userState.locationChanges.push(...action.payload)
+        userState.fetchedUntilDate = userState.fetchedUntilDate
+          ? new Date(
+              Math.min(
+                new Date(userState.fetchedUntilDate),
+                new Date(earliest),
+              ),
+            ).toISOString()
+          : earliest
+
+        userState.isLoading = false
+      }
+    },
+    [fetchLocationChangesAll.rejected]: (state, action) => {
+      if (state.users.all) {
+        state.users.all.isLoading = false
       }
       toast.error(
         i18next.t('error_message.api.fetch_location_changes_failed', {
