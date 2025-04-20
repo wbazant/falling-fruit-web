@@ -27,7 +27,8 @@ export const getUserActivity = (userId) => (dispatch, getState) => {
 
 export const fetchMoreLocationChanges = () => (dispatch, getState) => {
   const state = getState()
-  const latest = state.activity.allFetchedUntilDate || new Date().toISOString()
+  const latest =
+    state.activity.recentChanges.fetchedUntilDate || new Date().toISOString()
   const earliest = new Date(
     new Date(latest).getTime() - 7 * 24 * 60 * 60 * 1000,
   ).toISOString()
@@ -38,9 +39,11 @@ export const fetchMoreLocationChanges = () => (dispatch, getState) => {
 const activitySlice = createSlice({
   name: 'activity',
   initialState: {
-    allLocationChanges: [],
-    allIsLoading: true,
-    allFetchedUntilDate: null,
+    recentChanges: {
+      data: [],
+      isLoading: true,
+      fetchedUntilDate: null,
+    },
     userLocationChanges: {},
     anchorElementId: null,
   },
@@ -63,22 +66,26 @@ const activitySlice = createSlice({
       )
     },
     [fetchLocationChangesAll.pending]: (state) => {
-      state.allIsLoading = true
+      state.recentChanges.isLoading = true
     },
     [fetchLocationChangesAll.fulfilled]: (state, action) => {
       const { earliest } = action.meta.arg
 
-      state.allLocationChanges.push(...action.payload)
-      state.allFetchedUntilDate = state.allFetchedUntilDate
+      state.recentChanges.data.push(...action.payload)
+      state.recentChanges.fetchedUntilDate = state.recentChanges
+        .fetchedUntilDate
         ? new Date(
-            Math.min(new Date(state.allFetchedUntilDate), new Date(earliest)),
+            Math.min(
+              new Date(state.recentChanges.fetchedUntilDate),
+              new Date(earliest),
+            ),
           ).toISOString()
         : earliest
 
-      state.allIsLoading = false
+      state.recentChanges.isLoading = false
     },
     [fetchLocationChangesAll.rejected]: (state, action) => {
-      state.allIsLoading = false
+      state.recentChanges.isLoading = false
 
       toast.error(
         i18next.t('error_message.api.fetch_location_changes_failed', {

@@ -17,9 +17,11 @@ const ActivityPage = () => {
   const { t } = useTranslation()
 
   const locationChanges = useSelector(
-    (state) => state.activity.allLocationChanges,
+    (state) => state.activity.recentChanges.data,
   )
-  const isLoading = useSelector((state) => state.activity.allIsLoading)
+  const isLoading = useSelector(
+    (state) => state.activity.recentChanges.isLoading,
+  )
 
   const { typesAccess } = useSelector((state) => state.type)
   const { anchorElementId } = useSelector((state) => state.activity)
