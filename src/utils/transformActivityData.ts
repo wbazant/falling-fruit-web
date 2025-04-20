@@ -28,6 +28,7 @@ interface ActivityGroup {
 
 interface TimePeriodGroup {
   daysAgo: number
+  date: string
   activities: ActivityGroup[]
 }
 
@@ -59,6 +60,12 @@ export function transformActivityData(
   return Object.entries(changesByDate).map(([daysAgo, periodChanges]) => {
     // Group changes by unique user+location+date combination
     const groupedActivities = new Map<string, ActivityGroup>()
+
+    // Get the date for this period (using the first change's date)
+    const periodDate =
+      periodChanges.length > 0
+        ? periodChanges[0].created_at
+        : new Date().toISOString()
 
     periodChanges.forEach((change) => {
       const date = change.created_at.split('T')[0]
@@ -140,6 +147,7 @@ export function transformActivityData(
 
     return {
       daysAgo: parseInt(daysAgo),
+      date: periodDate,
       activities: Array.from(groupedActivities.values()),
     }
   })

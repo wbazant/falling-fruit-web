@@ -49,7 +49,12 @@ const UserActivityPage = () => {
       <h1>{t('pages.changes.recent_changes')}</h1>
       {changes !== undefined &&
         transformActivityData(changes, typesAccess).map((period) => (
-          <ChangesPeriod key={period.daysAgo} period={period} userId={userId} />
+          <ChangesPeriod
+            key={period.daysAgo}
+            period={period}
+            userId={userId}
+            useCalendarDates
+          />
         ))}
       {changes === undefined && <SkeletonLoader count={5} />}
     </InfoPage>

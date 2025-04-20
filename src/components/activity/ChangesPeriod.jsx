@@ -157,7 +157,13 @@ const formatPeriodName = (daysAgo, t) => {
   }
 }
 
-const ChangesPeriod = ({ period, userId }) => {
+const formatCalendarDate = (date, language) => new Date(date).toLocaleDateString(language, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+
+const ChangesPeriod = ({ period, userId, useCalendarDates = false }) => {
   const dispatch = useDispatch()
   const isDesktop = useIsDesktop()
   const onClickLink = useCallback(
@@ -170,11 +176,15 @@ const ChangesPeriod = ({ period, userId }) => {
       ),
     [dispatch, period.daysAgo, userId],
   )
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   return (
     <div id={period.daysAgo}>
-      <h3>{formatPeriodName(period.daysAgo, t)}</h3>
+      <h3>
+        {useCalendarDates
+          ? formatCalendarDate(period.date, i18n.language)
+          : formatPeriodName(period.daysAgo, t)}
+      </h3>
       <ListChanges>
         {period.activities.map((activity, index) => (
           <ListItem key={index} isDesktop={isDesktop}>
