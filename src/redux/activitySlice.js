@@ -16,10 +16,10 @@ const fetchLocationChangesAll = createAsyncThunk(
 
 export const getUserActivity = (userId) => (dispatch, getState) => {
   const state = getState()
-  const userData = state.activity.users[userId]
+  const userLocationChanges = state.activity.userLocationChanges[userId]
 
-  if (userData) {
-    return Promise.resolve(userData.locationChanges)
+  if (userLocationChanges) {
+    return Promise.resolve(userLocationChanges)
   } else {
     return dispatch(fetchLocationChangesUser({ user_id: userId }))
   }
@@ -27,8 +27,7 @@ export const getUserActivity = (userId) => (dispatch, getState) => {
 
 export const fetchMoreLocationChanges = () => (dispatch, getState) => {
   const state = getState()
-  const latest =
-    state.activity.users.all.fetchedUntilDate || new Date().toISOString()
+  const latest = state.activity.allFetchedUntilDate || new Date().toISOString()
   const earliest = new Date(
     new Date(latest).getTime() - 7 * 24 * 60 * 60 * 1000,
   ).toISOString()
@@ -39,12 +38,12 @@ export const fetchMoreLocationChanges = () => (dispatch, getState) => {
 const activitySlice = createSlice({
   name: 'activity',
   initialState: {
-    users: {
-      all: {
-        isLoading: true,
-        locationChanges: [],
-      },
-    },
+    allLocationChanges: [],
+    allIsLoading: true,
+    allFetchedUntilDate: null,
+    userLocationChanges: {},
+    userIsLoading: {},
+    userFetchedUntilDate: {},
     anchorElementId: null,
   },
   reducers: {
@@ -55,40 +54,35 @@ const activitySlice = createSlice({
   extraReducers: {
     [fetchLocationChangesUser.pending]: (state, action) => {
       const userId = action.meta.arg.user_id
-      if (!state.users[userId]) {
-        state.users[userId] = {
-          isLoading: true,
-          locationChanges: [],
-          fetchedUntilDate: null,
-        }
-      } else {
-        state.users[userId].isLoading = true
+      if (!state.userLocationChanges[userId]) {
+        state.userLocationChanges[userId] = []
       }
+      state.userIsLoading[userId] = true
     },
     [fetchLocationChangesUser.fulfilled]: (state, action) => {
       const { earliest } = action.meta.arg
       const userId = action.meta.arg.user_id
-      const userState = state.users[userId]
 
-      if (userState) {
-        userState.locationChanges.push(...action.payload)
-        userState.fetchedUntilDate = userState.fetchedUntilDate
-          ? new Date(
-              Math.min(
-                new Date(userState.fetchedUntilDate),
-                new Date(earliest),
-              ),
-            ).toISOString()
-          : earliest
-
-        userState.isLoading = false
+      if (!state.userLocationChanges[userId]) {
+        state.userLocationChanges[userId] = []
       }
+
+      state.userLocationChanges[userId].push(...action.payload)
+      state.userFetchedUntilDate[userId] = state.userFetchedUntilDate[userId]
+        ? new Date(
+            Math.min(
+              new Date(state.userFetchedUntilDate[userId]),
+              new Date(earliest),
+            ),
+          ).toISOString()
+        : earliest
+
+      state.userIsLoading[userId] = false
     },
     [fetchLocationChangesUser.rejected]: (state, action) => {
       const userId = action.meta.arg.user_id
-      if (state.users[userId]) {
-        state.users[userId].isLoading = false
-      }
+      state.userIsLoading[userId] = false
+
       toast.error(
         i18next.t('error_message.api.fetch_location_changes_failed', {
           message:
@@ -97,38 +91,23 @@ const activitySlice = createSlice({
       )
     },
     [fetchLocationChangesAll.pending]: (state) => {
-      if (!state.users.all) {
-        state.users.all = {
-          isLoading: true,
-          locationChanges: [],
-          fetchedUntilDate: null,
-        }
-      } else {
-        state.users.all.isLoading = true
-      }
+      state.allIsLoading = true
     },
     [fetchLocationChangesAll.fulfilled]: (state, action) => {
       const { earliest } = action.meta.arg
-      const userState = state.users.all
 
-      if (userState) {
-        userState.locationChanges.push(...action.payload)
-        userState.fetchedUntilDate = userState.fetchedUntilDate
-          ? new Date(
-              Math.min(
-                new Date(userState.fetchedUntilDate),
-                new Date(earliest),
-              ),
-            ).toISOString()
-          : earliest
+      state.allLocationChanges.push(...action.payload)
+      state.allFetchedUntilDate = state.allFetchedUntilDate
+        ? new Date(
+            Math.min(new Date(state.allFetchedUntilDate), new Date(earliest)),
+          ).toISOString()
+        : earliest
 
-        userState.isLoading = false
-      }
+      state.allIsLoading = false
     },
     [fetchLocationChangesAll.rejected]: (state, action) => {
-      if (state.users.all) {
-        state.users.all.isLoading = false
-      }
+      state.allIsLoading = false
+
       toast.error(
         i18next.t('error_message.api.fetch_location_changes_failed', {
           message:

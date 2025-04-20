@@ -16,9 +16,10 @@ const ActivityPage = () => {
   const loadMoreRef = useRef()
   const { t } = useTranslation()
 
-  const { locationChanges, isLoading } = useSelector(
-    (state) => state.activity.users.all,
+  const locationChanges = useSelector(
+    (state) => state.activity.allLocationChanges,
   )
+  const isLoading = useSelector((state) => state.activity.allIsLoading)
 
   const { typesAccess } = useSelector((state) => state.type)
   const { anchorElementId } = useSelector((state) => state.activity)

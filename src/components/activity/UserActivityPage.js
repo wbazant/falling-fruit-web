@@ -14,8 +14,11 @@ const UserActivityPage = () => {
   let { userId } = useParams()
   userId = parseInt(userId)
 
-  const { locationChanges = [], isLoading = true } = useSelector(
-    (state) => state.activity.users[userId] || {},
+  const locationChanges = useSelector(
+    (state) => state.activity.userLocationChanges[userId] || [],
+  )
+  const isLoading = useSelector(
+    (state) => state.activity.userIsLoading[userId] || true,
   )
 
   const { t } = useTranslation()
