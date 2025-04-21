@@ -68,7 +68,13 @@ const ActivityPage = () => {
     }
   }, [dispatch, changesReady])
 
-  const groupedData = transformActivityData(changes, typesAccess)
+  const { i18n } = useTranslation()
+  const groupedData = transformActivityData(
+    changes,
+    typesAccess,
+    t,
+    i18n.language,
+  )
 
   return (
     <InfoPage>

@@ -22,7 +22,7 @@ const UserActivityPage = () => {
   )
   const changes = changesByUser[userId]
 
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const { typesAccess } = useSelector((state) => state.type)
 
@@ -48,9 +48,15 @@ const UserActivityPage = () => {
     <InfoPage>
       <h1>{t('pages.changes.recent_changes')}</h1>
       {changes !== undefined &&
-        transformActivityData(changes, typesAccess).map((period) => (
-          <ChangesPeriod key={period.daysAgo} period={period} userId={userId} />
-        ))}
+        transformActivityData(changes, typesAccess, t, i18n.language).map(
+          (period) => (
+            <ChangesPeriod
+              key={period.daysAgo}
+              period={period}
+              userId={userId}
+            />
+          ),
+        )}
       {changes === undefined && <SkeletonLoader count={5} />}
     </InfoPage>
   )

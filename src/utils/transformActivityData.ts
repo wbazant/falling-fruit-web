@@ -1,3 +1,4 @@
+import { formatISOString } from '../components/entry/textFormatters'
 import { components } from './apiSchema'
 import { TypesAccess } from './localizedTypes'
 
@@ -29,6 +30,7 @@ interface ActivityGroup {
 interface TimePeriodGroup {
   daysAgo: number
   date: string
+  formattedDate: string
   activities: ActivityGroup[]
 }
 
@@ -38,9 +40,32 @@ function getDaysAgo(date: Date): number {
   return Math.floor(hoursAgo / 24)
 }
 
+function formatPeriodName(
+  daysAgo: number,
+  date: string,
+  t: Function,
+  language: string,
+): string {
+  if (daysAgo <= 14) {
+    if (daysAgo === 0) {
+      return t('time.last_24_hours')
+    } else if (daysAgo === 1) {
+      const time = t('time.days.one', { count: daysAgo })
+      return t('time.time_ago', { time })
+    } else {
+      const time = t('time.days.other', { count: daysAgo })
+      return t('time.time_ago', { time })
+    }
+  } else {
+    return formatISOString(date, language)
+  }
+}
+
 export function transformActivityData(
   changes: components['schemas']['LocationChange'][],
   typesAccess: TypesAccess,
+  t?: Function,
+  language?: string,
 ): TimePeriodGroup[] {
   // Group changes by time period
   const changesByDate = changes.reduce(
@@ -145,9 +170,14 @@ export function transformActivityData(
       group.edited = Array.from(uniqueEdits.values())
     })
 
+    const daysAgoNum = parseInt(daysAgo)
     return {
-      daysAgo: parseInt(daysAgo),
+      daysAgo: daysAgoNum,
       date: periodDate,
+      formattedDate:
+        t && language
+          ? formatPeriodName(daysAgoNum, periodDate, t, language)
+          : '',
       activities: Array.from(groupedActivities.values()),
     }
   })
