@@ -84,15 +84,20 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
           />
         )}
       </div>
-      {transformActivityData(changes, typesAccess, t, i18n.language).map(
-        (period) => (
-          <ChangesPeriod
-            key={period.formattedDate}
-            period={period}
-            userId={userId}
-          />
+      {transformActivityData(
+        changes.filter((change) =>
+          change.type_ids.some((typeId) => selectedTypes.includes(typeId)),
         ),
-      )}
+        typesAccess,
+        t,
+        i18n.language,
+      ).map((period) => (
+        <ChangesPeriod
+          key={period.formattedDate}
+          period={period}
+          userId={userId}
+        />
+      ))}
     </>
   )
 }
