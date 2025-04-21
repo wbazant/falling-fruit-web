@@ -75,11 +75,15 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   const filteredChanges = changes.filter((change) =>
     change.type_ids.some((typeId) => selectedTypes.includes(typeId)),
   )
+  const uniqueFilteredLocations = filteredChanges
+    ? new Set(changes.map((change) => change.location_id)).size
+    : 0
 
   console.log('Activity stats:', {
     totalChanges: changes.length,
     filteredChanges: filteredChanges.length,
     uniqueLocations: uniqueLocations,
+    uniqueFilteredLocations,
   })
 
   return (
