@@ -60,6 +60,11 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   }, {})
   const types = Object.keys(countsById).map(Number)
 
+  // Count unique locations
+  const uniqueLocations = changes
+    ? new Set(changes.map((change) => change.location_id)).size
+    : 0
+
   // Initialize selected types when types are first loaded
   useEffect(() => {
     if (types.length > 0 && selectedTypes.length === 0) {
@@ -70,6 +75,13 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   const filteredChanges = changes.filter((change) =>
     change.type_ids.some((typeId) => selectedTypes.includes(typeId)),
   )
+
+  console.log('Activity stats:', {
+    totalChanges: changes.length,
+    filteredChanges: filteredChanges.length,
+    uniqueLocations: uniqueLocations,
+  })
+
   return (
     <>
       <div className="activity-stats">
