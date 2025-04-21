@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
@@ -24,7 +24,7 @@ const TreeSelectTitle = styled.h4`
   margin-bottom: 10px;
 `
 
-const TypeDistributionTree = ({ typesAccess, countsById, types }) => {
+const TypeDistributionTree = ({ typesAccess, countsById, types, onChange }) => {
   const { t } = useTranslation()
   console.log(countsById, types)
 
@@ -43,28 +43,33 @@ const TypeDistributionTree = ({ typesAccess, countsById, types }) => {
   return (
     <TreeSelectContainer>
       <TreeSelectTitle>{t('pages.changes.type_distribution')}</TreeSelectTitle>
-      <TreeSelect
-        types={types}
-        onChange={() => void 0}
-        selectTree={selectTree}
-      />
+      <TreeSelect types={types} onChange={onChange} selectTree={selectTree} />
     </TreeSelectContainer>
   )
 }
 
 const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   const { t, i18n } = useTranslation()
+  const [selectedTypes, setSelectedTypes] = useState([])
 
-  if (changes === undefined) {
-    return <SkeletonLoader count={5} />
-  }
-
-  const typeCounts = calculateTypeCountsFromChanges(changes)
+  // Move calculations and hooks before any conditional returns
+  const typeCounts = changes ? calculateTypeCountsFromChanges(changes) : []
   const countsById = typeCounts.reduce((acc, { id, count }) => {
     acc[id] = count
     return acc
   }, {})
   const types = Object.keys(countsById).map(Number)
+
+  // Initialize selected types when types are first loaded
+  useEffect(() => {
+    if (types.length > 0 && selectedTypes.length === 0) {
+      setSelectedTypes([...types])
+    }
+  }, [types, selectedTypes.length])
+
+  if (changes === undefined) {
+    return <SkeletonLoader count={5} />
+  }
 
   return (
     <>
@@ -74,7 +79,8 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
           <TypeDistributionTree
             typesAccess={typesAccess}
             countsById={countsById}
-            types={types}
+            types={selectedTypes}
+            onChange={setSelectedTypes}
           />
         )}
       </div>
