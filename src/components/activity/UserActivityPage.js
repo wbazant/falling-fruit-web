@@ -67,10 +67,9 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     }
   }, [types, selectedTypes.length])
 
-  if (changes === undefined) {
-    return <SkeletonLoader count={5} />
-  }
-
+  const filteredChanges = changes.filter((change) =>
+    change.type_ids.some((typeId) => selectedTypes.includes(typeId)),
+  )
   return (
     <>
       <div className="activity-stats">
@@ -85,9 +84,7 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
         )}
       </div>
       {transformActivityData(
-        changes.filter((change) =>
-          change.type_ids.some((typeId) => selectedTypes.includes(typeId)),
-        ),
+        filteredChanges,
         typesAccess,
         t,
         i18n.language,
@@ -137,11 +134,14 @@ const UserActivityPage = () => {
   return (
     <InfoPage>
       <h1>{t('pages.changes.recent_changes')}</h1>
-      <UserActivityDisplay
-        changes={changes}
-        userId={userId}
-        typesAccess={typesAccess}
-      />
+      {changes !== undefined && (
+        <UserActivityDisplay
+          changes={changes}
+          userId={userId}
+          typesAccess={typesAccess}
+        />
+      )}
+      {changes === undefined && <SkeletonLoader count={5} />}
     </InfoPage>
   )
 }
