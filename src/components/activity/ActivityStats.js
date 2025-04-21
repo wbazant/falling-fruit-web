@@ -1,10 +1,22 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import styled from 'styled-components'
+
+import buildSelectTree from '../../utils/buildSelectTree'
+import TreeSelect from '../filter/TreeSelect'
 
 const TypesList = styled.div`
   margin-top: 10px;
   font-size: 0.9em;
+`
+
+const TreeSelectContainer = styled.div`
+  margin-top: 20px;
+`
+
+const TreeSelectTitle = styled.h4`
+  margin-bottom: 10px;
 `
 
 const TypeItem = styled.span`
@@ -30,39 +42,46 @@ const CommonTypesTitle = styled.div`
  * Component to display statistics about user activity changes
  * Shows counts of added, edited, and visited locations
  * Also displays up to three most common types in added locations
+ * Includes a TreeSelect component to visualize type distribution
  */
-const ActivityStats = ({ activities }) => {
+const ActivityStats = ({ stats, mostCommonTypes, transformedActivities }) => {
   const { t } = useTranslation()
+  const { typesAccess } = useSelector((state) => state.type)
 
-  // Calculate totals across all activities
-  const stats = activities.reduce(
-    (totals, activity) => {
-      totals.added += activity.added.length
-      totals.edited += activity.edited.length
-      totals.visited += activity.visited.length
-      return totals
-    },
-    { added: 0, edited: 0, visited: 0 },
-  )
+  // Calculate countsById from the activities data
+  const countsById = useMemo(() => {
+    const counts = {}
 
-  // Extract all types from added locations
-  const typeFrequency = {}
-  activities.forEach((activity) => {
-    activity.added.forEach((location) => {
-      location.types.forEach((type) => {
-        const typeName = type.commonName || type.scientificName
-        if (typeName) {
-          typeFrequency[typeName] = (typeFrequency[typeName] || 0) + 1
-        }
+    transformedActivities.forEach((activity) => {
+      activity.added.forEach((location) => {
+        location.types.forEach((type) => {
+          counts[type.id] = (counts[type.id] || 0) + 1
+        })
       })
     })
-  })
 
-  // Sort types by frequency and get top 3
-  const mostCommonTypes = Object.entries(typeFrequency)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map((entry) => ({ name: entry[0], count: entry[1] }))
+    return counts
+  }, [transformedActivities])
+  console.log(countsById)
+
+  // Get all type IDs that appear in the data
+  const types = useMemo(
+    () => Object.keys(countsById).map((id) => parseInt(id)),
+    [countsById],
+  )
+
+  // Build the select tree with the calculated data
+  const { tree: selectTree } = useMemo(
+    () =>
+      buildSelectTree(
+        typesAccess,
+        countsById,
+        false, // showOnlyOnMap
+        '', // searchValue
+        types, // selectedTypes
+      ),
+    [typesAccess, countsById, types],
+  )
 
   return (
     <div className="activity-stats">
@@ -95,6 +114,19 @@ const ActivityStats = ({ activities }) => {
             ))}
           </TypesList>
         </>
+      )}
+
+      {Object.keys(countsById).length > 0 && !typesAccess.isEmpty && (
+        <TreeSelectContainer>
+          <TreeSelectTitle>
+            {t('pages.changes.type_distribution')}
+          </TreeSelectTitle>
+          <TreeSelect
+            types={types}
+            onChange={() => void 0}
+            selectTree={selectTree}
+          />
+        </TreeSelectContainer>
       )}
     </div>
   )
