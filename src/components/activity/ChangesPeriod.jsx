@@ -152,15 +152,15 @@ const ChangesPeriod = ({ period, userId }) => {
     () =>
       dispatch(
         setLastBrowsedSection({
-          id: period.daysAgo.toString(),
+          id: period.formattedDate.toString(),
           userId: userId,
         }),
       ),
-    [dispatch, period.daysAgo, userId],
+    [dispatch, period.formattedDate, userId],
   )
 
   return (
-    <div id={period.daysAgo}>
+    <div id={period.formattedDate}>
       <h3>{period.formattedDate}</h3>
       <ListChanges>
         {period.activities.map((activity, index) => (
