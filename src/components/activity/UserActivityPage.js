@@ -9,6 +9,7 @@ import {
 } from '../../redux/activitySlice'
 import { transformActivityData } from '../../utils/transformActivityData'
 import { InfoPage } from '../ui/PageTemplate'
+import ActivityStats from './ActivityStats'
 import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
 
@@ -47,16 +48,27 @@ const UserActivityPage = () => {
   return (
     <InfoPage>
       <h1>{t('pages.changes.recent_changes')}</h1>
-      {changes !== undefined &&
-        transformActivityData(changes, typesAccess, t, i18n.language).map(
-          (period) => (
-            <ChangesPeriod
-              key={period.formattedDate}
-              period={period}
-              userId={userId}
-            />
-          ),
-        )}
+      {changes !== undefined && (
+        <>
+          <ActivityStats
+            activities={transformActivityData(
+              changes,
+              typesAccess,
+              t,
+              i18n.language,
+            ).flatMap((period) => period.activities)}
+          />
+          {transformActivityData(changes, typesAccess, t, i18n.language).map(
+            (period) => (
+              <ChangesPeriod
+                key={period.formattedDate}
+                period={period}
+                userId={userId}
+              />
+            ),
+          )}
+        </>
+      )}
       {changes === undefined && <SkeletonLoader count={5} />}
     </InfoPage>
   )
