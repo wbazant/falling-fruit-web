@@ -146,19 +146,23 @@ const ActivityTextComponent = ({
   )
 }
 
-const formatPeriodName = (daysAgo, t) => {
-  if (daysAgo === 0) {
-    return t('time.last_24_hours')
-  } else if (daysAgo === 1) {
-    const time = t('time.days.one', { count: daysAgo })
-    return t('time.time_ago', { time })
+const formatPeriodName = (daysAgo, date, t, language) => {
+  if (daysAgo <= 14) {
+    if (daysAgo === 0) {
+      return t('time.last_24_hours')
+    } else if (daysAgo === 1) {
+      const time = t('time.days.one', { count: daysAgo })
+      return t('time.time_ago', { time })
+    } else {
+      const time = t('time.days.other', { count: daysAgo })
+      return t('time.time_ago', { time })
+    }
   } else {
-    const time = t('time.days.other', { count: daysAgo })
-    return t('time.time_ago', { time })
+    return formatISOString(date, language)
   }
 }
 
-const ChangesPeriod = ({ period, userId, useCalendarDates = false }) => {
+const ChangesPeriod = ({ period, userId }) => {
   const dispatch = useDispatch()
   const isDesktop = useIsDesktop()
   const onClickLink = useCallback(
@@ -175,11 +179,7 @@ const ChangesPeriod = ({ period, userId, useCalendarDates = false }) => {
 
   return (
     <div id={period.daysAgo}>
-      <h3>
-        {useCalendarDates
-          ? formatISOString(period.date, i18n.language)
-          : formatPeriodName(period.daysAgo, t)}
-      </h3>
+      <h3>{formatPeriodName(period.daysAgo, period.date, t, i18n.language)}</h3>
       <ListChanges>
         {period.activities.map((activity, index) => (
           <ListItem key={index} isDesktop={isDesktop}>
