@@ -86,6 +86,9 @@
     "by_author": "av {{author}}",
     "description": "Beskrivning",
     "email": "Email",
+    "locations": {
+      "other": "Platser"
+    },
     "logout": "Utloggning",
     "map": "Karta",
     "name": "Namn",
@@ -253,7 +256,6 @@
       "imported_on": "Importerad den {{date}}",
       "intro_html": "Falling Fruit strävar efter att vara den mest omfattande och öppna geografiska databasen över ätbara växter i stadsmiljö. Medan våra användare utforskar, redigerar och lägger till platser med hjälp av vår <a href=\"/\">karta</a>, genomsöker vi den kända världen efter befintliga dataset och importerar dem direkt till <a href=\"/data\">databasen</a>, och förenar därmed insatserna från matletare, skogsbrukare och freeganare överallt. Om du känner till ett dataset som vi har missat, vänligen <a href=\"mailto:info@fallingfruit.org\">meddela oss</a>! Du kan också hjälpa oss med importprocessen genom att formatera data med hjälp av vår <a href=\"https://docs.google.com/spreadsheet/ccc?key=0AiHNFwLuWHvtdGVPamU2M0FZNFhpVTVSNXUtN3ZjRmc&usp=sharing\">importmall</a>. Observera att eftersom importer måste utföras manuellt kommer alla ändringar i originaldata som görs efter importen inte att återspeglas på Falling Fruit.",
       "link": "Länk",
-      "locations": "Platser",
       "table_info": "Varje dataset listas med namn, antal platser och importdatum. Genom att expandera varje rad visas ytterligare detaljer om data, importprocessen och licensen som styr hur data får användas.",
       "type": "Typ",
       "types_of_data": "Dataset som importeras till Falling Fruit faller i två huvudkategorier. \"Gemenskapskartor\" byggs av matletare och freeganare när de utforskar sina områden efter saker att äta. Vi är tacksamma för de hårt arbetande medborgar-kartograferna som har sammanställt dessa data. \"Trädinventeringar\" sammanställs av städer, universitet och andra institutioner som vill dokumentera och ta hand om sina träd bättre. Vi utvinner dessa omfattande dataset för matproducerande arter och lägger till dem på kartan. För att hjälpa oss kartlägga fruktträden i ditt område, kontakta din skola eller stad och uppmana dem att dela sin trädinventering med oss."

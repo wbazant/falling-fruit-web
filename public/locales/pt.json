@@ -86,6 +86,9 @@
     "by_author": "por {{author}}",
     "description": "Descrição",
     "email": "Email",
+    "locations": {
+      "other": "Locais"
+    },
     "logout": "Sair",
     "map": "Mapa",
     "name": "Nome",
@@ -253,7 +256,6 @@
       "imported_on": "Importado em {{date}}",
       "intro_html": "Falling Fruit aspira a ser o mais abrangente conjunto aberto de dados geográficos  de alimentos urbanos. Enquanto nossos usuários explorarem, editarem e adicionarem locais, usando o nosso <a href=\"/\">mapa</a>, nós procuramos o universo conhecido de conjuntos de dados pré-existentes e os importamos diretamente no <a href=\"/data\">banco de dados</a>, unindo os esforços de coletores, povos da floresta e freegans em todos os lugares. Se você souber de um conjunto de dados que nao encontramos, por favor, <a href=\"mailto:info@fallingfruit.org\">avise-nos</a> ! Você também pode nos ajudar com o processo de importação, formatando os dados usando <a href=\"https://docs.google.com/spreadsheet/ccc?key=0AiHNFwLuWHvtdGVPamU2M0FZNFhpVTVSNXUtN3ZjRmc&usp=sharing\">modelo de importação</a>. Note que desde que as importações devem ser executadas manualmente, as alterações aos dados originais não estão refletidos na Falling Fruit.",
       "link": "Link",
-      "locations": "Locais",
       "table_info": "Cada conjunto de dados é listado por nome, número de locais, e data de importação. Expandindo cada linha revela mais detalhes sobre os dados originais, o processo de importação, e a licença que rege como podem ser utilizados os dados.",
       "type": "Tipo",
       "types_of_data": "Os conjuntos de dados importados no Falling Fruit entram em duas categorias principais. \"Mapas comunitários\" são construídas por coletores e freegans enquanto procuram alimentos em suas comunidades. Estamos em dívida com os cidadãos-cartógrafos que compilaram os dados. \"Inventários de árvores\" são compilados por munícipios, universidades e outras instituições que desejam documentar melhor e cuidar de suas árvores. Nós garimpamos esses vastos conjuntos de dados para espécies produtoras de alimentos e os adicionamos ao mapa. Para nos ajudar a mapear sua comunidade, entre em contato com sua escola ou cidade instando-os a partilhar o seu inventário de árvores com a gente."

@@ -21,25 +21,19 @@ const ActivityStats = ({ activities }) => {
 
   return (
     <div className="activity-stats">
-      <h3>{t('pages.changes.activity_summary')}</h3>
+      <h3>{t('glossary.locations.other')}</h3>
       <div className="stats-container">
         <div className="stat-item">
           <span className="stat-value">{stats.added}</span>
-          <span className="stat-label">
-            {t('pages.changes.locations_added')}
-          </span>
+          <span className="stat-label">{t('pages.changes.type.added')}</span>
         </div>
         <div className="stat-item">
           <span className="stat-value">{stats.edited}</span>
-          <span className="stat-label">
-            {t('pages.changes.locations_edited')}
-          </span>
+          <span className="stat-label">{t('pages.changes.type.edited')}</span>
         </div>
         <div className="stat-item">
           <span className="stat-value">{stats.visited}</span>
-          <span className="stat-label">
-            {t('pages.changes.locations_visited')}
-          </span>
+          <span className="stat-label">{t('pages.changes.type.visited')}</span>
         </div>
       </div>
     </div>

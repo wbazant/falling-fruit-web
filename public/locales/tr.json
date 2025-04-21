@@ -86,6 +86,9 @@
     "by_author": "Yazar {{author}}",
     "description": "Açıklama",
     "email": "E-posta",
+    "locations": {
+      "other": "Konumlar"
+    },
     "logout": "Çıkış Yap",
     "map": "Harita",
     "name": "İsim",
@@ -253,7 +256,6 @@
       "imported_on": "{{date}} tarihinde içe aktarıldı",
       "intro_html": "Falling Fruit, kentsel yenilebilir ürünlerin en kapsamlı ve açık coğrafi veri seti olmayı hedefliyor. Kullanıcılarımız <a href=\"/\">harita</a> üzerinde keşfeder, düzenler ve yeni konumlar eklerken, biz de mevcut veri setlerini tarıyor ve doğrudan <a href=\"/data\">veritabanına</a> aktararak, dünyanın her yerindeki toplayıcıların, ormancıların ve freegan'ların çabalarını birleştiriyoruz. Gözden kaçırdığımız bir veri seti biliyorsanız, lütfen <a href=\"mailto:info@fallingfruit.org\">bize bildirin</a>! Ayrıca <a href=\"https://docs.google.com/spreadsheet/ccc?key=0AiHNFwLuWHvtdGVPamU2M0FZNFhpVTVSNXUtN3ZjRmc&usp=sharing\">içe aktarma şablonunu</a> kullanarak verileri biçimlendirerek içe aktarma sürecine yardımcı olabilirsiniz. İçe aktarmaların manuel olarak yapılması gerektiğinden, içe aktarma sonrasında orijinal verilerde yapılan tüm değişiklikler Falling Fruit'te yansıtılmaz.",
       "link": "Bağlantı",
-      "locations": "Konumlar",
       "table_info": "Her veri seti isim, konum sayısı ve içe aktarma tarihi ile listelenir. Her satırı genişletmek, veriler, içe aktarma süreci ve verilerin nasıl kullanılabileceğini düzenleyen lisans hakkında daha fazla ayrıntı gösterir.",
       "type": "Tür",
       "types_of_data": "Falling Fruit'e aktarılan veri setleri iki ana kategoriye ayrılır. \"Topluluk haritaları\", toplayıcılar ve freegan'lar tarafından toplulukları içinde yiyecek ararken oluşturulur. Bu verileri derleyen özverili vatandaş-kartograflarına minnettarız. \"Ağaç envanterleri\", şehirler, üniversiteler ve diğer kurumlar tarafından ağaçlarını daha iyi belgelemek ve bakımını yapmak için derlenir. Bu geniş veri setlerini gıda üreten türler için tarayıp haritaya ekliyoruz. Mahallenizin meyve ağaçlarını haritalamamıza yardımcı olmak için, okulunuz veya şehrinizle iletişime geçerek ağaç envanterlerini bizimle paylaşmaları için teşvik edin."
