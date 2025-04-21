@@ -52,6 +52,45 @@ const TypeDistributionTree = ({ typesAccess, countsById, types }) => {
   )
 }
 
+const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
+  const { t, i18n } = useTranslation()
+
+  if (changes === undefined) {
+    return <SkeletonLoader count={5} />
+  }
+
+  const typeCounts = calculateTypeCountsFromChanges(changes)
+  const countsById = typeCounts.reduce((acc, { id, count }) => {
+    acc[id] = count
+    return acc
+  }, {})
+  const types = Object.keys(countsById).map(Number)
+
+  return (
+    <>
+      <div className="activity-stats">
+        <h3>{t('glossary.locations.other')}</h3>
+        {Object.keys(countsById).length > 0 && !typesAccess.isEmpty && (
+          <TypeDistributionTree
+            typesAccess={typesAccess}
+            countsById={countsById}
+            types={types}
+          />
+        )}
+      </div>
+      {transformActivityData(changes, typesAccess, t, i18n.language).map(
+        (period) => (
+          <ChangesPeriod
+            key={period.formattedDate}
+            period={period}
+            userId={userId}
+          />
+        ),
+      )}
+    </>
+  )
+}
+
 const UserActivityPage = () => {
   const dispatch = useDispatch()
   let { userId } = useParams()
@@ -62,7 +101,7 @@ const UserActivityPage = () => {
   )
   const changes = changesByUser[userId]
 
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
 
   const { typesAccess } = useSelector((state) => state.type)
 
@@ -87,41 +126,11 @@ const UserActivityPage = () => {
   return (
     <InfoPage>
       <h1>{t('pages.changes.recent_changes')}</h1>
-      {changes !== undefined && (
-        <>
-          {(() => {
-            const typeCounts = calculateTypeCountsFromChanges(changes)
-            const countsById = typeCounts.reduce((acc, { id, count }) => {
-              acc[id] = count
-              return acc
-            }, {})
-            const types = Object.keys(countsById).map(Number)
-
-            return (
-              <div className="activity-stats">
-                <h3>{t('glossary.locations.other')}</h3>
-                {Object.keys(countsById).length > 0 && !typesAccess.isEmpty && (
-                  <TypeDistributionTree
-                    typesAccess={typesAccess}
-                    countsById={countsById}
-                    types={types}
-                  />
-                )}
-              </div>
-            )
-          })()}
-          {transformActivityData(changes, typesAccess, t, i18n.language).map(
-            (period) => (
-              <ChangesPeriod
-                key={period.formattedDate}
-                period={period}
-                userId={userId}
-              />
-            ),
-          )}
-        </>
-      )}
-      {changes === undefined && <SkeletonLoader count={5} />}
+      <UserActivityDisplay
+        changes={changes}
+        userId={userId}
+        typesAccess={typesAccess}
+      />
     </InfoPage>
   )
 }
