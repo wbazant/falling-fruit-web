@@ -11,6 +11,7 @@ import {
 import { calculateTypeCountsFromChanges } from '../../utils/activityTypeCounts'
 import buildSelectTree from '../../utils/buildSelectTree'
 import { transformActivityData } from '../../utils/transformActivityData'
+import FilterButtons from '../filter/FilterButtons'
 import TreeSelect from '../filter/TreeSelect'
 import { InfoPage } from '../ui/PageTemplate'
 import ChangesPeriod from './ChangesPeriod'
@@ -24,11 +25,18 @@ const TreeSelectTitle = styled.h4`
   margin-bottom: 10px;
 `
 
+const TreeFiltersContainer = styled.div`
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  /* Provide vertical space when buttons wrap over multiple lines */
+  line-height: 1.5rem;
+`
+
 const TypeDistributionTree = ({ typesAccess, countsById, types, onChange }) => {
   const { t } = useTranslation()
   console.log(countsById, types)
 
-  const { tree: selectTree } = useMemo(
+  const { tree: selectTree, visibleTypeIds } = useMemo(
     () =>
       buildSelectTree(
         typesAccess,
@@ -43,6 +51,26 @@ const TypeDistributionTree = ({ typesAccess, countsById, types, onChange }) => {
   return (
     <TreeSelectContainer>
       <TreeSelectTitle>{t('pages.changes.type_distribution')}</TreeSelectTitle>
+      <TreeFiltersContainer>
+        <FilterButtons
+          onSelectAllClick={() => {
+            const newSelection = [...new Set([...types, ...visibleTypeIds])]
+            onChange(newSelection)
+          }}
+          onDeselectAllClick={() => {
+            const remainingSelection = types.filter(
+              (typeId) => !visibleTypeIds.some((t) => t === typeId),
+            )
+            onChange(remainingSelection)
+          }}
+          isSelectAllDisabled={visibleTypeIds.every((typeId) =>
+            types.includes(typeId),
+          )}
+          isDeselectAllDisabled={visibleTypeIds.every(
+            (typeId) => !types.includes(typeId),
+          )}
+        />
+      </TreeFiltersContainer>
       <TreeSelect types={types} onChange={onChange} selectTree={selectTree} />
     </TreeSelectContainer>
   )
