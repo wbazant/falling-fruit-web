@@ -62,7 +62,7 @@ const ActivityStats = ({ activities }) => {
   const mostCommonTypes = Object.entries(typeFrequency)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3)
-    .map((entry) => entry[0])
+    .map((entry) => ({ name: entry[0], count: entry[1] }))
 
   return (
     <div className="activity-stats">
@@ -88,8 +88,10 @@ const ActivityStats = ({ activities }) => {
             {t('pages.changes.most_common_types')}
           </CommonTypesTitle>
           <TypesList>
-            {mostCommonTypes.map((typeName, index) => (
-              <TypeItem key={index}>{typeName}</TypeItem>
+            {mostCommonTypes.map((type, index) => (
+              <TypeItem key={index}>
+                {type.name} [{type.count}]
+              </TypeItem>
             ))}
           </TypesList>
         </>
