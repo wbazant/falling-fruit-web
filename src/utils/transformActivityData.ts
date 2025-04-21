@@ -28,7 +28,6 @@ interface ActivityGroup {
 }
 
 interface TimePeriodGroup {
-  daysAgo: number
   date: string
   formattedDate: string
   activities: ActivityGroup[]
@@ -171,13 +170,12 @@ export function transformActivityData(
     })
 
     const daysAgoNum = parseInt(daysAgo)
+    const formattedDate =
+      t && language ? formatPeriodName(daysAgoNum, periodDate, t, language) : ''
+
     return {
-      daysAgo: daysAgoNum,
       date: periodDate,
-      formattedDate:
-        t && language
-          ? formatPeriodName(daysAgoNum, periodDate, t, language)
-          : '',
+      formattedDate,
       activities: Array.from(groupedActivities.values()),
     }
   })

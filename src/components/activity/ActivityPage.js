@@ -81,7 +81,7 @@ const ActivityPage = () => {
       <h1>{t('pages.changes.recent_changes')}</h1>
       {changes.length > 0 &&
         groupedData.map((period) => (
-          <ChangesPeriod key={period.daysAgo} period={period} />
+          <ChangesPeriod key={period.formattedDate} period={period} />
         ))}
       <div ref={loadMoreRef}></div>
       {isLoading && <SkeletonLoader count={changes.length === 0 ? 5 : 1} />}

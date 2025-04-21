@@ -51,7 +51,7 @@ const UserActivityPage = () => {
         transformActivityData(changes, typesAccess, t, i18n.language).map(
           (period) => (
             <ChangesPeriod
-              key={period.daysAgo}
+              key={period.formattedDate}
               period={period}
               userId={userId}
             />
