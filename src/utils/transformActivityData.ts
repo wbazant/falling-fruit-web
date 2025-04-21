@@ -63,8 +63,8 @@ function formatPeriodName(
 export function transformActivityData(
   changes: components['schemas']['LocationChange'][],
   typesAccess: TypesAccess,
-  t?: Function,
-  language?: string,
+  t: Function,
+  language: string,
 ): TimePeriodGroup[] {
   // Calculate formattedDate for each change and group by it
   const changesByFormattedDate = changes.reduce(
@@ -74,10 +74,12 @@ export function transformActivityData(
     ) => {
       const date = new Date(change.created_at)
       const daysAgo = getDaysAgo(date)
-      const formattedDate =
-        t && language
-          ? formatPeriodName(daysAgo, change.created_at, t, language)
-          : change.created_at.split('T')[0]
+      const formattedDate = formatPeriodName(
+        daysAgo,
+        change.created_at,
+        t,
+        language,
+      )
 
       groups[formattedDate] = groups[formattedDate] || []
       groups[formattedDate].push(change)
@@ -85,6 +87,7 @@ export function transformActivityData(
     },
     {},
   )
+  console.log(changesByFormattedDate)
 
   // Transform each time period
   return Object.entries(changesByFormattedDate).map(
@@ -102,7 +105,7 @@ export function transformActivityData(
         const date = change.created_at.split('T')[0]
         const locationKey = change.city
           ? `${change.city},${change.state},${change.country}`
-          : `${change.lat.toFixed(4)},${change.lng.toFixed(4)}`
+          : `${change.lat.toFixed(2)},${change.lng.toFixed(2)}`
         const groupKey = `${change.author}-${locationKey}-${date}`
 
         if (!groupedActivities.has(groupKey)) {
@@ -113,7 +116,7 @@ export function transformActivityData(
               city: change.city,
               state: change.state,
               country: change.country,
-              coordinatesGrid: `${change.lat.toFixed(4)},${change.lng.toFixed(4)}`,
+              coordinatesGrid: `${change.lat.toFixed(2)},${change.lng.toFixed(2)}`,
             },
             date,
             added: [],

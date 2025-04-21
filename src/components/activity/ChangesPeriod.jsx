@@ -1,4 +1,4 @@
-import { Map } from '@styled-icons/boxicons-regular'
+import { MapAlt as Map } from '@styled-icons/boxicons-regular'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
@@ -125,7 +125,10 @@ const ActivityTextComponent = ({
         locationParts.filter(Boolean).join(', ')
       ) : (
         <>
-          <Map style={{ verticalAlign: 'text-top' }} size="1em" />
+          <Map
+            style={{ verticalAlign: 'sub', marginRight: '0.1em' }}
+            size="1em"
+          />
           {location.coordinatesGrid}
         </>
       )}
