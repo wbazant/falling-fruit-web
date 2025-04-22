@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
@@ -9,30 +9,61 @@ import {
   setLastBrowsedSection,
 } from '../../redux/activitySlice'
 import { calculateTypeCountsFromChanges } from '../../utils/activityTypeCounts'
-import buildSelectTree from '../../utils/buildSelectTree'
 import { transformActivityData } from '../../utils/transformActivityData'
 import FilterButtons from '../filter/FilterButtons'
-import TreeSelect from '../filter/TreeSelect'
 import { InfoPage } from '../ui/PageTemplate'
 import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
 
-const TreeSelectContainer = styled.div`
+const TypeFilterContainer = styled.div`
   margin-top: 20px;
 `
 
-const TreeSelectTitle = styled.h4`
+const TypeFilterTitle = styled.h4`
   margin-bottom: 10px;
 `
 
-const TreeFiltersContainer = styled.div`
+const TypeFiltersContainer = styled.div`
   margin-top: 0.5em;
   margin-bottom: 0.5em;
   /* Provide vertical space when buttons wrap over multiple lines */
   line-height: 1.5rem;
 `
 
-const TypeDistributionTree = ({
+const TypeTagsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+`
+
+const TypeTag = styled.button`
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1px solid ${({ theme }) => theme.secondaryBackground};
+  background-color: ${({ $selected, theme }) =>
+    $selected ? theme.transparentBlue : theme.background};
+  color: ${({ theme }) => theme.secondaryText};
+
+  &:hover {
+    background-color: ${({ $selected, theme }) =>
+      $selected ? theme.transparentBlue : theme.secondaryBackground};
+  }
+
+  .count {
+    margin-left: 6px;
+    font-size: 0.8rem;
+    background: ${({ theme }) => theme.secondaryBackground};
+    border-radius: 10px;
+    padding: 2px 6px;
+  }
+`
+
+const TypeFilterTags = ({
   typesAccess,
   countsById,
   types,
@@ -40,24 +71,28 @@ const TypeDistributionTree = ({
   onChange,
 }) => {
   const { t } = useTranslation()
-  console.log(countsById, types)
 
-  const { tree: selectTree, visibleTypeIds } = useMemo(
-    () =>
-      buildSelectTree(
-        typesAccess,
-        countsById,
-        true, // showOnlyOnMap
-        '', // searchValue
-        types, // selectedTypes
-      ),
-    [typesAccess, countsById, types],
-  )
+  // Sort types by count (largest first)
+  const sortedTypes = Object.entries(countsById)
+    .map(([id, count]) => ({
+      id: Number(id),
+      count,
+      name: typesAccess.byId[id]?.name || `Type ${id}`,
+    }))
+    .sort((a, b) => b.count - a.count)
+
+  const toggleType = (typeId) => {
+    if (types.includes(typeId)) {
+      onChange(types.filter((id) => id !== typeId))
+    } else {
+      onChange([...types, typeId])
+    }
+  }
 
   return (
-    <TreeSelectContainer>
-      <TreeSelectTitle>{t('pages.changes.type_distribution')}</TreeSelectTitle>
-      <TreeFiltersContainer>
+    <TypeFilterContainer>
+      <TypeFilterTitle>{t('pages.changes.type_distribution')}</TypeFilterTitle>
+      <TypeFiltersContainer>
         <FilterButtons
           onSelectAllClick={() => {
             onChange(allTypes)
@@ -68,13 +103,24 @@ const TypeDistributionTree = ({
           isSelectAllDisabled={allTypes.every((typeId) =>
             types.includes(typeId),
           )}
-          isDeselectAllDisabled={visibleTypeIds.every(
+          isDeselectAllDisabled={allTypes.every(
             (typeId) => !types.includes(typeId),
           )}
         />
-      </TreeFiltersContainer>
-      <TreeSelect types={types} onChange={onChange} selectTree={selectTree} />
-    </TreeSelectContainer>
+      </TypeFiltersContainer>
+      <TypeTagsContainer>
+        {sortedTypes.map(({ id, count, name }) => (
+          <TypeTag
+            key={id}
+            $selected={types.includes(id)}
+            onClick={() => toggleType(id)}
+          >
+            {name}
+            <span className="count">{count}</span>
+          </TypeTag>
+        ))}
+      </TypeTagsContainer>
+    </TypeFilterContainer>
   )
 }
 
@@ -114,7 +160,7 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
       <div className="activity-stats">
         <h3>{t('glossary.locations.other')}</h3>
         {Object.keys(countsById).length > 0 && !typesAccess.isEmpty && (
-          <TypeDistributionTree
+          <TypeFilterTags
             typesAccess={typesAccess}
             countsById={countsById}
             types={selectedTypes}
