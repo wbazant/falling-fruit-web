@@ -104,10 +104,11 @@ const TypeFilterTags = ({
   types,
   allTypes,
   onChange,
+  searchTerm,
+  onSearchChange,
 }) => {
   const { t } = useTranslation()
   const [visibleCount, setVisibleCount] = useState(5)
-  const [searchTerm, setSearchTerm] = useState('')
 
   // Sort types by count (largest first)
   const sortedTypes = Object.entries(countsById)
@@ -138,7 +139,7 @@ const TypeFilterTags = ({
   }
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value)
+    onSearchChange(e.target.value)
     // Reset visible count when searching
     if (e.target.value) {
       setVisibleCount(filteredTypes.length)
@@ -201,6 +202,7 @@ const TypeFilterTags = ({
 
 const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   const { t, i18n } = useTranslation()
+  const [searchTerm, setSearchTerm] = useState('')
 
   // Move calculations and hooks before any conditional returns
   const typeCounts = changes ? calculateTypeCountsFromChanges(changes) : []
@@ -216,9 +218,35 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     ? new Set(changes.map((change) => change.location_id)).size
     : 0
 
-  const filteredChanges = changes.filter((change) =>
-    change.type_ids.some((typeId) => selectedTypes.includes(typeId)),
-  )
+  // Filter changes based on both type selection and search term
+  const filteredChanges = changes.filter((change) => {
+    // First filter by selected types
+    const matchesSelectedType = change.type_ids.some((typeId) =>
+      selectedTypes.includes(typeId),
+    )
+
+    // If no search term, just use type filter
+    if (!searchTerm) {return matchesSelectedType}
+
+    // If there's a search term, check if it matches location name or type name
+    const searchLower = searchTerm.toLowerCase()
+
+    // Check if location name matches
+    const locationMatches =
+      (change.city && change.city.toLowerCase().includes(searchLower)) ||
+      (change.state && change.state.toLowerCase().includes(searchLower)) ||
+      (change.country && change.country.toLowerCase().includes(searchLower))
+
+    // Check if any type name matches
+    const typeMatches = change.type_ids.some((typeId) => {
+      const type = typesAccess.getType(typeId)
+      return (
+        type.commonName && type.commonName.toLowerCase().includes(searchLower)
+      )
+    })
+
+    return matchesSelectedType && (locationMatches || typeMatches)
+  })
   const uniqueFilteredLocations = filteredChanges
     ? new Set(changes.map((change) => change.location_id)).size
     : 0
@@ -241,6 +269,8 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
             types={selectedTypes}
             allTypes={types}
             onChange={setSelectedTypes}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
           />
         )}
       </div>
