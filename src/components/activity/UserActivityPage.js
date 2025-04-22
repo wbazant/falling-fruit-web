@@ -92,21 +92,6 @@ const TypeFilterTags = ({
     setVisibleCount((prev) => prev + 5)
   }
 
-  const handleSearchChange = (value) => {
-    onSearchChange(value)
-    // Reset visible count when searching
-    if (value) {
-      setVisibleCount(sortedTypes.length)
-    } else {
-      setVisibleCount(5)
-    }
-  }
-
-  const handleClearSearch = () => {
-    onSearchChange('')
-    setVisibleCount(5)
-  }
-
   const visibleTypes = sortedTypes.slice(0, visibleCount)
   const hasMoreToShow = visibleTypes.length < sortedTypes.length
 
@@ -129,12 +114,12 @@ const TypeFilterTags = ({
             {t('common.show_more')}
           </ShowMoreButton>
         )}
-        <ActivitySearchInput
-          value={searchTerm}
-          onChange={handleSearchChange}
-          onClear={handleClearSearch}
-        />
       </TypeTagsContainer>
+      <ActivitySearchInput
+        value={searchTerm}
+        onChange={onSearchChange}
+        onClear={() => onSearchChange('')}
+      />
     </TypeFilterContainer>
   )
 }
