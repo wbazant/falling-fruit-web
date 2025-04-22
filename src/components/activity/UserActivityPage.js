@@ -10,7 +10,6 @@ import {
 } from '../../redux/activitySlice'
 import { calculateTypeCountsFromChanges } from '../../utils/activityTypeCounts'
 import { transformActivityData } from '../../utils/transformActivityData'
-import FilterButtons from '../filter/FilterButtons'
 import Button from '../ui/Button'
 import { InfoPage } from '../ui/PageTemplate'
 import ChangesPeriod from './ChangesPeriod'
@@ -22,13 +21,6 @@ const TypeFilterContainer = styled.div`
 
 const TypeFilterTitle = styled.h4`
   margin-bottom: 10px;
-`
-
-const TypeFiltersContainer = styled.div`
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  /* Provide vertical space when buttons wrap over multiple lines */
-  line-height: 1.5rem;
 `
 
 const TypeTagsContainer = styled.div`
@@ -101,9 +93,6 @@ const ShowMoreButton = styled(Button)`
 const TypeFilterTags = ({
   typesAccess,
   countsById,
-  types,
-  allTypes,
-  onChange,
   searchTerm,
   onSearchChange,
 }) => {
@@ -126,14 +115,6 @@ const TypeFilterTags = ({
       )
     : sortedTypes
 
-  const toggleType = (typeId) => {
-    if (types.includes(typeId)) {
-      onChange(types.filter((id) => id !== typeId))
-    } else {
-      onChange([...types, typeId])
-    }
-  }
-
   const showMoreTags = () => {
     setVisibleCount((prev) => prev + 5)
   }
@@ -154,28 +135,12 @@ const TypeFilterTags = ({
   return (
     <TypeFilterContainer>
       <TypeFilterTitle>{t('pages.changes.type_distribution')}</TypeFilterTitle>
-      <TypeFiltersContainer>
-        <FilterButtons
-          onSelectAllClick={() => {
-            onChange(allTypes)
-          }}
-          onDeselectAllClick={() => {
-            onChange([])
-          }}
-          isSelectAllDisabled={allTypes.every((typeId) =>
-            types.includes(typeId),
-          )}
-          isDeselectAllDisabled={allTypes.every(
-            (typeId) => !types.includes(typeId),
-          )}
-        />
-      </TypeFiltersContainer>
       <TypeTagsContainer>
         {visibleTypes.map(({ id, count, name }) => (
           <TypeTag
             key={id}
-            $selected={types.includes(id)}
-            onClick={() => toggleType(id)}
+            $selected={searchTerm.toLowerCase() === name.toLowerCase()}
+            onClick={() => onSearchChange(name)}
           >
             {name}
             <span className="count">{count}</span>
@@ -210,25 +175,20 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     acc[id] = count
     return acc
   }, {})
-  const types = Object.keys(countsById).map(Number)
-  const [selectedTypes, setSelectedTypes] = useState(types)
 
   // Count unique locations
   const uniqueLocations = changes
     ? new Set(changes.map((change) => change.location_id)).size
     : 0
 
-  // Filter changes based on both type selection and search term
+  // Filter changes based on search term
   const filteredChanges = changes.filter((change) => {
-    // First filter by selected types
-    const matchesSelectedType = change.type_ids.some((typeId) =>
-      selectedTypes.includes(typeId),
-    )
+    // If no search term, show all changes
+    if (!searchTerm) {
+      return true
+    }
 
-    // If no search term, just use type filter
-    if (!searchTerm) {return matchesSelectedType}
-
-    // If there's a search term, check if it matches location name or type name
+    // Check if it matches location name or type name
     const searchLower = searchTerm.toLowerCase()
 
     // Check if location name matches
@@ -245,7 +205,7 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
       )
     })
 
-    return matchesSelectedType && (locationMatches || typeMatches)
+    return locationMatches || typeMatches
   })
   const uniqueFilteredLocations = filteredChanges
     ? new Set(changes.map((change) => change.location_id)).size
@@ -266,9 +226,6 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
           <TypeFilterTags
             typesAccess={typesAccess}
             countsById={countsById}
-            types={selectedTypes}
-            allTypes={types}
-            onChange={setSelectedTypes}
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
           />
