@@ -88,13 +88,6 @@ const TypeFilterTags = ({
     }))
     .sort((a, b) => b.count - a.count)
 
-  // Filter types based on search term
-  const filteredTypes = searchTerm
-    ? sortedTypes.filter((type) =>
-        type.name.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-    : sortedTypes
-
   const showMoreTags = () => {
     setVisibleCount((prev) => prev + 5)
   }
@@ -103,7 +96,7 @@ const TypeFilterTags = ({
     onSearchChange(value)
     // Reset visible count when searching
     if (value) {
-      setVisibleCount(filteredTypes.length)
+      setVisibleCount(sortedTypes.length)
     } else {
       setVisibleCount(5)
     }
@@ -114,8 +107,8 @@ const TypeFilterTags = ({
     setVisibleCount(5)
   }
 
-  const visibleTypes = filteredTypes.slice(0, visibleCount)
-  const hasMoreToShow = visibleTypes.length < filteredTypes.length
+  const visibleTypes = sortedTypes.slice(0, visibleCount)
+  const hasMoreToShow = visibleTypes.length < sortedTypes.length
 
   return (
     <TypeFilterContainer>
