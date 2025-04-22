@@ -11,6 +11,7 @@ import {
 import { calculateTypeCountsFromChanges } from '../../utils/activityTypeCounts'
 import { transformActivityData } from '../../utils/transformActivityData'
 import FilterButtons from '../filter/FilterButtons'
+import Button from '../ui/Button'
 import { InfoPage } from '../ui/PageTemplate'
 import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
@@ -63,18 +64,16 @@ const TypeTag = styled.button`
   }
 `
 
-const ShowMoreButton = styled.button`
-  margin-top: 10px;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  border: 1px solid ${({ theme }) => theme.secondaryBackground};
-  background-color: ${({ theme }) => theme.background};
-  color: ${({ theme }) => theme.secondaryText};
+const ShowMoreButton = styled(Button)`
+  height: 22px;
+  padding: 2px 4px;
+  color: ${({ theme }) => theme.tertiaryText};
+  border: 2px solid ${({ theme }) => theme.tertiaryText};
+  margin-left: 5px;
 
-  &:hover {
-    background-color: ${({ theme }) => theme.secondaryBackground};
+  &:not(:disabled):hover {
+    background-color: ${({ theme }) => theme.tertiaryText};
+    border-color: ${({ theme }) => theme.tertiaryText};
   }
 `
 
@@ -143,7 +142,7 @@ const TypeFilterTags = ({
           </TypeTag>
         ))}
         {hasMoreToShow && (
-          <ShowMoreButton onClick={showMoreTags}>
+          <ShowMoreButton secondary onClick={showMoreTags}>
             {t('common.show_more')}
           </ShowMoreButton>
         )}
