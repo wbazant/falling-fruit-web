@@ -38,3 +38,40 @@ export function calculateTypeCountsFromChanges(locationChanges) {
     count,
   }))
 }
+
+/**
+ * Calculates city counts from location changes
+ *
+ * @param {Array} locationChanges - Array of LocationChange objects
+ * @returns {Array} Array of objects with city name and count properties
+ */
+export function calculateCityCountsFromChanges(locationChanges) {
+  // Group changes by location_id to avoid counting the same location multiple times
+  const locationGroups = {}
+
+  // Process each change to build location groups
+  locationChanges.forEach((change) => {
+    // Skip locations without cities
+    if (!change.city) {return}
+
+    // Store the city for this location
+    locationGroups[change.location_id] = change.city
+  })
+
+  // Count occurrences of each city
+  const cityCounts = {}
+
+  // For each location, add its city to the count
+  Object.values(locationGroups).forEach((city) => {
+    if (!cityCounts[city]) {
+      cityCounts[city] = 0
+    }
+    cityCounts[city]++
+  })
+
+  // Convert to array of {name, count} objects
+  return Object.entries(cityCounts).map(([name, count]) => ({
+    name,
+    count,
+  }))
+}

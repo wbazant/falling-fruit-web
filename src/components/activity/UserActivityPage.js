@@ -8,7 +8,10 @@ import {
   getUserActivity,
   setLastBrowsedSection,
 } from '../../redux/activitySlice'
-import { calculateTypeCountsFromChanges } from '../../utils/activityTypeCounts'
+import {
+  calculateCityCountsFromChanges,
+  calculateTypeCountsFromChanges,
+} from '../../utils/activityTypeCounts'
 import { transformActivityData } from '../../utils/transformActivityData'
 import Button from '../ui/Button'
 import { InfoPage } from '../ui/PageTemplate'
@@ -16,22 +19,22 @@ import ActivitySearchInput from './ActivitySearchInput'
 import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
 
-const TypeFilterContainer = styled.div`
+const FilterContainer = styled.div`
   margin-top: 20px;
 `
 
-const TypeFilterTitle = styled.h4`
+const FilterTitle = styled.h4`
   margin-bottom: 10px;
 `
 
-const TypeTagsContainer = styled.div`
+const TagsContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 10px;
 `
 
-const TypeTag = styled.button`
+const Tag = styled.button`
   display: inline-flex;
   align-items: center;
   padding: 6px 12px;
@@ -57,6 +60,13 @@ const TypeTag = styled.button`
   }
 `
 
+const CategoryLabel = styled.div`
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.tertiaryText};
+  margin-top: 15px;
+  margin-bottom: 5px;
+`
+
 const ShowMoreButton = styled(Button)`
   height: 22px;
   padding: 2px 4px;
@@ -70,17 +80,19 @@ const ShowMoreButton = styled(Button)`
   }
 `
 
-const TypeFilterTags = ({
+const FilterTags = ({
   typesAccess,
-  countsById,
+  typeCountsById,
+  cityCounts,
   searchTerm,
   onSearchChange,
 }) => {
   const { t } = useTranslation()
-  const [visibleCount, setVisibleCount] = useState(5)
+  const [visibleTypeCount, setVisibleTypeCount] = useState(5)
+  const [visibleCityCount, setVisibleCityCount] = useState(5)
 
   // Sort types by count (largest first)
-  const sortedTypes = Object.entries(countsById)
+  const sortedTypes = Object.entries(typeCountsById)
     .map(([id, count]) => ({
       id: Number(id),
       count,
@@ -88,39 +100,79 @@ const TypeFilterTags = ({
     }))
     .sort((a, b) => b.count - a.count)
 
-  const showMoreTags = () => {
-    setVisibleCount((prev) => prev + 5)
+  // Sort cities by count (largest first)
+  const sortedCities = cityCounts.sort((a, b) => b.count - a.count)
+
+  const showMoreTypes = () => {
+    setVisibleTypeCount((prev) => prev + 5)
   }
 
-  const visibleTypes = sortedTypes.slice(0, visibleCount)
-  const hasMoreToShow = visibleTypes.length < sortedTypes.length
+  const showMoreCities = () => {
+    setVisibleCityCount((prev) => prev + 5)
+  }
+
+  const visibleTypes = sortedTypes.slice(0, visibleTypeCount)
+  const hasMoreTypesToShow = visibleTypes.length < sortedTypes.length
+
+  const visibleCities = sortedCities.slice(0, visibleCityCount)
+  const hasMoreCitiesToShow = visibleCities.length < sortedCities.length
 
   return (
-    <TypeFilterContainer>
-      <TypeFilterTitle>{t('pages.changes.type_distribution')}</TypeFilterTitle>
-      <TypeTagsContainer>
-        {visibleTypes.map(({ id, count, name }) => (
-          <TypeTag
-            key={id}
-            $selected={searchTerm.toLowerCase() === name.toLowerCase()}
-            onClick={() => onSearchChange(name)}
-          >
-            {name}
-            <span className="count">{count}</span>
-          </TypeTag>
-        ))}
-        {hasMoreToShow && (
-          <ShowMoreButton secondary onClick={showMoreTags}>
-            {t('common.show_more')}
-          </ShowMoreButton>
-        )}
-      </TypeTagsContainer>
+    <FilterContainer>
+      <FilterTitle>{t('pages.changes.type_distribution')}</FilterTitle>
+
+      {visibleTypes.length > 0 && (
+        <>
+          <CategoryLabel>{t('glossary.types.other')}</CategoryLabel>
+          <TagsContainer>
+            {visibleTypes.map(({ id, count, name }) => (
+              <Tag
+                key={`type-${id}`}
+                $selected={searchTerm.toLowerCase() === name.toLowerCase()}
+                onClick={() => onSearchChange(name)}
+              >
+                {name}
+                <span className="count">{count}</span>
+              </Tag>
+            ))}
+            {hasMoreTypesToShow && (
+              <ShowMoreButton secondary onClick={showMoreTypes}>
+                {t('common.show_more')}
+              </ShowMoreButton>
+            )}
+          </TagsContainer>
+        </>
+      )}
+
+      {visibleCities.length > 0 && (
+        <>
+          <CategoryLabel>{t('glossary.cities.other')}</CategoryLabel>
+          <TagsContainer>
+            {visibleCities.map(({ name, count }) => (
+              <Tag
+                key={`city-${name}`}
+                $selected={searchTerm.toLowerCase() === name.toLowerCase()}
+                onClick={() => onSearchChange(name)}
+              >
+                {name}
+                <span className="count">{count}</span>
+              </Tag>
+            ))}
+            {hasMoreCitiesToShow && (
+              <ShowMoreButton secondary onClick={showMoreCities}>
+                {t('common.show_more')}
+              </ShowMoreButton>
+            )}
+          </TagsContainer>
+        </>
+      )}
+
       <ActivitySearchInput
         value={searchTerm}
         onChange={onSearchChange}
         onClear={() => onSearchChange('')}
       />
-    </TypeFilterContainer>
+    </FilterContainer>
   )
 }
 
@@ -130,10 +182,13 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
 
   // Move calculations and hooks before any conditional returns
   const typeCounts = changes ? calculateTypeCountsFromChanges(changes) : []
-  const countsById = typeCounts.reduce((acc, { id, count }) => {
+  const typeCountsById = typeCounts.reduce((acc, { id, count }) => {
     acc[id] = count
     return acc
   }, {})
+
+  // Calculate city counts
+  const cityCounts = changes ? calculateCityCountsFromChanges(changes) : []
 
   // Count unique locations
   const uniqueLocations = changes
@@ -181,14 +236,16 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     <>
       <div className="activity-stats">
         <h3>{t('glossary.locations.other')}</h3>
-        {Object.keys(countsById).length > 0 && !typesAccess.isEmpty && (
-          <TypeFilterTags
-            typesAccess={typesAccess}
-            countsById={countsById}
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-          />
-        )}
+        {(Object.keys(typeCountsById).length > 0 || cityCounts.length > 0) &&
+          !typesAccess.isEmpty && (
+            <FilterTags
+              typesAccess={typesAccess}
+              typeCountsById={typeCountsById}
+              cityCounts={cityCounts}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+            />
+          )}
       </div>
       {transformActivityData(
         filteredChanges,
