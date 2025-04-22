@@ -32,7 +32,13 @@ const TreeFiltersContainer = styled.div`
   line-height: 1.5rem;
 `
 
-const TypeDistributionTree = ({ typesAccess, countsById, types, onChange }) => {
+const TypeDistributionTree = ({
+  typesAccess,
+  countsById,
+  types,
+  allTypes,
+  onChange,
+}) => {
   const { t } = useTranslation()
   console.log(countsById, types)
 
@@ -54,16 +60,12 @@ const TypeDistributionTree = ({ typesAccess, countsById, types, onChange }) => {
       <TreeFiltersContainer>
         <FilterButtons
           onSelectAllClick={() => {
-            const newSelection = [...new Set([...types, ...visibleTypeIds])]
-            onChange(newSelection)
+            onChange(allTypes)
           }}
           onDeselectAllClick={() => {
-            const remainingSelection = types.filter(
-              (typeId) => !visibleTypeIds.some((t) => t === typeId),
-            )
-            onChange(remainingSelection)
+            onChange([])
           }}
-          isSelectAllDisabled={visibleTypeIds.every((typeId) =>
+          isSelectAllDisabled={allTypes.every((typeId) =>
             types.includes(typeId),
           )}
           isDeselectAllDisabled={visibleTypeIds.every(
@@ -78,7 +80,6 @@ const TypeDistributionTree = ({ typesAccess, countsById, types, onChange }) => {
 
 const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   const { t, i18n } = useTranslation()
-  const [selectedTypes, setSelectedTypes] = useState([])
 
   // Move calculations and hooks before any conditional returns
   const typeCounts = changes ? calculateTypeCountsFromChanges(changes) : []
@@ -87,18 +88,12 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     return acc
   }, {})
   const types = Object.keys(countsById).map(Number)
+  const [selectedTypes, setSelectedTypes] = useState(types)
 
   // Count unique locations
   const uniqueLocations = changes
     ? new Set(changes.map((change) => change.location_id)).size
     : 0
-
-  // Initialize selected types when types are first loaded
-  useEffect(() => {
-    if (types.length > 0 && selectedTypes.length === 0) {
-      setSelectedTypes([...types])
-    }
-  }, [types, selectedTypes.length])
 
   const filteredChanges = changes.filter((change) =>
     change.type_ids.some((typeId) => selectedTypes.includes(typeId)),
@@ -123,6 +118,7 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
             typesAccess={typesAccess}
             countsById={countsById}
             types={selectedTypes}
+            allTypes={types}
             onChange={setSelectedTypes}
           />
         )}
