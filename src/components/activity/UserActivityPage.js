@@ -38,6 +38,27 @@ const TypeTagsContainer = styled.div`
   margin-top: 10px;
 `
 
+const SearchContainer = styled.div`
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+`
+
+const SearchInput = styled.input`
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid ${({ theme }) => theme.secondaryBackground};
+  width: 100%;
+  max-width: 300px;
+  background-color: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.primaryText};
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.primaryColor};
+  }
+`
+
 const TypeTag = styled.button`
   display: inline-flex;
   align-items: center;
@@ -86,6 +107,7 @@ const TypeFilterTags = ({
 }) => {
   const { t } = useTranslation()
   const [visibleCount, setVisibleCount] = useState(5)
+  const [searchTerm, setSearchTerm] = useState('')
 
   // Sort types by count (largest first)
   const sortedTypes = Object.entries(countsById)
@@ -95,6 +117,13 @@ const TypeFilterTags = ({
       name: typesAccess.getType(id).commonName,
     }))
     .sort((a, b) => b.count - a.count)
+
+  // Filter types based on search term
+  const filteredTypes = searchTerm
+    ? sortedTypes.filter((type) =>
+        type.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+    : sortedTypes
 
   const toggleType = (typeId) => {
     if (types.includes(typeId)) {
@@ -108,8 +137,18 @@ const TypeFilterTags = ({
     setVisibleCount((prev) => prev + 5)
   }
 
-  const visibleTypes = sortedTypes.slice(0, visibleCount)
-  const hasMoreToShow = visibleTypes.length < sortedTypes.length
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value)
+    // Reset visible count when searching
+    if (e.target.value) {
+      setVisibleCount(filteredTypes.length)
+    } else {
+      setVisibleCount(5)
+    }
+  }
+
+  const visibleTypes = filteredTypes.slice(0, visibleCount)
+  const hasMoreToShow = visibleTypes.length < filteredTypes.length
 
   return (
     <TypeFilterContainer>
@@ -146,6 +185,15 @@ const TypeFilterTags = ({
             {t('common.show_more')}
           </ShowMoreButton>
         )}
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            placeholder={t('common.search')}
+            value={searchTerm}
+            onChange={handleSearchChange}
+            aria-label={t('common.search')}
+          />
+        </SearchContainer>
       </TypeTagsContainer>
     </TypeFilterContainer>
   )
