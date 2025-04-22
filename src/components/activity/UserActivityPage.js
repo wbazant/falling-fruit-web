@@ -85,7 +85,7 @@ const TypeFilterTags = ({
   onChange,
 }) => {
   const { t } = useTranslation()
-  const [visibleCount, setVisibleCount] = useState(10)
+  const [visibleCount, setVisibleCount] = useState(5)
 
   // Sort types by count (largest first)
   const sortedTypes = Object.entries(countsById)
@@ -105,7 +105,7 @@ const TypeFilterTags = ({
   }
 
   const showMoreTags = () => {
-    setVisibleCount((prev) => prev + 10)
+    setVisibleCount((prev) => prev + 5)
   }
 
   const visibleTypes = sortedTypes.slice(0, visibleCount)
