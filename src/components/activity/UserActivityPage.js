@@ -77,7 +77,7 @@ const TypeFilterTags = ({
     .map(([id, count]) => ({
       id: Number(id),
       count,
-      name: typesAccess.byId[id]?.name || `Type ${id}`,
+      name: typesAccess.getType(id).commonName,
     }))
     .sort((a, b) => b.count - a.count)
 
