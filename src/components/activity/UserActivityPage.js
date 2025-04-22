@@ -96,7 +96,7 @@ const FilterTags = ({
     .map(([id, count]) => ({
       id: Number(id),
       count,
-      name: typesAccess.getType(id).commonName,
+      name: typesAccess.getType(id)?.commonName,
     }))
     .sort((a, b) => b.count - a.count)
 
