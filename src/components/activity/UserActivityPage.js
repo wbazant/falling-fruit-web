@@ -12,6 +12,7 @@ import { calculateTypeCountsFromChanges } from '../../utils/activityTypeCounts'
 import { transformActivityData } from '../../utils/transformActivityData'
 import Button from '../ui/Button'
 import { InfoPage } from '../ui/PageTemplate'
+import ActivitySearchInput from './ActivitySearchInput'
 import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
 
@@ -28,27 +29,6 @@ const TypeTagsContainer = styled.div`
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 10px;
-`
-
-const SearchContainer = styled.div`
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 100%;
-`
-
-const SearchInput = styled.input`
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid ${({ theme }) => theme.secondaryBackground};
-  width: 100%;
-  max-width: 300px;
-  background-color: ${({ theme }) => theme.background};
-  color: ${({ theme }) => theme.primaryText};
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme.primaryColor};
-  }
 `
 
 const TypeTag = styled.button`
@@ -119,14 +99,19 @@ const TypeFilterTags = ({
     setVisibleCount((prev) => prev + 5)
   }
 
-  const handleSearchChange = (e) => {
-    onSearchChange(e.target.value)
+  const handleSearchChange = (value) => {
+    onSearchChange(value)
     // Reset visible count when searching
-    if (e.target.value) {
+    if (value) {
       setVisibleCount(filteredTypes.length)
     } else {
       setVisibleCount(5)
     }
+  }
+
+  const handleClearSearch = () => {
+    onSearchChange('')
+    setVisibleCount(5)
   }
 
   const visibleTypes = filteredTypes.slice(0, visibleCount)
@@ -151,15 +136,11 @@ const TypeFilterTags = ({
             {t('common.show_more')}
           </ShowMoreButton>
         )}
-        <SearchContainer>
-          <SearchInput
-            type="text"
-            placeholder={t('common.search')}
-            value={searchTerm}
-            onChange={handleSearchChange}
-            aria-label={t('common.search')}
-          />
-        </SearchContainer>
+        <ActivitySearchInput
+          value={searchTerm}
+          onChange={handleSearchChange}
+          onClear={handleClearSearch}
+        />
       </TypeTagsContainer>
     </TypeFilterContainer>
   )
