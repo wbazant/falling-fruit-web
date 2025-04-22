@@ -63,6 +63,21 @@ const TypeTag = styled.button`
   }
 `
 
+const ShowMoreButton = styled.button`
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1px solid ${({ theme }) => theme.secondaryBackground};
+  background-color: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.secondaryText};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.secondaryBackground};
+  }
+`
+
 const TypeFilterTags = ({
   typesAccess,
   countsById,
@@ -71,6 +86,7 @@ const TypeFilterTags = ({
   onChange,
 }) => {
   const { t } = useTranslation()
+  const [visibleCount, setVisibleCount] = useState(10)
 
   // Sort types by count (largest first)
   const sortedTypes = Object.entries(countsById)
@@ -88,6 +104,13 @@ const TypeFilterTags = ({
       onChange([...types, typeId])
     }
   }
+
+  const showMoreTags = () => {
+    setVisibleCount((prev) => prev + 10)
+  }
+
+  const visibleTypes = sortedTypes.slice(0, visibleCount)
+  const hasMoreToShow = visibleTypes.length < sortedTypes.length
 
   return (
     <TypeFilterContainer>
@@ -109,7 +132,7 @@ const TypeFilterTags = ({
         />
       </TypeFiltersContainer>
       <TypeTagsContainer>
-        {sortedTypes.map(({ id, count, name }) => (
+        {visibleTypes.map(({ id, count, name }) => (
           <TypeTag
             key={id}
             $selected={types.includes(id)}
@@ -119,6 +142,11 @@ const TypeFilterTags = ({
             <span className="count">{count}</span>
           </TypeTag>
         ))}
+        {hasMoreToShow && (
+          <ShowMoreButton onClick={showMoreTags}>
+            {t('common.show_more')}
+          </ShowMoreButton>
+        )}
       </TypeTagsContainer>
     </TypeFilterContainer>
   )
