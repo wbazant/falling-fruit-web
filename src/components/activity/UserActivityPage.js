@@ -148,14 +148,16 @@ const FilterTags = ({
         <>
           <CategoryLabel>{t('glossary.cities.other')}</CategoryLabel>
           <TagsContainer>
-            {visibleCities.map(({ name, count }) => (
+            {visibleCities.map((city) => (
               <Tag
-                key={`city-${name}`}
-                $selected={searchTerm.toLowerCase() === name.toLowerCase()}
-                onClick={() => onSearchChange(name)}
+                key={`city-${city.city}`}
+                $selected={searchTerm.toLowerCase() === city.city.toLowerCase()}
+                onClick={() => onSearchChange(city.city)}
               >
-                {name}
-                <span className="count">{count}</span>
+                {city.city}
+                {city.state && `, ${city.state}`}
+                {city.country && `, ${city.country}`}
+                <span className="count">{city.count}</span>
               </Tag>
             ))}
             {hasMoreCitiesToShow && (

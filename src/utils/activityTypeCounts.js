@@ -43,7 +43,7 @@ export function calculateTypeCountsFromChanges(locationChanges) {
  * Calculates city counts from location changes
  *
  * @param {Array} locationChanges - Array of LocationChange objects
- * @returns {Array} Array of objects with city name and count properties
+ * @returns {Array} Array of objects with city, state, country and count properties
  */
 export function calculateCityCountsFromChanges(locationChanges) {
   // Group changes by location_id to avoid counting the same location multiple times
@@ -52,26 +52,35 @@ export function calculateCityCountsFromChanges(locationChanges) {
   // Process each change to build location groups
   locationChanges.forEach((change) => {
     // Skip locations without cities
-    if (!change.city) {return}
+    if (!change.city) {
+      return
+    }
 
-    // Store the city for this location
-    locationGroups[change.location_id] = change.city
+    // Store the city, state, and country for this location
+    locationGroups[change.location_id] = {
+      city: change.city,
+      state: change.state || '',
+      country: change.country || '',
+    }
   })
 
-  // Count occurrences of each city
-  const cityCounts = {}
+  // Count occurrences of each city+state+country combination
+  const locationCounts = {}
 
   // For each location, add its city to the count
-  Object.values(locationGroups).forEach((city) => {
-    if (!cityCounts[city]) {
-      cityCounts[city] = 0
+  Object.values(locationGroups).forEach((location) => {
+    const key = `${location.city}|${location.state}|${location.country}`
+    if (!locationCounts[key]) {
+      locationCounts[key] = {
+        city: location.city,
+        state: location.state,
+        country: location.country,
+        count: 0,
+      }
     }
-    cityCounts[city]++
+    locationCounts[key].count++
   })
 
-  // Convert to array of {name, count} objects
-  return Object.entries(cityCounts).map(([name, count]) => ({
-    name,
-    count,
-  }))
+  // Convert to array of location objects with counts
+  return Object.values(locationCounts)
 }
