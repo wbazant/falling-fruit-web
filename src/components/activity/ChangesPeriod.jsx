@@ -110,6 +110,7 @@ const ActivityTextComponent = ({
   userId,
   interactionType,
   onClickLink,
+  hideAuthor,
 }) => {
   const locationParts = [location.city, location.state, location.country]
   const hasLocationInfo = locationParts.filter(Boolean).length > 0
@@ -132,8 +133,8 @@ const ActivityTextComponent = ({
           {location.coordinatesGrid}
         </>
       )}
-      {author && ' — '}
-      {author && (
+      {!hideAuthor && author && ' — '}
+      {!hideAuthor && author && (
         <>
           {userId ? (
             <AuthorLink to={`/profiles/${userId}`} onClick={onClickLink}>
@@ -162,6 +163,9 @@ const ChangesPeriod = ({ period, userId }) => {
     [dispatch, period.formattedDate, userId],
   )
 
+  // If userId is provided, we should hide the author in activity text
+  const hideAuthor = !!userId
+
   return (
     <div id={period.formattedDate}>
       <h3>{period.formattedDate}</h3>
@@ -183,6 +187,7 @@ const ChangesPeriod = ({ period, userId }) => {
                     userId={activity.userId}
                     interactionType={interactionType}
                     onClickLink={onClickLink}
+                    hideAuthor={hideAuthor}
                   />
                 </p>
               ) : null

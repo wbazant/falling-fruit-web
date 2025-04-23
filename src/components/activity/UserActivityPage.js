@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { Link,useParams } from 'react-router-dom'
+import styled from 'styled-components'
 
 import {
   getUserActivity,
@@ -16,6 +17,10 @@ import { InfoPage } from '../ui/PageTemplate'
 import ActivitySearchInput from './ActivitySearchInput'
 import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
+
+const AuthorLink = styled(Link)`
+  color: ${({ theme }) => theme.blue} !important;
+`
 
 const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   const { t, i18n } = useTranslation()
@@ -73,8 +78,16 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     uniqueFilteredLocations,
   })
 
+  // Get the user name from the first change's author field
+  const userName = changes.length > 0 ? changes[0].author : ''
+
   return (
     <>
+      {userName && (
+        <h2>
+          User: <AuthorLink to={`/profiles/${userId}`}>{userName}</AuthorLink>
+        </h2>
+      )}
       <div className="activity-stats">
         <h3>{t('glossary.locations.other')}</h3>
         <ActivitySearchInput
