@@ -22,11 +22,9 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   const [searchTerm, setSearchTerm] = useState('')
 
   // Move calculations and hooks before any conditional returns
-  const typeCounts = changes ? calculateTypeCountsFromChanges(changes) : []
-  const typeCountsById = typeCounts.reduce((acc, { id, count }) => {
-    acc[id] = count
-    return acc
-  }, {})
+  const typeCountsById = changes
+    ? calculateTypeCountsFromChanges(changes, typesAccess)
+    : {}
 
   // Calculate city counts
   const cityCounts = changes ? calculateCityCountsFromChanges(changes) : []

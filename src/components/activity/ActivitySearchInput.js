@@ -74,11 +74,14 @@ const FilterTags = ({
 
   // Sort types by count (largest first)
   const sortedTypes = Object.entries(typeCountsById)
-    .map(([id, count]) => ({
-      id: Number(id),
-      count,
-      name: typesAccess.getType(id)?.commonName,
-    }))
+    .map(([id, count]) => {
+      const type = typesAccess.getType(Number(id))
+      return {
+        id: Number(id),
+        count,
+        name: type?.commonName || type?.scientificName || `Type ${id}`,
+      }
+    })
     .sort((a, b) => b.count - a.count)
 
   // Sort cities by count (largest first)

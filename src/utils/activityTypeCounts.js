@@ -2,9 +2,10 @@
  * Calculates type counts from location changes
  *
  * @param {Array} locationChanges - Array of LocationChange objects
- * @returns {Array} Array of objects with id and count properties
+ * @param {Object} typesAccess - TypesAccess object to get type names
+ * @returns {Object} Object with type IDs as keys and count as values
  */
-export function calculateTypeCountsFromChanges(locationChanges) {
+export function calculateTypeCountsFromChanges(locationChanges, typesAccess) {
   // Group changes by location_id
   const locationGroups = {}
 
@@ -20,23 +21,48 @@ export function calculateTypeCountsFromChanges(locationChanges) {
   })
 
   // Count occurrences of each type_id across all location sets
-  const typeCounts = {}
+  const typeIdCounts = {}
 
   // For each location, add its types to the count
   Object.values(locationGroups).forEach((typeIdSet) => {
     typeIdSet.forEach((typeId) => {
-      if (!typeCounts[typeId]) {
-        typeCounts[typeId] = 0
+      if (!typeIdCounts[typeId]) {
+        typeIdCounts[typeId] = 0
       }
-      typeCounts[typeId]++
+      typeIdCounts[typeId]++
     })
   })
 
-  // Convert to array of {id, count} objects
-  return Object.entries(typeCounts).map(([id, count]) => ({
-    id: Number(id),
-    count,
-  }))
+  // Aggregate by common name (or scientific name if no common name)
+  const typeNameCounts = {}
+  const typeNameToIds = {}
+
+  Object.entries(typeIdCounts).forEach(([id, count]) => {
+    const numId = Number(id)
+    const type = typesAccess.getType(numId)
+
+    if (!type) {return}
+
+    // Use common name if available, otherwise use scientific name
+    const name = type.commonName || type.scientificName || `Type ${numId}`
+
+    if (!typeNameCounts[name]) {
+      typeNameCounts[name] = 0
+      typeNameToIds[name] = numId // Store the first ID we find for this name
+    }
+
+    typeNameCounts[name] += count
+  })
+
+  // Convert back to ID-based counts, but with aggregated values
+  const aggregatedTypeCounts = {}
+
+  Object.entries(typeNameCounts).forEach(([name, count]) => {
+    const id = typeNameToIds[name]
+    aggregatedTypeCounts[id] = count
+  })
+
+  return aggregatedTypeCounts
 }
 
 /**
