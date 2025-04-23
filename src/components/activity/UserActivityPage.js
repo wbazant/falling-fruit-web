@@ -1,8 +1,7 @@
-import { User } from '@styled-icons/boxicons-regular'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import {
   getUserActivity,
@@ -13,15 +12,12 @@ import {
   calculateTypeCountsFromChanges,
 } from '../../utils/activityTypeCounts'
 import { transformActivityData } from '../../utils/transformActivityData'
-import { theme } from '../ui/GlobalStyle'
-import IconBesideText from '../ui/IconBesideText'
 import { InfoPage } from '../ui/PageTemplate'
 import ActivitySearchInput from './ActivitySearchInput'
 import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
 
 const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
-  const user = useSelector((state) => state.auth.user)
   const { t, i18n } = useTranslation()
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -77,22 +73,8 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     uniqueFilteredLocations,
   })
 
-  const userName = changes.length > 0 ? changes[0].author : ''
-
   return (
     <>
-      {userId === user?.id ? (
-        'my activity'
-      ) : (
-        <IconBesideText>
-          <User size={20} />
-          <p>
-            <Link to={`/profiles/${userId}`} style={{ color: theme.blue }}>
-              {userName}
-            </Link>
-          </p>
-        </IconBesideText>
-      )}
       <ActivitySearchInput
         value={searchTerm}
         onChange={setSearchTerm}
@@ -119,6 +101,7 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
 
 const UserActivityPage = () => {
   const dispatch = useDispatch()
+  const user = useSelector((state) => state.auth.user)
   let { userId } = useParams()
   userId = parseInt(userId)
 
@@ -149,9 +132,18 @@ const UserActivityPage = () => {
     }
   }, [dispatch, changesReady, userId])
 
+  const userName = changes?.length > 0 ? changes[0].author : ''
   return (
     <InfoPage>
-      <h2>{t('pages.changes.user_activity')}</h2>
+      <h2>
+        {userId === user?.id ? (
+          t('users.my_activity')
+        ) : (
+          <>
+            {t('glossary.activity')}: {userName}
+          </>
+        )}
+      </h2>
       {changes !== undefined && (
         <UserActivityDisplay
           changes={changes}
