@@ -2,7 +2,7 @@ import { User } from '@styled-icons/boxicons-regular'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import {
   getUserActivity,
@@ -16,7 +16,7 @@ import { transformActivityData } from '../../utils/transformActivityData'
 import IconBesideText from '../ui/IconBesideText'
 import { InfoPage } from '../ui/PageTemplate'
 import ActivitySearchInput from './ActivitySearchInput'
-import ChangesPeriod, { AuthorLink } from './ChangesPeriod'
+import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
 
 const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
@@ -75,6 +75,8 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     uniqueFilteredLocations,
   })
 
+  const userName = changes.length > 0 ? changes[0].author : ''
+
   return (
     <>
       <div className="activity-stats">
@@ -87,6 +89,12 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
           cityCounts={cityCounts}
         />
       </div>
+      <IconBesideText>
+        <User size={20} />
+        <p>
+          <Link to={`/profiles/${userId}`}>{userName}</Link>
+        </p>
+      </IconBesideText>
       {transformActivityData(
         filteredChanges,
         typesAccess,
@@ -135,18 +143,9 @@ const UserActivityPage = () => {
     }
   }, [dispatch, changesReady, userId])
 
-  const userName = changes?.length > 0 ? changes[0].author : ''
-
   return (
     <InfoPage>
       <h2>{t('pages.changes.user_activity')}</h2>
-      <IconBesideText>
-        <User size={20} />
-        <p>
-          {t('locations.overview.added_by', { name: '' })}{' '}
-          <AuthorLink to={`/profiles/${userId}`}>{userName}</AuthorLink>
-        </p>
-      </IconBesideText>
       {changes !== undefined && (
         <UserActivityDisplay
           changes={changes}
