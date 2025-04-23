@@ -21,6 +21,7 @@ import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
 
 const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
+  const user = useSelector((state) => state.auth.user)
   const { t, i18n } = useTranslation()
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -80,14 +81,18 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
 
   return (
     <>
-      <IconBesideText>
-        <User size={20} />
-        <p>
-          <Link to={`/profiles/${userId}`} style={{ color: theme.blue }}>
-            {userName}
-          </Link>
-        </p>
-      </IconBesideText>
+      {userId === user?.id ? (
+        'my activity'
+      ) : (
+        <IconBesideText>
+          <User size={20} />
+          <p>
+            <Link to={`/profiles/${userId}`} style={{ color: theme.blue }}>
+              {userName}
+            </Link>
+          </p>
+        </IconBesideText>
+      )}
       <ActivitySearchInput
         value={searchTerm}
         onChange={setSearchTerm}

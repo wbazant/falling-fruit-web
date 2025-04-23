@@ -83,9 +83,12 @@ const UserProfile = () => {
           </time>
         </p>
       </IconBesideText>
-      <div style={{ marginTop: '20px' }}>
-        <a href={`/changes/${id}`}>Recent changes</a>
-      </div>
+      <IconBesideText>
+        <Calendar color={theme.secondaryText} size={20} />
+        <p>
+          <a href={`/changes/${id}`}>{t('pages.changes.user_activity')}</a>
+        </p>
+      </IconBesideText>
     </Page>
   )
 }
