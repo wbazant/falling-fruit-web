@@ -80,16 +80,6 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
 
   return (
     <>
-      <div className="activity-stats">
-        <ActivitySearchInput
-          value={searchTerm}
-          onChange={setSearchTerm}
-          onClear={() => setSearchTerm('')}
-          typesAccess={typesAccess}
-          typeCountsById={typeCountsById}
-          cityCounts={cityCounts}
-        />
-      </div>
       <IconBesideText>
         <User size={20} />
         <p>
@@ -98,6 +88,14 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
           </Link>
         </p>
       </IconBesideText>
+      <ActivitySearchInput
+        value={searchTerm}
+        onChange={setSearchTerm}
+        onClear={() => setSearchTerm('')}
+        typesAccess={typesAccess}
+        typeCountsById={typeCountsById}
+        cityCounts={cityCounts}
+      />
       {transformActivityData(
         filteredChanges,
         typesAccess,
