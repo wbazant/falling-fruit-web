@@ -388,7 +388,7 @@
     "forgot_password": "Reset your password",
     "joined_on": "Joined on {{date}}",
     "login": "Login",
-    "my_recent_changes": "My recent changes",
+    "my_activity": "My activity",
     "new_email": "New email",
     "new_password": "New password",
     "new_password_confirmation": "New password confirmation",

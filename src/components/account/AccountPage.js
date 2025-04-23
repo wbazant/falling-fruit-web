@@ -90,7 +90,7 @@ const AccountPage = () => {
             <Link to="/users/change-email">{t('users.email_settings')}</Link>
           </div>
           <div style={{ margin: '16px 0' }}>
-            <Link to="/users/changes">{t('users.my_recent_changes')}</Link>
+            <Link to={`/changes/${user.id}`}>{t('users.my_activity')}</Link>
           </div>
           <Button
             onClick={() => {
