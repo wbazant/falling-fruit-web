@@ -13,7 +13,6 @@ import {
   calculateTypeCountsFromChanges,
 } from '../../utils/activityTypeCounts'
 import { transformActivityData } from '../../utils/transformActivityData'
-import Button from '../ui/Button'
 import { InfoPage } from '../ui/PageTemplate'
 import ActivitySearchInput from './ActivitySearchInput'
 import ChangesPeriod from './ChangesPeriod'
@@ -67,17 +66,8 @@ const CategoryLabel = styled.div`
   margin-bottom: 5px;
 `
 
-const ShowMoreButton = styled(Button)`
-  height: 22px;
-  padding: 2px 4px;
-  color: ${({ theme }) => theme.tertiaryText};
-  border: 2px solid ${({ theme }) => theme.tertiaryText};
+const ShowMoreTag = styled(Tag)`
   margin-left: 5px;
-
-  &:not(:disabled):hover {
-    background-color: ${({ theme }) => theme.tertiaryText};
-    border-color: ${({ theme }) => theme.tertiaryText};
-  }
 `
 
 const FilterTags = ({
@@ -136,9 +126,7 @@ const FilterTags = ({
               </Tag>
             ))}
             {hasMoreTypesToShow && (
-              <ShowMoreButton secondary onClick={showMoreTypes}>
-                {t('common.show_more')}
-              </ShowMoreButton>
+              <ShowMoreTag onClick={showMoreTypes}>...</ShowMoreTag>
             )}
           </TagsContainer>
         </>
@@ -161,9 +149,7 @@ const FilterTags = ({
               </Tag>
             ))}
             {hasMoreCitiesToShow && (
-              <ShowMoreButton secondary onClick={showMoreCities}>
-                {t('common.show_more')}
-              </ShowMoreButton>
+              <ShowMoreTag onClick={showMoreCities}>...</ShowMoreTag>
             )}
           </TagsContainer>
         </>
