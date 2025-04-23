@@ -2,7 +2,7 @@ import { User } from '@styled-icons/boxicons-regular'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import {
   getUserActivity,
@@ -16,7 +16,7 @@ import { transformActivityData } from '../../utils/transformActivityData'
 import IconBesideText from '../ui/IconBesideText'
 import { InfoPage } from '../ui/PageTemplate'
 import ActivitySearchInput from './ActivitySearchInput'
-import ChangesPeriod from './ChangesPeriod'
+import ChangesPeriod, { AuthorLink } from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
 
 const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
@@ -144,7 +144,7 @@ const UserActivityPage = () => {
         <User size={20} />
         <p>
           {t('locations.overview.added_by', { name: '' })}{' '}
-          <Link to={`/profiles/${userId}`}>{userName}</Link>
+          <AuthorLink to={`/profiles/${userId}`}>{userName}</AuthorLink>
         </p>
       </IconBesideText>
       {changes !== undefined && (

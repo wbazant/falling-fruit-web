@@ -23,7 +23,7 @@ const formatChangeType = (type, t) => {
   }
 }
 
-const AuthorLink = styled(Link)`
+export const AuthorLink = styled(Link)`
   color: ${({ theme }) => theme.blue} !important;
 `
 
