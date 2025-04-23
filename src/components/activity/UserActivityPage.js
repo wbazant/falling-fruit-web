@@ -143,6 +143,7 @@ const UserActivityPage = () => {
       <IconBesideText>
         <User size={20} />
         <p>
+          {t('locations.overview.added_by', { name: '' })}{' '}
           <Link to={`/profiles/${userId}`}>{userName}</Link>
         </p>
       </IconBesideText>
