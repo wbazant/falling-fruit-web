@@ -1,4 +1,5 @@
 import { SearchAlt2 } from '@styled-icons/boxicons-regular'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
@@ -12,26 +13,188 @@ const SearchContainer = styled.div`
   max-width: 300px;
 `
 
-const ActivitySearchInput = ({ value, onChange, onClear }) => {
+const FilterContainer = styled.div`
+  margin-top: 20px;
+`
+
+const FilterTitle = styled.h4`
+  margin-bottom: 10px;
+`
+
+const TagsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+`
+
+const Tag = styled.button`
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: 1px solid ${({ theme }) => theme.secondaryBackground};
+  background-color: ${({ $selected, theme }) =>
+    $selected ? theme.transparentBlue : theme.background};
+  color: ${({ theme }) => theme.secondaryText};
+
+  &:hover {
+    background-color: ${({ $selected, theme }) =>
+      $selected ? theme.transparentBlue : theme.secondaryBackground};
+  }
+
+  .count {
+    margin-left: 6px;
+    font-size: 0.8rem;
+    background: ${({ theme }) => theme.secondaryBackground};
+    border-radius: 10px;
+    padding: 2px 6px;
+  }
+`
+
+const CategoryLabel = styled.div`
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.tertiaryText};
+  margin-top: 15px;
+  margin-bottom: 5px;
+`
+
+const ShowMoreTag = styled(Tag)`
+  margin-left: 5px;
+`
+
+const FilterTags = ({
+  typesAccess,
+  typeCountsById,
+  cityCounts,
+  searchTerm,
+  onSearchChange,
+}) => {
   const { t } = useTranslation()
+  const [visibleTypeCount, setVisibleTypeCount] = useState(5)
+  const [visibleCityCount, setVisibleCityCount] = useState(5)
+
+  // Sort types by count (largest first)
+  const sortedTypes = Object.entries(typeCountsById)
+    .map(([id, count]) => ({
+      id: Number(id),
+      count,
+      name: typesAccess.getType(id)?.commonName,
+    }))
+    .sort((a, b) => b.count - a.count)
+
+  // Sort cities by count (largest first)
+  const sortedCities = cityCounts.sort((a, b) => b.count - a.count)
+
+  const showMoreTypes = () => {
+    setVisibleTypeCount((prev) => prev + 5)
+  }
+
+  const showMoreCities = () => {
+    setVisibleCityCount((prev) => prev + 5)
+  }
+
+  const visibleTypes = sortedTypes.slice(0, visibleTypeCount)
+  const hasMoreTypesToShow = visibleTypes.length < sortedTypes.length
+
+  const visibleCities = sortedCities.slice(0, visibleCityCount)
+  const hasMoreCitiesToShow = visibleCities.length < sortedCities.length
 
   return (
-    <SearchContainer>
-      <Input
-        type="text"
-        placeholder={t('common.search')}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        aria-label={t('common.search')}
-        icon={
-          value === '' ? (
-            <SearchAlt2 />
-          ) : (
-            <ClearSearchButton onClick={onClear} />
-          )
-        }
-      />
-    </SearchContainer>
+    <FilterContainer>
+      <FilterTitle>{t('pages.changes.type_distribution')}</FilterTitle>
+
+      {visibleTypes.length > 0 && (
+        <>
+          <CategoryLabel>{t('glossary.types.other')}</CategoryLabel>
+          <TagsContainer>
+            {visibleTypes.map(({ id, count, name }) => (
+              <Tag
+                key={`type-${id}`}
+                $selected={searchTerm.toLowerCase() === name.toLowerCase()}
+                onClick={() => onSearchChange(name)}
+              >
+                {name}
+                <span className="count">{count}</span>
+              </Tag>
+            ))}
+            {hasMoreTypesToShow && (
+              <ShowMoreTag onClick={showMoreTypes}>...</ShowMoreTag>
+            )}
+          </TagsContainer>
+        </>
+      )}
+
+      {visibleCities.length > 0 && (
+        <>
+          <CategoryLabel>{t('glossary.cities.other')}</CategoryLabel>
+          <TagsContainer>
+            {visibleCities.map((city) => (
+              <Tag
+                key={`city-${city.city}`}
+                $selected={searchTerm.toLowerCase() === city.city.toLowerCase()}
+                onClick={() => onSearchChange(city.city)}
+              >
+                {city.city}
+                {city.state && `, ${city.state}`}
+                {city.country && `, ${city.country}`}
+                <span className="count">{city.count}</span>
+              </Tag>
+            ))}
+            {hasMoreCitiesToShow && (
+              <ShowMoreTag onClick={showMoreCities}>...</ShowMoreTag>
+            )}
+          </TagsContainer>
+        </>
+      )}
+    </FilterContainer>
+  )
+}
+
+const ActivitySearchInput = ({
+  value,
+  onChange,
+  onClear,
+  typesAccess,
+  typeCountsById,
+  cityCounts,
+}) => {
+  const { t } = useTranslation()
+
+  const showTags =
+    (Object.keys(typeCountsById).length > 0 || cityCounts.length > 0) &&
+    !typesAccess?.isEmpty
+
+  return (
+    <>
+      {showTags && (
+        <FilterTags
+          typesAccess={typesAccess}
+          typeCountsById={typeCountsById}
+          cityCounts={cityCounts}
+          searchTerm={value}
+          onSearchChange={onChange}
+        />
+      )}
+      <SearchContainer>
+        <Input
+          type="text"
+          placeholder={t('common.search')}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          aria-label={t('common.search')}
+          icon={
+            value === '' ? (
+              <SearchAlt2 />
+            ) : (
+              <ClearSearchButton onClick={onClear} />
+            )
+          }
+        />
+      </SearchContainer>
+    </>
   )
 }
 
