@@ -135,15 +135,17 @@ const UserActivityPage = () => {
   const userName = changes?.length > 0 ? changes[0].author : ''
   return (
     <InfoPage>
-      <h2>
-        {userId === user?.id ? (
-          t('users.my_activity')
-        ) : (
-          <>
-            {t('glossary.activity')}: {userName}
-          </>
-        )}
-      </h2>
+      {changes !== undefined && (
+        <h2>
+          {userId === user?.id ? (
+            t('users.my_activity')
+          ) : (
+            <>
+              {t('glossary.activity')}: {userName}
+            </>
+          )}
+        </h2>
+      )}
       {changes !== undefined && (
         <UserActivityDisplay
           changes={changes}

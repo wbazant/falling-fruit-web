@@ -157,21 +157,8 @@ const ActivitySearchInput = ({
 }) => {
   const { t } = useTranslation()
 
-  const showTags =
-    (Object.keys(typeCountsById).length > 0 || cityCounts.length > 0) &&
-    !typesAccess?.isEmpty
-
   return (
     <>
-      {showTags && (
-        <FilterTags
-          typesAccess={typesAccess}
-          typeCountsById={typeCountsById}
-          cityCounts={cityCounts}
-          searchTerm={value}
-          onSearchChange={onChange}
-        />
-      )}
       <SearchContainer>
         <Input
           type="text"
@@ -188,6 +175,13 @@ const ActivitySearchInput = ({
           }
         />
       </SearchContainer>
+      <FilterTags
+        typesAccess={typesAccess}
+        typeCountsById={typeCountsById}
+        cityCounts={cityCounts}
+        searchTerm={value}
+        onSearchChange={onChange}
+      />
     </>
   )
 }
