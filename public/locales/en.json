@@ -236,7 +236,9 @@
     },
     "changes": {
       "change_in_city": "{{type}} in {{city}}",
+      "places": "Places",
       "recent_changes": "Recent changes",
+      "user_activity": "User activity",
       "type": {
         "added": "added",
         "edited": "edited",

@@ -17,10 +17,6 @@ const FilterContainer = styled.div`
   margin-top: 20px;
 `
 
-const FilterTitle = styled.h4`
-  margin-bottom: 10px;
-`
-
 const TagsContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -104,11 +100,9 @@ const FilterTags = ({
 
   return (
     <FilterContainer>
-      <FilterTitle>{t('pages.changes.type_distribution')}</FilterTitle>
-
       {visibleTypes.length > 0 && (
         <>
-          <CategoryLabel>{t('glossary.types.other')}</CategoryLabel>
+          <CategoryLabel>{t('glossary.type.other')}</CategoryLabel>
           <TagsContainer>
             {visibleTypes.map(({ id, count, name }) => (
               <Tag
@@ -129,7 +123,7 @@ const FilterTags = ({
 
       {visibleCities.length > 0 && (
         <>
-          <CategoryLabel>{t('glossary.cities.other')}</CategoryLabel>
+          <CategoryLabel>{t('pages.changes.places')}</CategoryLabel>
           <TagsContainer>
             {visibleCities.map((city) => (
               <Tag
@@ -181,10 +175,10 @@ const ActivitySearchInput = ({
       <SearchContainer>
         <Input
           type="text"
-          placeholder={t('common.search')}
+          placeholder={t('form.search')}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          aria-label={t('common.search')}
+          aria-label={t('form.search')}
           icon={
             value === '' ? (
               <SearchAlt2 />

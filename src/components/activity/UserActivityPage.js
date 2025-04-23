@@ -1,8 +1,8 @@
+import { User } from '@styled-icons/boxicons-regular'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link,useParams } from 'react-router-dom'
-import styled from 'styled-components'
+import { Link, useParams } from 'react-router-dom'
 
 import {
   getUserActivity,
@@ -13,14 +13,11 @@ import {
   calculateTypeCountsFromChanges,
 } from '../../utils/activityTypeCounts'
 import { transformActivityData } from '../../utils/transformActivityData'
+import IconBesideText from '../ui/IconBesideText'
 import { InfoPage } from '../ui/PageTemplate'
 import ActivitySearchInput from './ActivitySearchInput'
 import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
-
-const AuthorLink = styled(Link)`
-  color: ${({ theme }) => theme.blue} !important;
-`
 
 const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   const { t, i18n } = useTranslation()
@@ -78,18 +75,9 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     uniqueFilteredLocations,
   })
 
-  // Get the user name from the first change's author field
-  const userName = changes.length > 0 ? changes[0].author : ''
-
   return (
     <>
-      {userName && (
-        <h2>
-          User: <AuthorLink to={`/profiles/${userId}`}>{userName}</AuthorLink>
-        </h2>
-      )}
       <div className="activity-stats">
-        <h3>{t('glossary.locations.other')}</h3>
         <ActivitySearchInput
           value={searchTerm}
           onChange={setSearchTerm}
@@ -147,9 +135,17 @@ const UserActivityPage = () => {
     }
   }, [dispatch, changesReady, userId])
 
+  const userName = changes?.length > 0 ? changes[0].author : ''
+
   return (
     <InfoPage>
-      <h1>{t('pages.changes.recent_changes')}</h1>
+      <h2>{t('pages.changes.user_activity')}</h2>
+      <IconBesideText>
+        <User size={20} />
+        <p>
+          <Link to={`/profiles/${userId}`}>{userName}</Link>
+        </p>
+      </IconBesideText>
       {changes !== undefined && (
         <UserActivityDisplay
           changes={changes}
