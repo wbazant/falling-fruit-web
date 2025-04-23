@@ -13,6 +13,7 @@ import {
   calculateTypeCountsFromChanges,
 } from '../../utils/activityTypeCounts'
 import { transformActivityData } from '../../utils/transformActivityData'
+import { theme } from '../ui/GlobalStyle'
 import IconBesideText from '../ui/IconBesideText'
 import { InfoPage } from '../ui/PageTemplate'
 import ActivitySearchInput from './ActivitySearchInput'
@@ -92,7 +93,9 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
       <IconBesideText>
         <User size={20} />
         <p>
-          <Link to={`/profiles/${userId}`}>{userName}</Link>
+          <Link to={`/profiles/${userId}`} style={{ color: theme.blue }}>
+            {userName}
+          </Link>
         </p>
       </IconBesideText>
       {transformActivityData(
