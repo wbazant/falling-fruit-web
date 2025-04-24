@@ -22,26 +22,19 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [displayLimit, setDisplayLimit] = useState(20)
 
-  // Move calculations and hooks before any conditional returns
   const typeCountsById = changes
     ? calculateTypeCountsFromChanges(changes, typesAccess)
     : []
 
-  // Calculate city counts
   const cityCounts = changes ? calculateCityCountsFromChanges(changes) : []
 
-  // Filter changes based on search term
   const filteredChanges = changes.filter((change) => {
-    // If no search term, show all changes
     if (!searchTerm) {
       return true
     }
 
-    // Check if it matches location name or type name
     const searchLower = searchTerm.toLowerCase()
 
-    // Check if location name matches
-    // Build full location name to match against tags
     const fullLocationName = [
       change.city || '',
       change.state || '',
@@ -57,7 +50,6 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
       (change.state && change.state.toLowerCase().includes(searchLower)) ||
       (change.country && change.country.toLowerCase().includes(searchLower))
 
-    // Check if any type name matches
     const typeMatches = change.type_ids.some((typeId) => {
       const type = typesAccess.getType(typeId)
       if (!type) {
