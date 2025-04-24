@@ -126,7 +126,12 @@ const FilterTags = ({
                   }
                 }}
               >
-                {typeCount.displayName}
+                {typeCount.commonName ||
+                  (typeCount.scientificName ? (
+                    <i>{typeCount.scientificName}</i>
+                  ) : (
+                    `Type ${typeCount.typeId}`
+                  ))}
                 <span className="count">{typeCount.count}</span>
               </Tag>
             ))}
