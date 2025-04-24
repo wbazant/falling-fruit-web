@@ -11,7 +11,7 @@ import { InfoPage } from '../ui/PageTemplate'
 import ChangesPeriod from './ChangesPeriod'
 import SkeletonLoader from './SkeletonLoader'
 
-const ActivityPage = () => {
+const RecentChangesPage = () => {
   const dispatch = useDispatch()
   const loadMoreRef = useRef()
   const { t } = useTranslation()
@@ -89,4 +89,4 @@ const ActivityPage = () => {
   )
 }
 
-export default ActivityPage
+export default RecentChangesPage
