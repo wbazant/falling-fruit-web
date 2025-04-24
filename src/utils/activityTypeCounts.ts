@@ -1,14 +1,40 @@
 /**
+ * Represents a type with its count information
+ */
+export class TypeCount {
+  typeId: number
+  commonName: string
+  scientificName: string
+  count: number
+
+  constructor(
+    typeId: number,
+    commonName: string,
+    scientificName: string,
+    count: number = 0,
+  ) {
+    this.typeId = typeId
+    this.commonName = commonName
+    this.scientificName = scientificName
+    this.count = count
+  }
+
+  get displayName(): string {
+    return this.commonName || this.scientificName || `Type ${this.typeId}`
+  }
+}
+
+/**
  * Calculates type counts from location changes
  *
  * @param locationChanges - Array of LocationChange objects
  * @param typesAccess - TypesAccess object to get type names
- * @returns Object with type IDs as keys and count as values
+ * @returns Array of TypeCount objects
  */
 export function calculateTypeCountsFromChanges(
   locationChanges: any[],
   typesAccess: any,
-): Record<number, number> {
+): TypeCount[] {
   // Group changes by location_id
   const locationGroups: Record<string, Set<number>> = {}
 
@@ -36,10 +62,10 @@ export function calculateTypeCountsFromChanges(
     })
   })
 
-  // Aggregate by common name (or scientific name if no common name)
-  const typeNameCounts: Record<string, number> = {}
-  const typeNameToIds: Record<string, number> = {}
+  // Map of display name to TypeCount object
+  const typeCountMap: Record<string, TypeCount> = {}
 
+  // Create TypeCount objects
   Object.entries(typeIdCounts).forEach(([id, count]) => {
     const numId = Number(id)
     const type = typesAccess.getType(numId)
@@ -48,26 +74,24 @@ export function calculateTypeCountsFromChanges(
       return
     }
 
-    // Use common name if available, otherwise use scientific name
-    const name = type.commonName || type.scientificName || `Type ${numId}`
+    const commonName = type.commonName || ''
+    const scientificName = type.scientificName || ''
+    const displayName = commonName || scientificName || `Type ${numId}`
 
-    if (!typeNameCounts[name]) {
-      typeNameCounts[name] = 0
-      typeNameToIds[name] = numId // Store the first ID we find for this name
+    if (!typeCountMap[displayName]) {
+      typeCountMap[displayName] = new TypeCount(
+        numId,
+        commonName,
+        scientificName,
+        0,
+      )
     }
 
-    typeNameCounts[name] += count
+    typeCountMap[displayName].count += count
   })
 
-  // Convert back to ID-based counts, but with aggregated values
-  const aggregatedTypeCounts: Record<number, number> = {}
-
-  Object.entries(typeNameCounts).forEach(([name, count]) => {
-    const id = typeNameToIds[name]
-    aggregatedTypeCounts[id] = count
-  })
-
-  return aggregatedTypeCounts
+  // Convert to array and sort by count (descending)
+  return Object.values(typeCountMap).sort((a, b) => b.count - a.count)
 }
 
 interface CityCount {

@@ -63,13 +63,16 @@ const ShowMoreTag = styled(Tag)`
 
 const getFullCityName = (city) => {
   let fullName = city.city
-  if (city.state) {fullName += `, ${city.state}`}
-  if (city.country) {fullName += `, ${city.country}`}
+  if (city.state) {
+    fullName += `, ${city.state}`
+  }
+  if (city.country) {
+    fullName += `, ${city.country}`
+  }
   return fullName
 }
 
 const FilterTags = ({
-  typesAccess,
   typeCountsById,
   cityCounts,
   searchTerm,
@@ -79,17 +82,8 @@ const FilterTags = ({
   const [visibleTypeCount, setVisibleTypeCount] = useState(5)
   const [visibleCityCount, setVisibleCityCount] = useState(5)
 
-  // Sort types by count (largest first)
-  const sortedTypes = Object.entries(typeCountsById)
-    .map(([id, count]) => {
-      const type = typesAccess.getType(Number(id))
-      return {
-        id: Number(id),
-        count,
-        name: type?.commonName || type?.scientificName || `Type ${id}`,
-      }
-    })
-    .sort((a, b) => b.count - a.count)
+  // TypeCountsById is already an array of TypeCount objects sorted by count
+  const sortedTypes = typeCountsById
 
   // Sort cities by count (largest first)
   const sortedCities = cityCounts.sort((a, b) => b.count - a.count)
@@ -114,20 +108,26 @@ const FilterTags = ({
         <>
           <CategoryLabel>{t('glossary.type.other')}</CategoryLabel>
           <TagsContainer>
-            {visibleTypes.map(({ id, count, name }) => (
+            {visibleTypes.map((typeCount) => (
               <Tag
-                key={`type-${id}`}
-                $selected={searchTerm.toLowerCase() === name.toLowerCase()}
+                key={`type-${typeCount.typeId}`}
+                $selected={
+                  searchTerm.toLowerCase() ===
+                  typeCount.displayName.toLowerCase()
+                }
                 onClick={() => {
-                  if (searchTerm.toLowerCase() === name.toLowerCase()) {
+                  if (
+                    searchTerm.toLowerCase() ===
+                    typeCount.displayName.toLowerCase()
+                  ) {
                     onSearchChange('')
                   } else {
-                    onSearchChange(name)
+                    onSearchChange(typeCount.displayName)
                   }
                 }}
               >
-                {name}
-                <span className="count">{count}</span>
+                {typeCount.displayName}
+                <span className="count">{typeCount.count}</span>
               </Tag>
             ))}
             {hasMoreTypesToShow && (
@@ -179,7 +179,6 @@ const ActivitySearchInput = ({
   value,
   onChange,
   onClear,
-  typesAccess,
   typeCountsById,
   cityCounts,
 }) => {
@@ -204,7 +203,6 @@ const ActivitySearchInput = ({
         />
       </SearchContainer>
       <FilterTags
-        typesAccess={typesAccess}
         typeCountsById={typeCountsById}
         cityCounts={cityCounts}
         searchTerm={value}

@@ -25,7 +25,7 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   // Move calculations and hooks before any conditional returns
   const typeCountsById = changes
     ? calculateTypeCountsFromChanges(changes, typesAccess)
-    : {}
+    : []
 
   // Calculate city counts
   const cityCounts = changes ? calculateCityCountsFromChanges(changes) : []
@@ -60,11 +60,13 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     // Check if any type name matches
     const typeMatches = change.type_ids.some((typeId) => {
       const type = typesAccess.getType(typeId)
-      return (
-        type &&
-        type.commonName &&
-        type.commonName.toLowerCase().includes(searchLower)
-      )
+      if (!type) {
+        return false
+      }
+
+      const typeName =
+        type.commonName || type.scientificName || `Type ${typeId}`
+      return typeName.toLowerCase().includes(searchLower)
     })
 
     return locationMatches || typeMatches
