@@ -45,7 +45,18 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     const searchLower = searchTerm.toLowerCase()
 
     // Check if location name matches
+    // Build full location name to match against tags
+    const fullLocationName = [
+      change.city || '',
+      change.state || '',
+      change.country || '',
+    ]
+      .filter(Boolean)
+      .join(', ')
+      .toLowerCase()
+
     const locationMatches =
+      fullLocationName.includes(searchLower) ||
       (change.city && change.city.toLowerCase().includes(searchLower)) ||
       (change.state && change.state.toLowerCase().includes(searchLower)) ||
       (change.country && change.country.toLowerCase().includes(searchLower))
