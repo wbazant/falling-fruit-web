@@ -65,7 +65,9 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
     const typeMatches = change.type_ids.some((typeId) => {
       const type = typesAccess.getType(typeId)
       return (
-        type.commonName && type.commonName.toLowerCase().includes(searchLower)
+        type &&
+        type.commonName &&
+        type.commonName.toLowerCase().includes(searchLower)
       )
     })
 
