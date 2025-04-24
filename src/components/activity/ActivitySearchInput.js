@@ -61,6 +61,13 @@ const ShowMoreTag = styled(Tag)`
   margin-left: 5px;
 `
 
+const getFullCityName = (city) => {
+  let fullName = city.city
+  if (city.state) {fullName += `, ${city.state}`}
+  if (city.country) {fullName += `, ${city.country}`}
+  return fullName
+}
+
 const FilterTags = ({
   typesAccess,
   typeCountsById,
@@ -137,12 +144,18 @@ const FilterTags = ({
             {visibleCities.map((city) => (
               <Tag
                 key={`city-${city.city}`}
-                $selected={searchTerm.toLowerCase() === city.city.toLowerCase()}
+                $selected={
+                  searchTerm.toLowerCase() ===
+                  getFullCityName(city).toLowerCase()
+                }
                 onClick={() => {
-                  if (searchTerm.toLowerCase() === city.city.toLowerCase()) {
+                  if (
+                    searchTerm.toLowerCase() ===
+                    getFullCityName(city).toLowerCase()
+                  ) {
                     onSearchChange('')
                   } else {
-                    onSearchChange(city.city)
+                    onSearchChange(getFullCityName(city))
                   }
                 }}
               >
