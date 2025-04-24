@@ -20,6 +20,7 @@ import SkeletonLoader from './SkeletonLoader'
 const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
   const { t, i18n } = useTranslation()
   const [searchTerm, setSearchTerm] = useState('')
+  const [displayLimit, setDisplayLimit] = useState(20)
 
   // Move calculations and hooks before any conditional returns
   const typeCountsById = changes
@@ -28,11 +29,6 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
 
   // Calculate city counts
   const cityCounts = changes ? calculateCityCountsFromChanges(changes) : []
-
-  // Count unique locations
-  const uniqueLocations = changes
-    ? new Set(changes.map((change) => change.location_id)).size
-    : 0
 
   // Filter changes based on search term
   const filteredChanges = changes.filter((change) => {
@@ -73,16 +69,6 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
 
     return locationMatches || typeMatches
   })
-  const uniqueFilteredLocations = filteredChanges
-    ? new Set(changes.map((change) => change.location_id)).size
-    : 0
-
-  console.log('Activity stats:', {
-    totalChanges: changes.length,
-    filteredChanges: filteredChanges.length,
-    uniqueLocations: uniqueLocations,
-    uniqueFilteredLocations,
-  })
 
   return (
     <>
@@ -94,18 +80,43 @@ const UserActivityDisplay = ({ changes, userId, typesAccess }) => {
         typeCountsById={typeCountsById}
         cityCounts={cityCounts}
       />
-      {transformActivityData(
-        filteredChanges,
-        typesAccess,
-        t,
-        i18n.language,
-      ).map((period) => (
-        <ChangesPeriod
-          key={period.formattedDate}
-          period={period}
-          userId={userId}
-        />
-      ))}
+      {(() => {
+        const transformedData = transformActivityData(
+          filteredChanges,
+          typesAccess,
+          t,
+          i18n.language,
+        )
+
+        return (
+          <>
+            {transformedData.slice(0, displayLimit).map((period) => (
+              <ChangesPeriod
+                key={period.formattedDate}
+                period={period}
+                userId={userId}
+              />
+            ))}
+
+            {transformedData.length > displayLimit && (
+              <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                <button
+                  onClick={() => setDisplayLimit((prev) => prev + 20)}
+                  style={{
+                    padding: '8px 16px',
+                    cursor: 'pointer',
+                    backgroundColor: '#f0f0f0',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                  }}
+                >
+                  {t('common.show_more')}
+                </button>
+              </div>
+            )}
+          </>
+        )
+      })()}
     </>
   )
 }
