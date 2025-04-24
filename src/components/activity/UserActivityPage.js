@@ -10,7 +10,7 @@ import {
 import {
   calculateCityCountsFromChanges,
   calculateTypeCountsFromChanges,
-} from '../../utils/activityTypeCounts'
+} from '../../utils/activityTypeCounts.ts'
 import { transformActivityData } from '../../utils/transformActivityData'
 import { InfoPage } from '../ui/PageTemplate'
 import ActivitySearchInput from './ActivitySearchInput'
