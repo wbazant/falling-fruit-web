@@ -111,7 +111,13 @@ const FilterTags = ({
               <Tag
                 key={`type-${id}`}
                 $selected={searchTerm.toLowerCase() === name.toLowerCase()}
-                onClick={() => onSearchChange(name)}
+                onClick={() => {
+                  if (searchTerm.toLowerCase() === name.toLowerCase()) {
+                    onSearchChange('')
+                  } else {
+                    onSearchChange(name)
+                  }
+                }}
               >
                 {name}
                 <span className="count">{count}</span>
@@ -132,7 +138,13 @@ const FilterTags = ({
               <Tag
                 key={`city-${city.city}`}
                 $selected={searchTerm.toLowerCase() === city.city.toLowerCase()}
-                onClick={() => onSearchChange(city.city)}
+                onClick={() => {
+                  if (searchTerm.toLowerCase() === city.city.toLowerCase()) {
+                    onSearchChange('')
+                  } else {
+                    onSearchChange(city.city)
+                  }
+                }}
               >
                 {city.city}
                 {city.state && `, ${city.state}`}
