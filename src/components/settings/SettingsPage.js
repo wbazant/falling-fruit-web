@@ -26,24 +26,27 @@ const Page = styled.div`
   height: 100%;
   overflow: auto;
 
-  @media ${({ theme }) => theme.device.mobile} {
-    padding-block-start: 26px;
-    padding-inline: 26px;
-    ${({ isEmbed }) =>
-      isEmbed &&
+  ${({ isEmbed }) =>
+    isEmbed
+      ? `
+        padding-block-start: ${10 + EMBED_HEADER_HEIGHT_PX}px;
+        padding-block-end: 2em;
+        padding-inline: 26px;
       `
-      padding-block-start: ${10 + EMBED_HEADER_HEIGHT_PX}px;
-      padding-block-end: 2em;
-    `}
-  }
+      : `
+        @media ${({ theme }) => theme.device.mobile} {
+          padding-block-start: 26px;
+          padding-inline: 26px;
+        }
 
-  @media ${({ theme }) => theme.device.desktop} {
-    padding-inline: 15px;
+        @media ${({ theme }) => theme.device.desktop} {
+          padding-inline: 15px;
 
-    h3:first-child {
-      margin-block-start: 8px;
-    }
-  }
+          h3:first-child {
+            margin-block-start: 8px;
+          }
+        }
+      `}
 
   > h2 {
     margin-block-start: 0;
