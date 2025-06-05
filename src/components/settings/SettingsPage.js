@@ -6,7 +6,6 @@ import { EMBED_HEADER_HEIGHT_PX } from '../../constants/mobileLayout'
 import { LanguageSelect } from '../../i18n'
 import { updateSettings } from '../../redux/settingsSlice'
 import { useAppHistory } from '../../utils/useAppHistory'
-import { useIsDesktop, useIsEmbed } from '../../utils/useBreakpoint'
 import Checkbox from '../ui/Checkbox'
 import ForwardChevronIcon from '../ui/ForwardChevronIcon'
 import LabeledRow from '../ui/LabeledRow'
@@ -383,27 +382,21 @@ const SettingsAbout = () => {
   )
 }
 
-const SettingsPage = ({ desktop, isEmbed: isEmbedProp }) => {
+const SettingsPage = ({ isDesktop, isEmbed }) => {
   const { t } = useTranslation()
-  const isDesktop = useIsDesktop()
-  const isEmbed = useIsEmbed()
-
-  // Use props if provided, otherwise use hooks
-  const actualIsDesktop = desktop !== undefined ? desktop : isDesktop
-  const actualIsEmbed = isEmbedProp !== undefined ? isEmbedProp : isEmbed
 
   return (
-    <Page isEmbed={actualIsEmbed} isDesktop={actualIsDesktop}>
-      {!actualIsDesktop && <h2>{t('menu.settings')}</h2>}
+    <Page isEmbed={isEmbed} isDesktop={isDesktop}>
+      {!isDesktop && <h2>{t('menu.settings')}</h2>}
       <h3>{t('pages.settings.data')}</h3>
       <ShowLabelsCheckbox />
       <h3>{t('glossary.map')}</h3>
       <MapSettings />
-      {!actualIsDesktop && (
+      {!isDesktop && (
         <>
           <h3>{t('pages.settings.regional')}</h3>
           <RegionalSettings />
-          {!actualIsEmbed && (
+          {!isEmbed && (
             <>
               <h3>{t('glossary.about')}</h3>
               <SettingsAbout />
