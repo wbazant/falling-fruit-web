@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
 
+import { EMBED_HEADER_HEIGHT_PX } from '../../constants/mobileLayout'
 import { LanguageSelect } from '../../i18n'
 import { updateSettings } from '../../redux/settingsSlice'
 import { useAppHistory } from '../../utils/useAppHistory'
@@ -376,7 +377,7 @@ const SettingsPage = ({ desktop, isEmbed }) => {
 
   return (
     <Page>
-      {isEmbed && <div style={{ height: '2em' }} />}
+      {isEmbed && <div style={{ height: `${EMBED_HEADER_HEIGHT_PX}px` }} />}
       {!desktop && <h2>{t('menu.settings')}</h2>}
       <h3>{t('pages.settings.data')}</h3>
       <ShowLabelsCheckbox />

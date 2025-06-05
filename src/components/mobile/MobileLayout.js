@@ -4,6 +4,7 @@ import { matchPath, Route, Switch, useLocation } from 'react-router-dom'
 import styled from 'styled-components/macro'
 
 import {
+  EMBED_HEADER_HEIGHT_PX,
   NAVIGATION_BAR_HEIGHT_PX,
   TABS_HEIGHT_PX,
 } from '../../constants/mobileLayout'
@@ -41,7 +42,7 @@ const ListPageWrapper = styled.div`
   height: 100%;
   overflow: scroll;
   margin-block-start: ${(props) =>
-    props.isEmbed ? 0 : NAVIGATION_BAR_HEIGHT_PX}px;
+    props.isEmbed ? EMBED_HEADER_HEIGHT_PX : NAVIGATION_BAR_HEIGHT_PX}px;
   padding-top: 4px;
 `
 

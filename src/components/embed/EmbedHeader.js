@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 import styled from 'styled-components/macro'
 
+import { EMBED_HEADER_HEIGHT_PX } from '../../constants/mobileLayout'
 import { useAppHistory } from '../../utils/useAppHistory'
 import useShareUrl from '../share/useShareUrl'
 import { AddLocationEmbed } from '../ui/AddLocation'
@@ -60,6 +61,7 @@ const VerticalTabs = styled(PageTabs)`
 const HeaderContent = styled.div`
   display: flex;
   align-items: center;
+  height: ${EMBED_HEADER_HEIGHT_PX - 2 * 8}px;
   padding: 8px;
   gap: 8px;
 `
@@ -82,7 +84,7 @@ const ExternalSiteLink = styled.a`
 `
 
 const Logo = styled.img`
-  height: 36px;
+  height: 40px;
   margin-inline-end: 0.5em;
 `
 
