@@ -6,6 +6,7 @@ import { EMBED_HEADER_HEIGHT_PX } from '../../constants/mobileLayout'
 import { LanguageSelect } from '../../i18n'
 import { updateSettings } from '../../redux/settingsSlice'
 import { useAppHistory } from '../../utils/useAppHistory'
+import { useIsDesktop, useIsEmbed } from '../../utils/useBreakpoint'
 import Checkbox from '../ui/Checkbox'
 import ForwardChevronIcon from '../ui/ForwardChevronIcon'
 import LabeledRow from '../ui/LabeledRow'
@@ -26,27 +27,28 @@ const Page = styled.div`
   height: 100%;
   overflow: auto;
 
-  ${({ isEmbed }) =>
-    isEmbed
-      ? `
+  ${({ isEmbed, isDesktop }) => {
+    if (isEmbed) {
+      return `
         padding-block-start: ${10 + EMBED_HEADER_HEIGHT_PX}px;
         padding-block-end: 2em;
         padding-inline: 26px;
       `
-      : `
-        @media ${({ theme }) => theme.device.mobile} {
-          padding-block-start: 26px;
-          padding-inline: 26px;
-        }
+    } else if (isDesktop) {
+      return `
+        padding-inline: 15px;
 
-        @media ${({ theme }) => theme.device.desktop} {
-          padding-inline: 15px;
-
-          h3:first-child {
-            margin-block-start: 8px;
-          }
+        h3:first-child {
+          margin-block-start: 8px;
         }
-      `}
+      `
+    } else {
+      return `
+        padding-block-start: 26px;
+        padding-inline: 26px;
+      `
+    }
+  }}
 
   > h2 {
     margin-block-start: 0;
@@ -381,21 +383,27 @@ const SettingsAbout = () => {
   )
 }
 
-const SettingsPage = ({ desktop, isEmbed }) => {
+const SettingsPage = ({ desktop, isEmbed: isEmbedProp }) => {
   const { t } = useTranslation()
+  const isDesktop = useIsDesktop()
+  const isEmbed = useIsEmbed()
+
+  // Use props if provided, otherwise use hooks
+  const actualIsDesktop = desktop !== undefined ? desktop : isDesktop
+  const actualIsEmbed = isEmbedProp !== undefined ? isEmbedProp : isEmbed
 
   return (
-    <Page isEmbed={isEmbed}>
-      {!desktop && <h2>{t('menu.settings')}</h2>}
+    <Page isEmbed={actualIsEmbed} isDesktop={actualIsDesktop}>
+      {!actualIsDesktop && <h2>{t('menu.settings')}</h2>}
       <h3>{t('pages.settings.data')}</h3>
       <ShowLabelsCheckbox />
       <h3>{t('glossary.map')}</h3>
       <MapSettings />
-      {!desktop && (
+      {!actualIsDesktop && (
         <>
           <h3>{t('pages.settings.regional')}</h3>
           <RegionalSettings />
-          {!isEmbed && (
+          {!actualIsEmbed && (
             <>
               <h3>{t('glossary.about')}</h3>
               <SettingsAbout />
