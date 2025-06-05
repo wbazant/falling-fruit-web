@@ -19,7 +19,7 @@ import {
 import { setInitialView } from '../../redux/mapSlice'
 import { currentPathWithView, parseCurrentUrl } from '../../utils/appUrl'
 import { useAppHistory } from '../../utils/useAppHistory'
-import { useIsDesktop } from '../../utils/useBreakpoint'
+import { useIsDesktop, useIsEmbed } from '../../utils/useBreakpoint'
 import Button from '../ui/Button'
 
 const LessPaddingButton = styled(Button)`
@@ -97,6 +97,7 @@ const ConnectLocation = ({
   )
   const history = useAppHistory()
   const isDesktop = useIsDesktop()
+  const isEmbed = useIsEmbed()
   const [hasCentered, setHasCentered] = useState(false)
 
   useEffect(() => {
@@ -117,7 +118,8 @@ const ConnectLocation = ({
         locationId,
         isBeingEdited,
         isStreetView,
-        paneDrawerDisabled: isFromListLocations,
+        isFromListLocations,
+        isFromEmbedViewMap: isEmbed,
       }),
     ).then((action) => {
       if (action.payload && !initialView) {

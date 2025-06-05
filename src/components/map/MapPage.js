@@ -13,6 +13,7 @@ import { fetchLocations } from '../../redux/viewChange'
 import { updateLastMapView } from '../../redux/viewportSlice'
 import throttle from '../../utils/throttle'
 import { useAppHistory } from '../../utils/useAppHistory'
+import { useIsEmbed } from '../../utils/useBreakpoint'
 import Share from '../share/Share'
 import ShareIconButton from '../share/ShareIconButton'
 import { AddLocationMobile } from '../ui/AddLocation'
@@ -279,6 +280,7 @@ const MapPage = ({ isDesktop }) => {
   const isViewingLocation =
     locationId !== null && !isEditingLocation && !isAddingLocation
   const showLabels = settingsShowLabels || isAddingLocation || isEditingLocation
+  const isEmbed = useIsEmbed()
 
   useEffect(() => {
     setDraggedPosition(isDesktop ? position : null)
@@ -329,11 +331,11 @@ const MapPage = ({ isDesktop }) => {
     <>
       {(mapIsLoading || locationIsLoading) && <BottomLeftLoadingIndicator />}
       {isAddingLocation && !isDesktop && <AddLocationCentralUnmovablePin />}
-      {!isAddingLocation && !isEditingLocation && !isDesktop && (
+      {!isAddingLocation && !isEditingLocation && !isDesktop && !isEmbed && (
         <AddLocationMobile />
       )}
       {isEditingLocation && !isDesktop && <EditLocationCentralUnmovablePin />}
-      {!isDesktop && <TrackLocationButton isIcon />}
+      {!isDesktop && !isEmbed && <TrackLocationButton isIcon />}
 
       <ZoomInButton
         onClick={zoomIn}

@@ -7,11 +7,13 @@ import {
   NAVIGATION_BAR_HEIGHT_PX,
   TABS_HEIGHT_PX,
 } from '../../constants/mobileLayout'
+import { useIsEmbed } from '../../utils/useBreakpoint'
 import aboutRoutes from '../about/aboutRoutes'
 import accountRoutes from '../account/accountRoutes'
 import activityRoutes from '../activity/activityRoutes'
 import authRoutes from '../auth/authRoutes'
 import connectRoutes from '../connect/connectRoutes'
+import EmbedHeader from '../embed/EmbedHeader'
 import EntryMobile from '../entry/EntryMobile'
 import { formRoutesMobile } from '../form/formRoutes'
 import ListPage from '../list/ListPage'
@@ -87,6 +89,7 @@ const MobileLayout = () => {
   const streetView = useSelector((state) => state.location.streetViewOpen)
   const { pathname } = useLocation()
   const { tabIndex, handleTabChange, tabContent } = Tabs()
+  const isEmbed = useIsEmbed()
 
   return (
     <>
@@ -97,6 +100,11 @@ const MobileLayout = () => {
         />
       </Helmet>
       <PageTabs index={tabIndex} onChange={handleTabChange}>
+        <Switch>
+          <Route path={['/map', '/settings', '/list']}>
+            {isEmbed && <EmbedHeader />}
+          </Route>
+        </Switch>
         <Switch>{formRoutesMobile}</Switch>
         <MapContainer show={shouldDisplayMapPage(pathname)}>
           <MapPage />
@@ -125,7 +133,7 @@ const MobileLayout = () => {
               <Route path="/locations/:locationId/edit" />
               <Route
                 path={['/map', '/list', '/locations/:locationId']}
-                component={NavigationBar}
+                component={isEmbed ? null : NavigationBar}
               />
             </Switch>
             <TabPanels>
@@ -150,7 +158,7 @@ const MobileLayout = () => {
                       </ListPageWrapper>
                     </Route>
                     <Route path="/settings">
-                      <SettingsPage />
+                      <SettingsPage isEmbed={isEmbed} />
                     </Route>
                   </Switch>
                 </Route>
@@ -160,6 +168,7 @@ const MobileLayout = () => {
               <Route path={'/profiles'} />
               <Route path={['/locations/:locationId/edit/:postfix', '*']}>
                 {({ match }) =>
+                  !isEmbed &&
                   (!match.params.postfix ||
                     match.params.postfix === 'position') && (
                     <>
