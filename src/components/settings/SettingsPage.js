@@ -29,6 +29,12 @@ const Page = styled.div`
   @media ${({ theme }) => theme.device.mobile} {
     padding-block-start: 26px;
     padding-inline: 26px;
+    ${({ isEmbed }) =>
+      isEmbed &&
+      `
+      padding-block-start: ${26 + EMBED_HEADER_HEIGHT_PX}px;
+      padding-block-end: 2em;
+    `}
   }
 
   @media ${({ theme }) => theme.device.desktop} {
@@ -376,8 +382,7 @@ const SettingsPage = ({ desktop, isEmbed }) => {
   const { t } = useTranslation()
 
   return (
-    <Page>
-      {isEmbed && <div style={{ height: `${EMBED_HEADER_HEIGHT_PX}px` }} />}
+    <Page isEmbed={isEmbed}>
       {!desktop && <h2>{t('menu.settings')}</h2>}
       <h3>{t('pages.settings.data')}</h3>
       <ShowLabelsCheckbox />
@@ -395,7 +400,6 @@ const SettingsPage = ({ desktop, isEmbed }) => {
           )}
         </>
       )}
-      {isEmbed && <div style={{ height: '2em' }} />}
     </Page>
   )
 }
