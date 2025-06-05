@@ -32,7 +32,7 @@ const Page = styled.div`
     ${({ isEmbed }) =>
       isEmbed &&
       `
-      padding-block-start: ${26 + EMBED_HEADER_HEIGHT_PX}px;
+      padding-block-start: ${10 + EMBED_HEADER_HEIGHT_PX}px;
       padding-block-end: 2em;
     `}
   }
