@@ -31,15 +31,17 @@ import Tabs from './Tabs'
 const MapContainer = styled.div`
   display: ${(props) => (props.show ? 'block' : 'none')};
   position: absolute;
-  inset-block-start: ${NAVIGATION_BAR_HEIGHT_PX}px;
-  inset-block-end: ${TABS_HEIGHT_PX}px;
+  inset-block-start: ${(props) =>
+    props.isEmbed ? 0 : NAVIGATION_BAR_HEIGHT_PX}px;
+  inset-block-end: ${(props) => (props.isEmbed ? 0 : TABS_HEIGHT_PX)}px;
   inset-inline: 0;
 `
 
 const ListPageWrapper = styled.div`
   height: 100%;
   overflow: scroll;
-  margin-block-start: ${NAVIGATION_BAR_HEIGHT_PX}px;
+  margin-block-start: ${(props) =>
+    props.isEmbed ? 0 : NAVIGATION_BAR_HEIGHT_PX}px;
   padding-top: 4px;
 `
 
@@ -106,7 +108,7 @@ const MobileLayout = () => {
           </Route>
         </Switch>
         <Switch>{formRoutesMobile}</Switch>
-        <MapContainer show={shouldDisplayMapPage(pathname)}>
+        <MapContainer show={shouldDisplayMapPage(pathname)} isEmbed={isEmbed}>
           <MapPage />
         </MapContainer>
         {connectRoutes}
@@ -153,7 +155,7 @@ const MobileLayout = () => {
                   </Switch>
                   <Switch>
                     <Route path="/list">
-                      <ListPageWrapper>
+                      <ListPageWrapper isEmbed={isEmbed}>
                         <ListPage />
                       </ListPageWrapper>
                     </Route>
