@@ -24,8 +24,8 @@ const StyledFormDiv = styled.div`
   padding: 0 10px;
   overflow: auto;
 
-  ${({ $isMobileOrEmbed }) =>
-    $isMobileOrEmbed &&
+  ${({ $isMobile, $isEmbed }) =>
+    ($isMobile || $isEmbed) &&
     `
     padding-inline: 1em;
 
@@ -38,8 +38,9 @@ const StyledFormDiv = styled.div`
     }
   `}
 
-  ${({ $isMobileNotEmbed }) =>
-    $isMobileNotEmbed &&
+  ${({ $isMobile, $isEmbed }) =>
+    $isMobile &&
+    !$isEmbed &&
     `
     margin-block-start: ${NAVIGATION_BAR_HEIGHT_PX}px;
   `}
@@ -49,15 +50,8 @@ export const StyledForm = ({ children, ...props }) => {
   const isEmbed = useIsEmbed()
   const isMobile = useIsMobile()
 
-  const isMobileOrEmbed = isMobile || isEmbed
-  const isMobileNotEmbed = isMobile && !isEmbed
-
   return (
-    <StyledFormDiv
-      $isMobileOrEmbed={isMobileOrEmbed}
-      $isMobileNotEmbed={isMobileNotEmbed}
-      {...props}
-    >
+    <StyledFormDiv $isMobile={isMobile} $isEmbed={isEmbed} {...props}>
       {children}
     </StyledFormDiv>
   )
