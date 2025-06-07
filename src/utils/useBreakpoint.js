@@ -25,6 +25,7 @@ const useBreakpoint = ({
 }
 
 const getIsEmbed = () => {
+  console.log('getIsEmbed')
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search)
     return urlParams.get('embed') === 'true'
