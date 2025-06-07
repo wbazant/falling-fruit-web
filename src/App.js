@@ -18,12 +18,24 @@ import { useGoogleAnalytics } from './utils/useGoogleAnalytics'
 const EmbedRedirect = () => {
   const location = useLocation()
   if (location.pathname.startsWith('/locations/embed')) {
-    //TODO newPath might have searchParams itself and then we're duplicting them
     const newPath = pathWithCurrentView('/map')
-    const searchParams = new URLSearchParams(location.search)
+    const [basePath, existingParams] = newPath.split('?')
+
+    // Merge existing params from newPath with current location params
+    const searchParams = new URLSearchParams(existingParams || '')
+    const currentParams = new URLSearchParams(location.search)
+
+    // Add all current params to the merged params
+    currentParams.forEach((value, key) => {
+      searchParams.set(key, value)
+    })
+
+    // Ensure embed=true is set
     searchParams.set('embed', 'true')
-    console.log(`${newPath}?${searchParams.toString()}`)
-    return <Redirect to={`${newPath}?${searchParams.toString()}`} />
+
+    const finalUrl = `${basePath}?${searchParams.toString()}`
+    console.log(finalUrl)
+    return <Redirect to={finalUrl} />
   }
   return null
 }
