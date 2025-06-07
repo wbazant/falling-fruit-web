@@ -28,7 +28,9 @@ const getIsEmbed = () => {
   console.log('getIsEmbed')
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search)
-    return urlParams.get('embed') === 'true'
+    const isEmbedParam = urlParams.get('embed') === 'true'
+    const isEmbedPath = window.location.pathname.startsWith('/locations/embed')
+    return isEmbedParam || isEmbedPath
   }
   return false
 }
