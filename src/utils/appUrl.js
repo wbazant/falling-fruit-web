@@ -72,8 +72,16 @@ export const pathWithCurrentView = (path) => {
     const zoom = legacyZoom ? parseInt(legacyZoom, 10) : DEFAULT_ZOOM
 
     if (!isNaN(lat) && !isNaN(lng) && !isNaN(zoom)) {
+      // Remove x, y, z parameters since we're using them for the view
+      const cleanedSearchParams = new URLSearchParams(search)
+      cleanedSearchParams.delete('x')
+      cleanedSearchParams.delete('y')
+      cleanedSearchParams.delete('z')
+      const cleanedSearch = cleanedSearchParams.toString()
+      const searchString = cleanedSearch ? `?${cleanedSearch}` : ''
+
       const pathNoTrailingSlash = path.replace(/\/*$/, '')
-      return `${pathNoTrailingSlash}/${viewToString(lat, lng, zoom)}${search}`
+      return `${pathNoTrailingSlash}/${viewToString(lat, lng, zoom)}${searchString}`
     }
   }
 
