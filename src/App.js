@@ -3,7 +3,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { WindowSize } from '@reach/window-size'
 import { useTranslation } from 'react-i18next'
 import { Provider, useSelector } from 'react-redux'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 
 import MainPage from './components/MainPage'
@@ -14,6 +14,17 @@ import { pathWithCurrentView } from './utils/appUrl'
 import AuthInitializer from './utils/AuthInitializer'
 import { ConnectedBreakpoint, useIsDesktop } from './utils/useBreakpoint'
 import { useGoogleAnalytics } from './utils/useGoogleAnalytics'
+
+const EmbedRedirect = () => {
+  const location = useLocation()
+  if (location.pathname.startsWith('/locations/embed')) {
+    const newPath = location.pathname.replace('/locations/embed', '/map')
+    const searchParams = new URLSearchParams(location.search)
+    searchParams.set('embed', 'true')
+    return <Redirect to={`${newPath}?${searchParams.toString()}`} />
+  }
+  return null
+}
 
 const HomeRedirect = () => {
   const { user, isLoading } = useSelector((state) => state.auth)
@@ -46,6 +57,9 @@ const AppContent = () => {
         <Switch>
           <Route exact path="/">
             <HomeRedirect />
+          </Route>
+          <Route path="/locations/embed">
+            <EmbedRedirect />
           </Route>
           <Route>
             <MainPage />
