@@ -75,8 +75,7 @@ const Tabs = () => {
     if (matchedIndex !== -1) {
       setTabIndex(matchedIndex)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname])
+  }, [pathname]) //eslint-disable-line
 
   const handleTabChange = (newTabIndex) => {
     if (newTabIndex === 1 && isBeingInitializedMobile) {

@@ -144,7 +144,7 @@ const Search = (props) => {
       }
     },
     // The effect should run after first render and each time we clear selectedPlace
-    [selectedPlace], // eslint-disable-line react-hooks/exhaustive-deps
+    [selectedPlace],
   )
 
   const handleChange = (e) => {

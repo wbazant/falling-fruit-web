@@ -22,14 +22,12 @@ export const PhotoUploader = ({ value, onChange }) => {
     if (!equals(photos, value)) {
       setPhotos(value)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   // We use a useEffect rather than onChange directly in order to call setPhotos with an updater function
   // Then propagate changes to photos via onChange
   useEffect(() => {
     onChange(photos)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [photos])
 
   const scrollAnchorRef = useRef(null)

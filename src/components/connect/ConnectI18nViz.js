@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import i18n from 'i18next'
 import { useEffect, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'

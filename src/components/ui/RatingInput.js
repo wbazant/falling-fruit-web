@@ -40,7 +40,6 @@ const RatingInput = ({ name, score, total }) => {
   return (
     <RatingWrapper role="group" aria-labelledby={`${name}-group`}>
       {Number(score) !== 0 && (
-        // eslint-disable-next-line jsx-a11y/label-has-associated-control
         <label>
           <Field type="radio" name={name} value={'0'} />
           <X color={theme.tertiaryText} />

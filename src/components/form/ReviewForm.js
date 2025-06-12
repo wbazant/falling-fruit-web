@@ -34,7 +34,6 @@ export const ReviewStep = ({ standalone, hasHeading = true }) => {
   return (
     <>
       {hasHeading && (
-        // eslint-disable-next-line jsx-a11y/anchor-is-valid
         <a id="review" style={{ textDecoration: 'none' }}>
           <SectionHeading>
             {t('review.form.leave_a_review')}

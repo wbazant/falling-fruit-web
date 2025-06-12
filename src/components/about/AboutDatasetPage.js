@@ -39,8 +39,7 @@ const AboutDatasetPage = () => {
     }
 
     fetchImportData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id])
+  }, [id]) //eslint-disable-line
 
   if (isLoading) {
     return <LoadingOverlay />
