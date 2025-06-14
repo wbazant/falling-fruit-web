@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
 
-import { setShowOnlyOnMap } from '../../redux/filterSlice'
+import { setShowOnlyOnMap, setTypeSearch } from '../../redux/filterSlice'
 import { muniChanged, selectionChanged } from '../../redux/viewChange'
 import buildSelectTree from '../../utils/buildSelectTree'
 import { tokenizeQuery } from '../../utils/tokenize'
@@ -49,16 +49,13 @@ const filterOption = (candidate, input) => {
 
 const Filter = () => {
   const dispatch = useDispatch()
-  const { countsById, types, muni, showOnlyOnMap } = useSelector(
+  const { countsById, types, typeSearch, muni, showOnlyOnMap } = useSelector(
     (state) => state.filter,
   )
 
   const { typesAccess } = useSelector((state) => state.type)
-  const {
-    tree: selectTree,
-    visibleTypeIds,
-    typeCounts,
-  } = useMemo(
+  const typeOptions = useMemo(() => typesAccess.asMenuEntries(), [typesAccess])
+  const { tree: selectTree, visibleTypeIds } = useMemo(
     () => buildSelectTree(typesAccess, countsById, showOnlyOnMap, '', types),
     [typesAccess, countsById, showOnlyOnMap, types],
   )
@@ -69,22 +66,13 @@ const Filter = () => {
       <div>
         <EdibleTypeText>{t('glossary.type.other')}</EdibleTypeText>
         <Select
-          options={typeCounts || []}
-          value={
-            types
-              ?.map((typeId) =>
-                typeCounts?.find((option) => option.value === typeId),
-              )
-              .filter(Boolean) || []
-          }
-          onChange={(options) =>
-            dispatch(
-              selectionChanged(options?.map((option) => option.value) || []),
-            )
-          }
+          options={typeOptions}
+          value={typeSearch || []}
+          onChange={(options) => dispatch(setTypeSearch(options || []))}
           placeholder={t('glossary.type.one')}
           isClearable
           isMulti
+          isVirtualized
           formatOptionLabel={(option, { context }) => (
             <div
               style={{
