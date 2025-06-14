@@ -54,7 +54,14 @@ const Filter = () => {
   )
 
   const { typesAccess } = useSelector((state) => state.type)
-  const typeOptions = useMemo(() => typesAccess.asMenuEntries(), [typesAccess])
+  const aggregatedCounts = useMemo(
+    () => typesAccess.calculateAggregatedCounts(countsById),
+    [typesAccess, countsById],
+  )
+  const typeOptions = useMemo(
+    () => typesAccess.asMenuEntries(aggregatedCounts),
+    [typesAccess, aggregatedCounts],
+  )
   const { tree: selectTree, visibleTypeIds } = useMemo(
     () => buildSelectTree(typesAccess, countsById, showOnlyOnMap, '', types),
     [typesAccess, countsById, showOnlyOnMap, types],
@@ -84,14 +91,7 @@ const Filter = () => {
               <TypeName
                 commonName={option.commonName}
                 scientificName={option.scientificName}
-                count={
-                  context === 'menu'
-                    ? option.filteredCount !== undefined &&
-                      option.filteredCount !== option.count
-                      ? `${option.filteredCount}/${option.count}`
-                      : option.count
-                    : undefined
-                }
+                count={context === 'menu' ? option.count : undefined}
               />
             </div>
           )}

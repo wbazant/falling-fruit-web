@@ -58,6 +58,7 @@ type TypeSelectMenuEntry = {
   label: string
   synonyms: string[]
   taxonomicRank: number
+  count?: number
 }
 
 const localize = (type: SchemaType, language: string): LocalizedType => {
@@ -103,6 +104,7 @@ const createTypesAccess = (localizedTypes: LocalizedType[]) => {
 const toMenuEntry = (
   localizedType: LocalizedType,
   parentCommonName: string,
+  countsById?: { [key: number]: number },
 ) => {
   const { id, parentId, commonName, scientificName, taxonomicRank, synonyms } =
     localizedType
@@ -141,6 +143,7 @@ const toMenuEntry = (
     scientificName: scientificName,
     taxonomicRank,
     synonyms,
+    count: countsById ? countsById[id] || 0 : undefined,
   }
 }
 
@@ -186,14 +189,17 @@ export class TypesAccess {
     const t = this.localizedTypes[this.idIndex[id]]
     return t ? t.scientificName : ''
   }
-  asMenuEntries(): TypeSelectMenuEntry[] {
+  asMenuEntries(countsById?: { [key: number]: number }): TypeSelectMenuEntry[] {
     return this.localizedTypes.map((t) =>
-      toMenuEntry(t, this.getCommonName(t.parentId)),
+      toMenuEntry(t, this.getCommonName(t.parentId), countsById),
     )
   }
-  getMenuEntry(id: Id): TypeSelectMenuEntry | null {
+  getMenuEntry(
+    id: Id,
+    countsById?: { [key: number]: number },
+  ): TypeSelectMenuEntry | null {
     const t = this.localizedTypes[this.idIndex[id]]
-    return t ? toMenuEntry(t, this.getCommonName(t.parentId)) : null
+    return t ? toMenuEntry(t, this.getCommonName(t.parentId), countsById) : null
   }
 
   filter(predicate: (_type: LocalizedType) => boolean): TypesAccess {
@@ -231,6 +237,35 @@ export class TypesAccess {
         t.id !== PENDING_ID &&
         t.categories.some((category) => categories.includes(category)),
     )
+  }
+
+  calculateAggregatedCounts(countsById: { [key: number]: number }): {
+    [key: number]: number
+  } {
+    const aggregatedCounts: { [key: number]: number } = {}
+
+    const calculateCount = (id: Id): number => {
+      if (aggregatedCounts[id] !== undefined) {
+        return aggregatedCounts[id]
+      }
+
+      let count = countsById[id] || 0
+      const children = this.childrenById[id] || []
+
+      for (const childId of children) {
+        count += calculateCount(childId)
+      }
+
+      aggregatedCounts[id] = count
+      return count
+    }
+
+    // Calculate aggregated counts for all types
+    this.localizedTypes.forEach((type) => {
+      calculateCount(type.id)
+    })
+
+    return aggregatedCounts
   }
 }
 
