@@ -1,5 +1,4 @@
-import { debounce } from 'debounce'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
@@ -7,7 +6,9 @@ import styled from 'styled-components/macro'
 import { setShowOnlyOnMap } from '../../redux/filterSlice'
 import { muniChanged, selectionChanged } from '../../redux/viewChange'
 import buildSelectTree from '../../utils/buildSelectTree'
-import Input from '../ui/Input'
+import { tokenizeQuery } from '../../utils/tokenize'
+import { Select } from '../ui/Select'
+import { TypeName } from '../ui/TypeName'
 import FilterButtons from './FilterButtons'
 import LabeledCheckbox from './LabeledCheckbox'
 import RCTreeSelectSkeleton from './RCTreeSelectSkeleton'
@@ -30,43 +31,36 @@ const TreeFiltersContainer = styled.div`
   line-height: 1.5rem;
 `
 
-const SearchInput = styled(Input)`
-  height: 2.5em;
-  padding: 0;
-  flex: 0;
-  input {
-    margin-block: 1em;
-    margin-inline: 0.75em;
-    height: 100%;
-  }
-`
 const MuniCheckbox = styled.div`
   margin-block: 1em;
 `
 
-const Filter = () => {
-  const [searchValue, setSearchValue] = useState('')
-  const setSearchValueDebounced = useMemo(
-    () => debounce(setSearchValue, 200),
-    [setSearchValue],
-  )
+// Filter function for select options using tokenized search
+const filterOption = (candidate, input) => {
+  if (!input) {
+    return true
+  }
 
+  const tokenizedInput = tokenizeQuery(input)
+  const searchReference = candidate.data.searchReference
+
+  return searchReference && searchReference.includes(tokenizedInput)
+}
+
+const Filter = () => {
   const dispatch = useDispatch()
   const { countsById, types, muni, showOnlyOnMap } = useSelector(
     (state) => state.filter,
   )
 
   const { typesAccess } = useSelector((state) => state.type)
-  const { tree: selectTree, visibleTypeIds } = useMemo(
-    () =>
-      buildSelectTree(
-        typesAccess,
-        countsById,
-        showOnlyOnMap,
-        searchValue,
-        types,
-      ),
-    [typesAccess, countsById, showOnlyOnMap, searchValue, types],
+  const {
+    tree: selectTree,
+    visibleTypeIds,
+    typeCounts,
+  } = useMemo(
+    () => buildSelectTree(typesAccess, countsById, showOnlyOnMap, '', types),
+    [typesAccess, countsById, showOnlyOnMap, types],
   )
 
   const { t } = useTranslation()
@@ -74,9 +68,46 @@ const Filter = () => {
     <>
       <div>
         <EdibleTypeText>{t('glossary.type.other')}</EdibleTypeText>
-        <SearchInput
-          onChange={(e) => setSearchValueDebounced(e.target.value)}
+        <Select
+          options={typeCounts || []}
+          value={
+            types
+              ?.map((typeId) =>
+                typeCounts?.find((option) => option.value === typeId),
+              )
+              .filter(Boolean) || []
+          }
+          onChange={(options) =>
+            dispatch(
+              selectionChanged(options?.map((option) => option.value) || []),
+            )
+          }
           placeholder={t('glossary.type.one')}
+          isClearable
+          isMulti
+          formatOptionLabel={(option, { context }) => (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '100%',
+              }}
+            >
+              <TypeName
+                commonName={option.commonName}
+                scientificName={option.scientificName}
+                count={
+                  context === 'menu'
+                    ? option.filteredCount !== undefined &&
+                      option.filteredCount !== option.count
+                      ? `${option.filteredCount}/${option.count}`
+                      : option.count
+                    : undefined
+                }
+              />
+            </div>
+          )}
+          filterOption={filterOption}
         />
         <TreeFiltersContainer>
           <LabeledCheckbox
