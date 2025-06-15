@@ -18,7 +18,7 @@ class SelectTreeBuilder {
   private typesAccess: TypesAccess
   private countsById: { [key: number]: number }
   private showOnlyOnMap: boolean
-  private searchValue: string
+  private typeSearch: number[]
   private selectedTypes: number[]
   private visibleTypeIds: Set<number>
 
@@ -26,13 +26,13 @@ class SelectTreeBuilder {
     typesAccess: TypesAccess,
     countsById: { [key: number]: number },
     showOnlyOnMap: boolean,
-    searchValue: string,
+    typeSearch: number[],
     selectedTypes: number[],
   ) {
     this.typesAccess = typesAccess
     this.countsById = countsById
     this.showOnlyOnMap = showOnlyOnMap
-    this.searchValue = searchValue.toLowerCase()
+    this.typeSearch = typeSearch
     this.selectedTypes = selectedTypes
     this.visibleTypeIds = new Set()
   }
@@ -49,15 +49,15 @@ class SelectTreeBuilder {
   private buildNode(
     type: LocalizedType,
     parent: RenderTreeNode | null = null,
-    parentMatchesSearch: boolean = false,
+    parentMatchesTypeSearch: boolean = false,
   ): RenderTreeNode | null {
     const count = this.getAggregatedCount(type.id)
     if (this.showOnlyOnMap && count === 0) {
       return null
     }
     const searchLabel = `${type.commonName} ${type.scientificName}`.trim()
-    const matchesSearch =
-      !this.searchValue || searchLabel.toLowerCase().includes(this.searchValue)
+    const matchesTypeSearch =
+      this.typeSearch.length === 0 || this.typeSearch.includes(type.id)
 
     const node: RenderTreeNode = {
       id: type.id,
@@ -70,16 +70,26 @@ class SelectTreeBuilder {
       isSelected: this.selectedTypes.includes(type.id),
       isIndeterminate: false,
       isDisabled:
-        this.searchValue !== '' && !matchesSearch && !parentMatchesSearch,
+        this.typeSearch.length > 0 &&
+        !matchesTypeSearch &&
+        !parentMatchesTypeSearch,
     }
 
     const children = (this.typesAccess.childrenById[type.id] || [])
       .map((childId) =>
-        this.buildNode(this.typesAccess.getType(childId), node, matchesSearch),
+        this.buildNode(
+          this.typesAccess.getType(childId),
+          node,
+          matchesTypeSearch,
+        ),
       )
       .filter((child): child is RenderTreeNode => child !== null)
 
-    if (!matchesSearch && !parentMatchesSearch && children.length === 0) {
+    if (
+      !matchesTypeSearch &&
+      !parentMatchesTypeSearch &&
+      children.length === 0
+    ) {
       return null
     }
 
@@ -107,7 +117,7 @@ class SelectTreeBuilder {
       children.length &&
       (ownCount > 0 ||
         (!this.showOnlyOnMap && this.typesAccess.isSelectable(type.id))) &&
-      matchesSearch
+      matchesTypeSearch
     ) {
       const childNode: RenderTreeNode = {
         ...node,
@@ -118,7 +128,7 @@ class SelectTreeBuilder {
         children: [],
         isSelected: this.selectedTypes.includes(type.id),
         isIndeterminate: false,
-        isDisabled: !matchesSearch,
+        isDisabled: !matchesTypeSearch,
       }
       node.children.unshift(childNode)
     } else if (children.length === 0) {
@@ -166,14 +176,14 @@ function buildSelectTree(
   typesAccess: TypesAccess,
   countsById: { [key: number]: number },
   showOnlyOnMap: boolean,
-  searchValue: string,
+  typeSearch: number[],
   selectedTypes: number[],
 ): SelectTreeResult {
   const builder = new SelectTreeBuilder(
     typesAccess,
     countsById,
     showOnlyOnMap,
-    searchValue,
+    typeSearch,
     selectedTypes,
   )
   const tree = builder.buildRenderTree()

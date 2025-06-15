@@ -59,8 +59,15 @@ const Filter = () => {
     [typesAccess, countsById],
   )
   const { tree: selectTree, visibleTypeIds } = useMemo(
-    () => buildSelectTree(typesAccess, countsById, showOnlyOnMap, '', types),
-    [typesAccess, countsById, showOnlyOnMap, types],
+    () =>
+      buildSelectTree(
+        typesAccess,
+        countsById,
+        showOnlyOnMap,
+        typeSearch || [],
+        types,
+      ),
+    [typesAccess, countsById, showOnlyOnMap, typeSearch, types],
   )
 
   const { t } = useTranslation()
