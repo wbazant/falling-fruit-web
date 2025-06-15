@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
 
-import { setShowOnlyOnMap, setTypeSearch } from '../../redux/filterSlice'
+import {
+  restorePreviousTypes,
+  setShowOnlyOnMap,
+  setTypeSearch,
+} from '../../redux/filterSlice'
 import { muniChanged, selectionChanged } from '../../redux/viewChange'
 import buildSelectTree from '../../utils/buildSelectTree'
 import { tokenizeQuery } from '../../utils/tokenize'
@@ -108,6 +112,9 @@ const Filter = () => {
       ) {
         dispatch(selectionChanged(newSelection))
       }
+    } else if (typeSearch && typeSearch.length === 0) {
+      // Restore previous selection when typeSearch becomes empty
+      dispatch(restorePreviousTypes())
     }
   }, [typeSearch, typesAccess, types, dispatch])
 
