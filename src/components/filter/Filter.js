@@ -54,9 +54,13 @@ const Filter = () => {
   )
 
   const { typesAccess } = useSelector((state) => state.type)
-  const typeOptions = useMemo(
-    () => typesAccess.asMenuEntries(countsById),
+  const aggregatedCounts = useMemo(
+    () => typesAccess.calculateAggregatedCounts(countsById),
     [typesAccess, countsById],
+  )
+  const typeOptions = useMemo(
+    () => typesAccess.asMenuEntries(countsById, aggregatedCounts),
+    [typesAccess, countsById, aggregatedCounts],
   )
   const { tree: selectTree, visibleTypeIds } = useMemo(
     () =>
@@ -71,7 +75,9 @@ const Filter = () => {
   )
 
   const typeSearchObjects = useMemo(() => {
-    if (!typeSearch || typeSearch.length === 0) {return []}
+    if (!typeSearch || typeSearch.length === 0) {
+      return []
+    }
     return typeSearch
       .map((id) => typeOptions.find((option) => option.value === id))
       .filter(Boolean)

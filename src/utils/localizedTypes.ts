@@ -58,7 +58,7 @@ type TypeSelectMenuEntry = {
   label: string
   synonyms: string[]
   taxonomicRank: number
-  count?: number
+  count?: number | string
 }
 
 const localize = (type: SchemaType, language: string): LocalizedType => {
@@ -105,6 +105,7 @@ const toMenuEntry = (
   localizedType: LocalizedType,
   parentCommonName: string,
   countsById?: { [key: number]: number },
+  aggregatedCounts?: { [key: number]: number },
 ) => {
   const { id, parentId, commonName, scientificName, taxonomicRank, synonyms } =
     localizedType
@@ -135,6 +136,11 @@ const toMenuEntry = (
       ? i18next.t('type.pending_review_item', { name: commonName })
       : commonName
 
+  const ownCount = countsById ? countsById[id] || 0 : 0
+  const aggregatedCount = aggregatedCounts ? aggregatedCounts[id] || 0 : 0
+  const displayCount =
+    aggregatedCount > ownCount ? `${ownCount}/${aggregatedCount}` : ownCount
+
   return {
     value: id,
     searchReference: tokenizeReference(referenceStrings),
@@ -143,7 +149,7 @@ const toMenuEntry = (
     scientificName: scientificName,
     taxonomicRank,
     synonyms,
-    count: countsById ? countsById[id] || 0 : undefined,
+    count: countsById ? displayCount : undefined,
   }
 }
 
@@ -189,14 +195,32 @@ export class TypesAccess {
     const t = this.localizedTypes[this.idIndex[id]]
     return t ? t.scientificName : ''
   }
-  asMenuEntries(countsById?: { [key: number]: number }): TypeSelectMenuEntry[] {
+  asMenuEntries(
+    countsById?: { [key: number]: number },
+    aggregatedCounts?: { [key: number]: number },
+  ): TypeSelectMenuEntry[] {
     const menuEntries = this.localizedTypes.map((t) =>
-      toMenuEntry(t, this.getCommonName(t.parentId), countsById),
+      toMenuEntry(
+        t,
+        this.getCommonName(t.parentId),
+        countsById,
+        aggregatedCounts,
+      ),
     )
 
-    // Sort by decreasing count if counts are available
+    // Sort by decreasing own count if counts are available
     if (countsById) {
-      return menuEntries.sort((a, b) => (b.count || 0) - (a.count || 0))
+      return menuEntries.sort((a, b) => {
+        const aOwnCount =
+          typeof a.count === 'string'
+            ? parseInt(a.count.split('/')[0])
+            : a.count || 0
+        const bOwnCount =
+          typeof b.count === 'string'
+            ? parseInt(b.count.split('/')[0])
+            : b.count || 0
+        return bOwnCount - aOwnCount
+      })
     }
 
     return menuEntries
@@ -204,9 +228,17 @@ export class TypesAccess {
   getMenuEntry(
     id: Id,
     countsById?: { [key: number]: number },
+    aggregatedCounts?: { [key: number]: number },
   ): TypeSelectMenuEntry | null {
     const t = this.localizedTypes[this.idIndex[id]]
-    return t ? toMenuEntry(t, this.getCommonName(t.parentId), countsById) : null
+    return t
+      ? toMenuEntry(
+          t,
+          this.getCommonName(t.parentId),
+          countsById,
+          aggregatedCounts,
+        )
+      : null
   }
 
   filter(predicate: (_type: LocalizedType) => boolean): TypesAccess {
