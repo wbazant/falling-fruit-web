@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect,useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
@@ -82,6 +82,34 @@ const Filter = () => {
       .map((id) => typeOptions.find((option) => option.value === id))
       .filter(Boolean)
   }, [typeSearch, typeOptions])
+
+  // Auto-select types when typeSearch changes
+  useEffect(() => {
+    if (typeSearch && typeSearch.length > 0) {
+      const typesToSelect = new Set(types)
+
+      typeSearch.forEach((searchTypeId) => {
+        // Add the searched type itself
+        typesToSelect.add(searchTypeId)
+
+        // Add all its descendants
+        const descendants = typesAccess.getAllDescendantIds(searchTypeId)
+        descendants.forEach((descendantId) => {
+          if (typesAccess.isSelectable(descendantId)) {
+            typesToSelect.add(descendantId)
+          }
+        })
+      })
+
+      const newSelection = Array.from(typesToSelect)
+      if (
+        newSelection.length !== types.length ||
+        !newSelection.every((id) => types.includes(id))
+      ) {
+        dispatch(selectionChanged(newSelection))
+      }
+    }
+  }, [typeSearch, typesAccess, types, dispatch])
 
   const { t } = useTranslation()
   return (

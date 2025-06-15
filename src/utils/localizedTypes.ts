@@ -306,6 +306,18 @@ export class TypesAccess {
 
     return aggregatedCounts
   }
+
+  getAllDescendantIds(id: Id): Id[] {
+    const descendants: Id[] = []
+    const children = this.childrenById[id] || []
+
+    for (const childId of children) {
+      descendants.push(childId)
+      descendants.push(...this.getAllDescendantIds(childId))
+    }
+
+    return descendants
+  }
 }
 
 export const displayOrderProperties = [
