@@ -70,6 +70,13 @@ const Filter = () => {
     [typesAccess, countsById, showOnlyOnMap, typeSearch, types],
   )
 
+  const typeSearchObjects = useMemo(() => {
+    if (!typeSearch || typeSearch.length === 0) {return []}
+    return typeSearch
+      .map((id) => typeOptions.find((option) => option.value === id))
+      .filter(Boolean)
+  }, [typeSearch, typeOptions])
+
   const { t } = useTranslation()
   return (
     <>
@@ -77,8 +84,12 @@ const Filter = () => {
         <EdibleTypeText>{t('glossary.type.other')}</EdibleTypeText>
         <Select
           options={typeOptions}
-          value={typeSearch || []}
-          onChange={(options) => dispatch(setTypeSearch(options || []))}
+          value={typeSearchObjects}
+          onChange={(options) =>
+            dispatch(
+              setTypeSearch((options || []).map((option) => option.value)),
+            )
+          }
           placeholder={t('glossary.type.one')}
           isClearable
           isMulti

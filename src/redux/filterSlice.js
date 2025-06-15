@@ -41,7 +41,7 @@ export const filterSlice = createSlice({
   name: 'filter',
   initialState: {
     types: null,
-    typeSearch: null,
+    typeSearch: [],
     muni: true,
     isOpenInMobileLayout: false,
     isLoading: false,
