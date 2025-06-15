@@ -88,7 +88,7 @@ export const TypeName = ({ commonName, scientificName, synonyms, count }) => {
         )}
       </DetailsBlock>
       {synonyms?.length > 0 && <Synonyms> {synonyms.join(' · ')}</Synonyms>}
-      {count !== undefined && <CountBadge>{count}</CountBadge>}
+      {count ? <CountBadge>{count}</CountBadge> : null}
     </ItemWrapper>
   )
 }
