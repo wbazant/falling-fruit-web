@@ -54,13 +54,9 @@ const Filter = () => {
   )
 
   const { typesAccess } = useSelector((state) => state.type)
-  const aggregatedCounts = useMemo(
-    () => typesAccess.calculateAggregatedCounts(countsById),
-    [typesAccess, countsById],
-  )
   const typeOptions = useMemo(
-    () => typesAccess.asMenuEntries(aggregatedCounts),
-    [typesAccess, aggregatedCounts],
+    () => typesAccess.asMenuEntries(countsById),
+    [typesAccess, countsById],
   )
   const { tree: selectTree, visibleTypeIds } = useMemo(
     () => buildSelectTree(typesAccess, countsById, showOnlyOnMap, '', types),
