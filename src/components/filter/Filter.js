@@ -1,13 +1,9 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
 
-import {
-  restorePreviousTypes,
-  setShowOnlyOnMap,
-  setTypeSearch,
-} from '../../redux/filterSlice'
+import { setShowOnlyOnMap, setTypeSearch } from '../../redux/filterSlice'
 import { muniChanged, selectionChanged } from '../../redux/viewChange'
 import buildSelectTree from '../../utils/buildSelectTree'
 import { tokenizeQuery } from '../../utils/tokenize'
@@ -56,6 +52,7 @@ const Filter = () => {
   const { countsById, types, typeSearch, muni, showOnlyOnMap } = useSelector(
     (state) => state.filter,
   )
+  const previousTypesRef = useRef(null)
 
   const { typesAccess } = useSelector((state) => state.type)
   const aggregatedCounts = useMemo(
@@ -90,6 +87,11 @@ const Filter = () => {
   // Auto-select types when typeSearch changes
   useEffect(() => {
     if (typeSearch && typeSearch.length > 0) {
+      // Store previous types when typeSearch is first set
+      if (previousTypesRef.current === null) {
+        previousTypesRef.current = types
+      }
+
       const typesToSelect = new Set()
 
       typeSearch.forEach((searchTypeId) => {
@@ -114,7 +116,10 @@ const Filter = () => {
       }
     } else if (typeSearch && typeSearch.length === 0) {
       // Restore previous selection when typeSearch becomes empty
-      dispatch(restorePreviousTypes())
+      if (previousTypesRef.current !== null) {
+        dispatch(selectionChanged(previousTypesRef.current))
+        previousTypesRef.current = null
+      }
     }
   }, [typeSearch, typesAccess, types, dispatch])
 

@@ -42,7 +42,6 @@ export const filterSlice = createSlice({
   initialState: {
     types: null,
     typeSearch: [],
-    previousTypes: null,
     muni: true,
     isOpenInMobileLayout: false,
     isLoading: false,
@@ -60,20 +59,7 @@ export const filterSlice = createSlice({
       state.showOnlyOnMap = action.payload
     },
     setTypeSearch: (state, action) => {
-      const newTypeSearch = action.payload
-
-      // Store previous types when typeSearch is first set (going from empty to non-empty)
-      if (state.typeSearch.length === 0 && newTypeSearch.length > 0) {
-        state.previousTypes = state.types
-      }
-
-      state.typeSearch = newTypeSearch
-    },
-    restorePreviousTypes: (state) => {
-      if (state.previousTypes !== null) {
-        state.types = state.previousTypes
-        state.previousTypes = null
-      }
+      state.typeSearch = action.payload
     },
   },
   extraReducers: {
@@ -108,12 +94,7 @@ export const filterSlice = createSlice({
   },
 })
 
-export const {
-  openFilter,
-  closeFilter,
-  setShowOnlyOnMap,
-  setTypeSearch,
-  restorePreviousTypes,
-} = filterSlice.actions
+export const { openFilter, closeFilter, setShowOnlyOnMap, setTypeSearch } =
+  filterSlice.actions
 
 export default filterSlice.reducer
