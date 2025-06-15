@@ -1,4 +1,4 @@
-import { useEffect,useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
@@ -86,7 +86,7 @@ const Filter = () => {
   // Auto-select types when typeSearch changes
   useEffect(() => {
     if (typeSearch && typeSearch.length > 0) {
-      const typesToSelect = new Set(types)
+      const typesToSelect = new Set()
 
       typeSearch.forEach((searchTypeId) => {
         // Add the searched type itself
