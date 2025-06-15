@@ -190,9 +190,16 @@ export class TypesAccess {
     return t ? t.scientificName : ''
   }
   asMenuEntries(countsById?: { [key: number]: number }): TypeSelectMenuEntry[] {
-    return this.localizedTypes.map((t) =>
+    const menuEntries = this.localizedTypes.map((t) =>
       toMenuEntry(t, this.getCommonName(t.parentId), countsById),
     )
+
+    // Sort by decreasing count if counts are available
+    if (countsById) {
+      return menuEntries.sort((a, b) => (b.count || 0) - (a.count || 0))
+    }
+
+    return menuEntries
   }
   getMenuEntry(
     id: Id,
