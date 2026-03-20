@@ -196,12 +196,19 @@ const createLabel = (
   return label
 }
 
+const getMarkerIcon = (google, isSaved) => ({
+  url: isSaved ? '/saved_location_dot.svg' : '/location_blue_dot.svg',
+  anchor: new google.Point(8, 8),
+  scaledSize: new google.Size(16, 16),
+})
+
 const LocationMarkers = ({
   locations,
   googleMap,
   getGoogleMaps,
   onLocationClick,
   showLabels,
+  savedLocationIds,
 }) => {
   const markersRef = useRef(new Map())
   const [hoveredLocationId, setHoveredLocationId] = useState(null)
@@ -235,6 +242,10 @@ const LocationMarkers = ({
     })
 
     locations.forEach((location) => {
+      const isSaved = savedLocationIds
+        ? savedLocationIds.has(location.id)
+        : false
+
       if (!existingLocationIds.has(location.id)) {
         const labelData = (location.type_ids || [])
           .map((id) => getDisplayLabel(typesAccess, id))
@@ -244,11 +255,7 @@ const LocationMarkers = ({
           position: { lat: location.lat, lng: location.lng },
           map: googleMap,
           optimized: locations.length > 100,
-          icon: {
-            url: '/location_blue_dot.svg',
-            anchor: new google.Point(8, 8),
-            scaledSize: new google.Size(16, 16),
-          },
+          icon: getMarkerIcon(google, isSaved),
         })
 
         google.event.addListener(marker, 'mouseover', () => {
@@ -271,6 +278,7 @@ const LocationMarkers = ({
           label: null,
           labelData,
           location,
+          isSaved,
         })
       } else {
         const markerData = currentMarkers.get(location.id)
@@ -287,6 +295,12 @@ const LocationMarkers = ({
             markerData.label.updatePosition(google, location.lat, location.lng)
           }
           markerData.location = location
+        }
+
+        // Update marker icon if saved state changed
+        if (markerData.isSaved !== isSaved) {
+          markerData.marker.setIcon(getMarkerIcon(google, isSaved))
+          markerData.isSaved = isSaved
         }
 
         const newLabelData = (location.type_ids || [])
@@ -357,6 +371,7 @@ const LocationMarkers = ({
     showLabels,
     hoveredLocationId,
     mapType,
+    savedLocationIds,
   ])
 
   useEffect(

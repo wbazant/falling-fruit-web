@@ -16,6 +16,7 @@ import { viewToString } from '../../utils/appUrl'
 import throttle from '../../utils/throttle'
 import { useAppHistory } from '../../utils/useAppHistory'
 import { useIsEmbed } from '../../utils/useBreakpoint'
+import useSavedLocationIds from '../saved/useSavedLocationIds'
 import Share from '../share/Share'
 import ShareIconButton from '../share/ShareIconButton'
 import { AddLocationMobile } from '../ui/AddLocation'
@@ -230,6 +231,8 @@ const MapPage = ({ isDesktop }) => {
   const { mapType, overlay, labelVisibility, showBusinesses } = useSelector(
     (state) => state.settings,
   )
+
+  const savedLocationIds = useSavedLocationIds()
 
   // Needs to be available straight after clicking on a location, but also when zoomed out
   const selectedLocation =
@@ -550,6 +553,7 @@ const MapPage = ({ isDesktop }) => {
             getGoogleMaps={getGoogleMaps}
             onLocationClick={handleLocationClick}
             showLabels={showLabels}
+            savedLocationIds={savedLocationIds}
           />
           {(isEditingLocation || isAddingLocation) && draggedPosition && (
             <DraggableMapPin

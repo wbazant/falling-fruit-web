@@ -11,6 +11,7 @@ import ConnectNewLocation from './ConnectNewLocation'
 import ConnectOverscroll from './ConnectOverscroll'
 import ConnectPath from './ConnectPath'
 import ConnectReview from './ConnectReview'
+import ConnectSave from './ConnectSave'
 import ConnectShare from './ConnectShare'
 import ConnectTopPanel from './ConnectTopPanel'
 import ConnectTypes from './ConnectTypes'
@@ -187,9 +188,19 @@ const connectRoutes = [
       '/settings',
       '/changes',
       '/users/:userId/activity',
+      '/lists',
     ]}
   >
     <ConnectTypes />
+  </Route>,
+  /*
+   * ConnectSave
+   * why: app needs the user's saved lists available in Redux
+   *
+   * action: fetch all saved lists from the backend exactly once per app load
+   */
+  <Route key="connect-save" path={['/map', '/list', '/locations', '/reviews']}>
+    <ConnectSave />
   </Route>,
   /*
    * DisconnectLocation

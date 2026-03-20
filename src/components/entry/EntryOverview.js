@@ -21,6 +21,7 @@ import { useIsDesktop, useIsEmbed } from '../../utils/useBreakpoint'
 import { theme } from '../ui/GlobalStyle'
 import IconBesideText from '../ui/IconBesideText'
 import { ReportButton } from './overview/ReportButton'
+import SaveToListButton from './overview/SaveToListButton'
 import Tags from './overview/Tags'
 import TypesHeader from './overview/TypesHeader'
 import { ReviewButton } from './ReviewButton'
@@ -52,10 +53,6 @@ const Description = styled.section`
   & > p:first-child {
     margin-block-end: 14px;
   }
-
-  button {
-    margin-inline-end: 10px;
-  }
 `
 
 const DisabledIconBesideText = styled(IconBesideText)`
@@ -65,6 +62,20 @@ const DisabledIconBesideText = styled(IconBesideText)`
       opacity: 0.5;
       cursor: not-allowed;
     `}
+`
+
+const ButtonRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const ButtonGroupStart = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
 `
 
 const EntryOverview = () => {
@@ -245,10 +256,13 @@ const EntryOverview = () => {
             </p>
           </IconBesideText>
           <ReviewSummary reviews={reviews} />
-          <div>
-            <ReviewButton />
-            <ReportButton />
-          </div>
+          <ButtonRow>
+            <ButtonGroupStart>
+              <ReviewButton />
+              <ReportButton />
+            </ButtonGroupStart>
+            <SaveToListButton locationId={locationId} />
+          </ButtonRow>
         </Description>
       </>
     </div>

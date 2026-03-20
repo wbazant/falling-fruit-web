@@ -3,6 +3,7 @@ import Skeleton from 'react-loading-skeleton'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
 
+import useSavedLocationIds from '../saved/useSavedLocationIds'
 import CircleIcon from '../ui/CircleIcon'
 import { theme } from '../ui/GlobalStyle'
 import DistanceText from './DistanceText'
@@ -94,8 +95,8 @@ const LeftIcon = styled.div`
   margin-block-start: 0.5em;
 `
 
-const ImageIcon = ({ imageSrc }) => (
-  <CircleIcon backgroundColor={theme.green}>
+const ImageIcon = ({ imageSrc, isSaved }) => (
+  <CircleIcon backgroundColor={theme.green} isSaved={isSaved}>
     {imageSrc ? <img src={imageSrc} alt="icon" /> : <LeafIcon />}
   </CircleIcon>
 )
@@ -112,6 +113,8 @@ const Locations = ({
 }) => {
   const { typesAccess } = useSelector((state) => state.type)
   const { types: selectedTypes } = useSelector((state) => state.filter)
+
+  const savedLocationIds = useSavedLocationIds()
 
   const observerTarget = useRef(null)
 
@@ -172,7 +175,10 @@ const Locations = ({
           }}
         >
           <LeftIcon>
-            <ImageIcon imageSrc={location.photo} />
+            <ImageIcon
+              imageSrc={location.photo}
+              isSaved={savedLocationIds.has(location.id)}
+            />
           </LeftIcon>
           <ContentWrapper>
             {location.type_ids.map((typeId) => {

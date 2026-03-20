@@ -126,6 +126,13 @@ export const getLocationById = (
   embed: paths['/locations/{id}']['get']['parameters']['query']['embed'],
 ) => instance.get(`/locations/${id}`, { params: { embed } })
 
+/**
+ * Inefficient bulk fetch: fires one request per location ID and waits for all.
+ * Returns an array of location objects in the same order as the input IDs.
+ */
+export const getLocationsByIds = (ids: number[]) =>
+  Promise.all(ids.map((id) => getLocationById(id, undefined)))
+
 export const editLocation = (
   id: paths['/locations/{id}']['put']['parameters']['path']['id'],
   data: paths['/locations/{id}']['put']['requestBody']['content']['application/json'],
