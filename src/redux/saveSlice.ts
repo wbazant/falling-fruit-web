@@ -4,8 +4,7 @@ import {
   addList as apiAddList,
   addLocationToList as apiAddLocationToList,
   editList as apiEditList,
-  getLists as apiGetLists,
-  getLocationsByIds,
+  getListsWithLocations as apiGetLists,
   removeList as apiRemoveList,
   removeLocationFromList as apiRemoveLocationFromList,
 } from '../utils/api'
@@ -19,21 +18,15 @@ export interface SaveState {
   isLoading: boolean
   /** Per-list loading state: { [listId]: boolean } */
   loadingLists: Record<number, boolean>
-  /** Locations fetched per list id: { [listId]: location[] } */
-  locationsByListId: Record<number, any[]>
-  /** Per-list loading flag for fetching locations: { [listId]: boolean } */
-  loadingLocationsByListId: Record<number, boolean>
 }
 
 const initialState: SaveState = {
   lists: [],
   isLoading: false,
   loadingLists: {},
-  locationsByListId: {},
-  loadingLocationsByListId: {},
 }
 
-// Fetch all lists from the backend
+// Fetch all lists (with embedded locations) from the backend
 export const fetchLists = createAsyncThunk<LocationList[]>(
   'save/fetchLists',
   async () => {
@@ -98,16 +91,6 @@ export const toggleLocationInList = createAsyncThunk<
   return updatedLists
 })
 
-// Fetch full location data for all locationIds in a given list.
-// Payload: { listId: number, locationIds: number[] }
-export const fetchLocationsForList = createAsyncThunk<
-  any[],
-  { listId: number; locationIds: number[] }
->('save/fetchLocationsForList', async ({ locationIds }) => {
-  const locations = await getLocationsByIds(locationIds)
-  return locations
-})
-
 const saveSlice = createSlice({
   name: 'save',
   initialState,
@@ -145,8 +128,6 @@ const saveSlice = createSlice({
     builder.addCase(removeList.fulfilled, (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
-      delete state.locationsByListId[listId]
-      delete state.loadingLocationsByListId[listId]
       state.lists = action.payload
     })
     builder.addCase(removeList.rejected, (state, action) => {
@@ -182,22 +163,6 @@ const saveSlice = createSlice({
     builder.addCase(toggleLocationInList.rejected, (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
-    })
-
-    // fetchLocationsForList
-    builder.addCase(fetchLocationsForList.pending, (state, action) => {
-      const { listId } = action.meta.arg
-      state.loadingLocationsByListId[listId] = true
-      state.locationsByListId[listId] = []
-    })
-    builder.addCase(fetchLocationsForList.fulfilled, (state, action) => {
-      const { listId } = action.meta.arg
-      delete state.loadingLocationsByListId[listId]
-      state.locationsByListId[listId] = action.payload
-    })
-    builder.addCase(fetchLocationsForList.rejected, (state, action) => {
-      const { listId } = action.meta.arg
-      delete state.loadingLocationsByListId[listId]
     })
   },
 })

@@ -7,45 +7,21 @@ import {
 import { Pencil, Trash } from '@styled-icons/boxicons-solid'
 import { darken } from 'polished'
 import { useEffect, useRef, useState } from 'react'
-import Skeleton from 'react-loading-skeleton'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components/macro'
 
 import {
   addList,
   fetchLists,
-  fetchLocationsForList,
   removeList,
-  removeLocationFromList,
   renameList,
+  toggleLocationInList,
 } from '../../redux/saveSlice'
 import { BackButton } from '../ui/ActionButtons'
 import { theme } from '../ui/GlobalStyle'
 import Input from '../ui/Input'
 import { Page } from '../ui/PageTemplate'
 
-const LocationRowSkeleton = () => (
-  <div
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '0.5rem 1.25rem',
-      borderBottom: '1px solid #eee',
-    }}
-  >
-    <div
-      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}
-    >
-      {/* Type name */}
-      <Skeleton width={120} height={16} />
-      {/* Address */}
-      <Skeleton width={180} height={14} />
-    </div>
-    {/* Remove button placeholder */}
-    <Skeleton circle width={20} height={20} />
-  </div>
-)
 /* ─── Styled components ─────────────────────────────────────────── */
 
 const ListCard = styled.div`
@@ -338,7 +314,7 @@ const LocationRow = ({ location, listId, isListBusy, typesAccess }) => {
   const handleRemove = () => {
     setMenuOpen(false)
     if (window.confirm(`Remove "${displayName}" from the list?`)) {
-      dispatch(removeLocationFromList({ listId, locationId: location.id }))
+      dispatch(toggleLocationInList({ listId, locationId: location.id }))
     }
   }
 
@@ -379,14 +355,12 @@ const ListCardComponent = ({ list }) => {
   const [editName, setEditName] = useState(list.name)
   const inputRef = useRef(null)
 
-  const { locationsByListId, loadingLocationsByListId, loadingLists } =
-    useSelector((state) => state.save)
+  const { loadingLists } = useSelector((state) => state.save)
   const { typesAccess } = useSelector((state) => state.type)
 
-  const isListBusy = !!loadingLists[list.listId]
-  const isLoadingLocations = !!loadingLocationsByListId[list.listId]
-  const currentListLocations = locationsByListId[list.listId] || []
-  const hasLocations = list.locationIds.length > 0
+  const isListBusy = !!loadingLists[list.id]
+  const locations = list.locations || []
+  const hasLocations = locations.length > 0
 
   useEffect(() => {
     if (editing && inputRef.current) {
@@ -398,16 +372,7 @@ const ListCardComponent = ({ list }) => {
     if (!hasLocations) {
       return
     }
-    const next = !expanded
-    setExpanded(next)
-    if (next) {
-      dispatch(
-        fetchLocationsForList({
-          listId: list.listId,
-          locationIds: list.locationIds,
-        }),
-      )
-    }
+    setExpanded((v) => !v)
   }
 
   const handleEditClick = (e) => {
@@ -426,7 +391,7 @@ const ListCardComponent = ({ list }) => {
     e?.stopPropagation()
     const trimmed = editName.trim()
     if (trimmed && trimmed !== list.name) {
-      dispatch(renameList({ listId: list.listId, newName: trimmed }))
+      dispatch(renameList({ listId: list.id, newName: trimmed }))
     }
     setEditing(false)
   }
@@ -434,7 +399,7 @@ const ListCardComponent = ({ list }) => {
   const handleDeleteClick = (e) => {
     e.stopPropagation()
     if (window.confirm(`Delete "${list.name}"?`)) {
-      dispatch(removeList({ listId: list.listId }))
+      dispatch(removeList({ listId: list.id }))
     }
   }
 
@@ -481,27 +446,22 @@ const ListCardComponent = ({ list }) => {
         {hasLocations &&
           (expanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />)}
         <LocationCount>
-          {list.locationIds.length}{' '}
-          {list.locationIds.length === 1 ? 'location' : 'locations'}
+          {locations.length} {locations.length === 1 ? 'location' : 'locations'}
         </LocationCount>
       </ExpandRow>
 
       {/* Expanded location list */}
       {expanded && (
         <LocationList>
-          {isLoadingLocations
-            ? Array.from({ length: Math.min(list.locationIds.length, 3) }).map(
-                (_, i) => <LocationRowSkeleton key={i} />,
-              )
-            : currentListLocations.map((location) => (
-                <LocationRow
-                  key={location.id}
-                  location={location}
-                  listId={list.listId}
-                  isListBusy={isListBusy}
-                  typesAccess={typesAccess}
-                />
-              ))}
+          {locations.map((location) => (
+            <LocationRow
+              key={location.id}
+              location={location}
+              listId={list.id}
+              isListBusy={isListBusy}
+              typesAccess={typesAccess}
+            />
+          ))}
         </LocationList>
       )}
     </ListCard>
@@ -592,7 +552,7 @@ const SavedListsPage = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {lists.map((list) => (
-          <ListCardComponent key={list.listId} list={list} />
+          <ListCardComponent key={list.id} list={list} />
         ))}
         <AddListCard />
       </div>
