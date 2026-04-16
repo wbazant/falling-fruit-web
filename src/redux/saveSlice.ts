@@ -9,10 +9,7 @@ import {
   removeList as apiRemoveList,
   removeLocationFromList as apiRemoveLocationFromList,
 } from '../utils/api'
-import {
-  SavedList,
-  toggleLocationInList as apiToggleLocationInList,
-} from '../utils/apiMock'
+import { SavedList } from '../utils/apiMock'
 
 export interface SaveState {
   lists: SavedList[]
@@ -76,37 +73,27 @@ export const renameList = createAsyncThunk<
   return lists
 })
 
-// Toggle a location in/out of a list
-// No direct real API equivalent — uses mock
+// Toggle a location in/out of a list by checking current state and calling
+// the appropriate real API method (add or remove).
 // Payload: { listId: number, locationId: string | number }
 export const toggleLocationInList = createAsyncThunk<
   SavedList[],
-  { listId: number; locationId: string | number }
->('save/toggleLocationInList', async ({ listId, locationId }) => {
-  const lists = await apiToggleLocationInList(listId, locationId)
-  return lists
-})
+  { listId: number; locationId: string | number },
+  { state: { save: SaveState } }
+>('save/toggleLocationInList', async ({ listId, locationId }, { getState }) => {
+  const { lists } = getState().save
+  const list = lists.find((l) => l.listId === listId)
+  const isAlreadySaved =
+    list?.locationIds?.includes(Number(locationId)) ?? false
 
-// Remove a location from a list
-// Payload: { listId: number, locationId: string | number }
-export const removeLocationFromList = createAsyncThunk<
-  SavedList[],
-  { listId: number; locationId: string | number }
->('save/removeLocationFromList', async ({ listId, locationId }) => {
-  await apiRemoveLocationFromList(Number(locationId), listId)
-  const lists = await apiGetLists()
-  return lists
-})
+  if (isAlreadySaved) {
+    await apiRemoveLocationFromList(Number(locationId), listId)
+  } else {
+    await apiAddLocationToList(Number(locationId), listId)
+  }
 
-// Add a location to a list
-// Payload: { listId: number, locationId: string | number }
-export const addLocationToList = createAsyncThunk<
-  SavedList[],
-  { listId: number; locationId: string | number }
->('save/addLocationToList', async ({ listId, locationId }) => {
-  await apiAddLocationToList(Number(locationId), listId)
-  const lists = await apiGetLists()
-  return lists
+  const updatedLists = await apiGetLists()
+  return updatedLists
 })
 
 // Fetch full location data for all locationIds in a given list.
@@ -191,36 +178,6 @@ const saveSlice = createSlice({
       state.lists = action.payload
     })
     builder.addCase(toggleLocationInList.rejected, (state, action) => {
-      const { listId } = action.meta.arg
-      delete state.loadingLists[listId]
-    })
-
-    // removeLocationFromList
-    builder.addCase(removeLocationFromList.pending, (state, action) => {
-      const { listId } = action.meta.arg
-      state.loadingLists[listId] = true
-    })
-    builder.addCase(removeLocationFromList.fulfilled, (state, action) => {
-      const { listId } = action.meta.arg
-      delete state.loadingLists[listId]
-      state.lists = action.payload
-    })
-    builder.addCase(removeLocationFromList.rejected, (state, action) => {
-      const { listId } = action.meta.arg
-      delete state.loadingLists[listId]
-    })
-
-    // addLocationToList
-    builder.addCase(addLocationToList.pending, (state, action) => {
-      const { listId } = action.meta.arg
-      state.loadingLists[listId] = true
-    })
-    builder.addCase(addLocationToList.fulfilled, (state, action) => {
-      const { listId } = action.meta.arg
-      delete state.loadingLists[listId]
-      state.lists = action.payload
-    })
-    builder.addCase(addLocationToList.rejected, (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
     })
