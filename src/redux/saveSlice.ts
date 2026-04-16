@@ -9,10 +9,12 @@ import {
   removeList as apiRemoveList,
   removeLocationFromList as apiRemoveLocationFromList,
 } from '../utils/api'
-import { SavedList } from '../utils/apiMock'
+import { components } from '../utils/apiSchema'
+
+type LocationList = components['schemas']['LocationList']
 
 export interface SaveState {
-  lists: SavedList[]
+  lists: LocationList[]
   /** Global loading flag for operations not tied to a specific list */
   isLoading: boolean
   /** Per-list loading state: { [listId]: boolean } */
@@ -32,7 +34,7 @@ const initialState: SaveState = {
 }
 
 // Fetch all lists from the backend
-export const fetchLists = createAsyncThunk<SavedList[]>(
+export const fetchLists = createAsyncThunk<LocationList[]>(
   'save/fetchLists',
   async () => {
     const lists = await apiGetLists()
@@ -42,7 +44,7 @@ export const fetchLists = createAsyncThunk<SavedList[]>(
 
 // Add a new named list
 // Payload: { name: string }
-export const addList = createAsyncThunk<SavedList[], { name: string }>(
+export const addList = createAsyncThunk<LocationList[], { name: string }>(
   'save/addList',
   async ({ name }) => {
     await apiAddList({ name })
@@ -53,7 +55,7 @@ export const addList = createAsyncThunk<SavedList[], { name: string }>(
 
 // Remove a list by id
 // Payload: { listId: number }
-export const removeList = createAsyncThunk<SavedList[], { listId: number }>(
+export const removeList = createAsyncThunk<LocationList[], { listId: number }>(
   'save/removeList',
   async ({ listId }) => {
     await apiRemoveList(listId)
@@ -65,7 +67,7 @@ export const removeList = createAsyncThunk<SavedList[], { listId: number }>(
 // Rename an existing list
 // Payload: { listId: number, newName: string }
 export const renameList = createAsyncThunk<
-  SavedList[],
+  LocationList[],
   { listId: number; newName: string }
 >('save/renameList', async ({ listId, newName }) => {
   await apiEditList(listId, { name: newName })
@@ -77,14 +79,14 @@ export const renameList = createAsyncThunk<
 // the appropriate real API method (add or remove).
 // Payload: { listId: number, locationId: string | number }
 export const toggleLocationInList = createAsyncThunk<
-  SavedList[],
+  LocationList[],
   { listId: number; locationId: string | number },
   { state: { save: SaveState } }
 >('save/toggleLocationInList', async ({ listId, locationId }, { getState }) => {
   const { lists } = getState().save
-  const list = lists.find((l) => l.listId === listId)
+  const list = lists.find((l) => l.id === listId)
   const isAlreadySaved =
-    list?.locationIds?.includes(Number(locationId)) ?? false
+    list?.locations?.some((loc) => loc.id === Number(locationId)) ?? false
 
   if (isAlreadySaved) {
     await apiRemoveLocationFromList(Number(locationId), listId)
@@ -97,7 +99,7 @@ export const toggleLocationInList = createAsyncThunk<
 })
 
 // Fetch full location data for all locationIds in a given list.
-// Payload: { listId: number, locationIds: (string | number)[] }
+// Payload: { listId: number, locationIds: number[] }
 export const fetchLocationsForList = createAsyncThunk<
   any[],
   { listId: number; locationIds: number[] }
