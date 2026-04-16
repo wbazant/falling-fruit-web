@@ -208,7 +208,6 @@ const LocationMarkers = ({
   getGoogleMaps,
   onLocationClick,
   showLabels,
-  savedLocationIds,
 }) => {
   const markersRef = useRef(new Map())
   const [hoveredLocationId, setHoveredLocationId] = useState(null)
@@ -242,9 +241,7 @@ const LocationMarkers = ({
     })
 
     locations.forEach((location) => {
-      const isSaved = savedLocationIds
-        ? savedLocationIds.has(location.id)
-        : false
+      const isSaved = Boolean(location.in_list)
 
       if (!existingLocationIds.has(location.id)) {
         const labelData = (location.type_ids || [])
@@ -371,7 +368,6 @@ const LocationMarkers = ({
     showLabels,
     hoveredLocationId,
     mapType,
-    savedLocationIds,
   ])
 
   useEffect(
