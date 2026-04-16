@@ -1,12 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-import { getLocationsByIds } from '../utils/api'
 import {
   addList as apiAddList,
-  getLists,
+  addLocationToList as apiAddLocationToList,
+  editList as apiEditList,
+  getLists as apiGetLists,
+  getLocationsByIds,
   removeList as apiRemoveList,
   removeLocationFromList as apiRemoveLocationFromList,
-  renameList as apiRenameList,
+} from '../utils/api'
+import {
   SavedList,
   toggleLocationInList as apiToggleLocationInList,
 } from '../utils/apiMock'
@@ -35,7 +38,7 @@ const initialState: SaveState = {
 export const fetchLists = createAsyncThunk<SavedList[]>(
   'save/fetchLists',
   async () => {
-    const lists = await getLists()
+    const lists = await apiGetLists()
     return lists
   },
 )
@@ -45,7 +48,8 @@ export const fetchLists = createAsyncThunk<SavedList[]>(
 export const addList = createAsyncThunk<SavedList[], { name: string }>(
   'save/addList',
   async ({ name }) => {
-    const lists = await apiAddList(name)
+    await apiAddList({ name })
+    const lists = await apiGetLists()
     return lists
   },
 )
@@ -55,7 +59,8 @@ export const addList = createAsyncThunk<SavedList[], { name: string }>(
 export const removeList = createAsyncThunk<SavedList[], { listId: number }>(
   'save/removeList',
   async ({ listId }) => {
-    const lists = await apiRemoveList(listId)
+    await apiRemoveList(listId)
+    const lists = await apiGetLists()
     return lists
   },
 )
@@ -66,11 +71,13 @@ export const renameList = createAsyncThunk<
   SavedList[],
   { listId: number; newName: string }
 >('save/renameList', async ({ listId, newName }) => {
-  const lists = await apiRenameList(listId, newName)
+  await apiEditList(listId, { name: newName })
+  const lists = await apiGetLists()
   return lists
 })
 
 // Toggle a location in/out of a list
+// No direct real API equivalent — uses mock
 // Payload: { listId: number, locationId: string | number }
 export const toggleLocationInList = createAsyncThunk<
   SavedList[],
@@ -86,7 +93,19 @@ export const removeLocationFromList = createAsyncThunk<
   SavedList[],
   { listId: number; locationId: string | number }
 >('save/removeLocationFromList', async ({ listId, locationId }) => {
-  const lists = await apiRemoveLocationFromList(listId, locationId)
+  await apiRemoveLocationFromList(Number(locationId), listId)
+  const lists = await apiGetLists()
+  return lists
+})
+
+// Add a location to a list
+// Payload: { listId: number, locationId: string | number }
+export const addLocationToList = createAsyncThunk<
+  SavedList[],
+  { listId: number; locationId: string | number }
+>('save/addLocationToList', async ({ listId, locationId }) => {
+  await apiAddLocationToList(Number(locationId), listId)
+  const lists = await apiGetLists()
   return lists
 })
 
@@ -187,6 +206,21 @@ const saveSlice = createSlice({
       state.lists = action.payload
     })
     builder.addCase(removeLocationFromList.rejected, (state, action) => {
+      const { listId } = action.meta.arg
+      delete state.loadingLists[listId]
+    })
+
+    // addLocationToList
+    builder.addCase(addLocationToList.pending, (state, action) => {
+      const { listId } = action.meta.arg
+      state.loadingLists[listId] = true
+    })
+    builder.addCase(addLocationToList.fulfilled, (state, action) => {
+      const { listId } = action.meta.arg
+      delete state.loadingLists[listId]
+      state.lists = action.payload
+    })
+    builder.addCase(addLocationToList.rejected, (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
     })
