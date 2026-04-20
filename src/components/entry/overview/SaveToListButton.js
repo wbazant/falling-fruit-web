@@ -7,7 +7,11 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import styled from 'styled-components/macro'
 
-import { addList, toggleLocationInList } from '../../../redux/saveSlice'
+import {
+  addList,
+  addLocationToList,
+  removeLocationFromList,
+} from '../../../redux/saveSlice'
 import Button from '../../ui/Button'
 import { theme } from '../../ui/GlobalStyle'
 import Input from '../../ui/Input'
@@ -157,8 +161,12 @@ const SaveToListButton = ({
     }
   }, [addingNew])
 
-  const handleToggle = (listId) => {
-    dispatch(toggleLocationInList({ listId, locationId }))
+  const handleToggle = (listId, checked) => {
+    if (checked) {
+      dispatch(removeLocationFromList({ listId, locationId }))
+    } else {
+      dispatch(addLocationToList({ listId, locationId }))
+    }
   }
 
   const handleAddNewClick = () => {
@@ -200,7 +208,7 @@ const SaveToListButton = ({
             <ListItem
               key={listId}
               checked={checked}
-              onClick={() => handleToggle(listId)}
+              onClick={() => handleToggle(listId, checked)}
             >
               {name}
             </ListItem>

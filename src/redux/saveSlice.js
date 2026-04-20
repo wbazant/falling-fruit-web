@@ -53,23 +53,23 @@ export const renameList = createAsyncThunk(
   },
 )
 
-// Toggle a location in/out of a list by checking current state and calling
-// the appropriate real API method (add or remove).
-// Payload: { listId: number, locationId: string | number }
-export const toggleLocationInList = createAsyncThunk(
-  'save/toggleLocationInList',
-  async ({ listId, locationId }, { getState }) => {
-    const { lists } = getState().save
-    const list = lists.find((l) => l.id === listId)
-    const isAlreadySaved =
-      list?.locations?.some((loc) => loc.id === Number(locationId)) ?? false
+// Add a location to a list
+// Payload: { listId: number, locationId: number }
+export const addLocationToList = createAsyncThunk(
+  'save/addLocationToList',
+  async ({ listId, locationId }) => {
+    await apiAddLocationToList(Number(locationId), listId)
+    const updatedLists = await apiGetLists()
+    return updatedLists
+  },
+)
 
-    if (isAlreadySaved) {
-      await apiRemoveLocationFromList(Number(locationId), listId)
-    } else {
-      await apiAddLocationToList(Number(locationId), listId)
-    }
-
+// Remove a location from a list
+// Payload: { listId: number, locationId: number }
+export const removeLocationFromList = createAsyncThunk(
+  'save/removeLocationFromList',
+  async ({ listId, locationId }) => {
+    await apiRemoveLocationFromList(Number(locationId), listId)
     const updatedLists = await apiGetLists()
     return updatedLists
   },
@@ -155,20 +155,42 @@ const saveSlice = createSlice({
       )
     },
 
-    [toggleLocationInList.pending]: (state, action) => {
+    // addLocationToList
+    [addLocationToList.pending]: (state, action) => {
       const { listId } = action.meta.arg
       state.loadingLists[listId] = true
     },
-    [toggleLocationInList.fulfilled]: (state, action) => {
+    [addLocationToList.fulfilled]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
       state.lists = action.payload
     },
-    [toggleLocationInList.rejected]: (state, action) => {
+    [addLocationToList.rejected]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
       toast.error(
-        i18next.t('error_message.api.list_toggle_location_failed', {
+        i18next.t('error_message.api.list_add_location_failed', {
+          message:
+            action.error.message || i18next.t('error_message.unknown_error'),
+        }),
+      )
+    },
+
+    // removeLocationFromList
+    [removeLocationFromList.pending]: (state, action) => {
+      const { listId } = action.meta.arg
+      state.loadingLists[listId] = true
+    },
+    [removeLocationFromList.fulfilled]: (state, action) => {
+      const { listId } = action.meta.arg
+      delete state.loadingLists[listId]
+      state.lists = action.payload
+    },
+    [removeLocationFromList.rejected]: (state, action) => {
+      const { listId } = action.meta.arg
+      delete state.loadingLists[listId]
+      toast.error(
+        i18next.t('error_message.api.list_remove_location_failed', {
           message:
             action.error.message || i18next.t('error_message.unknown_error'),
         }),

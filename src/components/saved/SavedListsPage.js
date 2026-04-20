@@ -14,8 +14,8 @@ import {
   addList,
   fetchLists,
   removeList,
+  removeLocationFromList,
   renameList,
-  toggleLocationInList,
 } from '../../redux/saveSlice'
 import { BackButton } from '../ui/ActionButtons'
 import { theme } from '../ui/GlobalStyle'
@@ -314,7 +314,7 @@ const LocationRow = ({ location, listId, isListBusy, typesAccess }) => {
   const handleRemove = () => {
     setMenuOpen(false)
     if (window.confirm(`Remove "${displayName}" from the list?`)) {
-      dispatch(toggleLocationInList({ listId, locationId: location.id }))
+      dispatch(removeLocationFromList({ listId, locationId: location.id }))
     }
   }
 
