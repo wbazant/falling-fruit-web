@@ -77,75 +77,75 @@ const saveSlice = createSlice({
   name: 'save',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: {
     // fetchLists
-    builder.addCase(fetchLists.pending, (state) => {
+    [fetchLists.pending]: (state) => {
       state.isLoading = true
-    })
-    builder.addCase(fetchLists.fulfilled, (state, action) => {
+    },
+    [fetchLists.fulfilled]: (state, action) => {
       state.isLoading = false
       state.lists = action.payload
-    })
-    builder.addCase(fetchLists.rejected, (state) => {
+    },
+    [fetchLists.rejected]: (state) => {
       state.isLoading = false
-    })
+    },
 
     // addList
-    builder.addCase(addList.pending, (state) => {
+    [addList.pending]: (state) => {
       state.isLoading = true
-    })
-    builder.addCase(addList.fulfilled, (state, action) => {
+    },
+    [addList.fulfilled]: (state, action) => {
       state.isLoading = false
       state.lists = action.payload
-    })
-    builder.addCase(addList.rejected, (state) => {
+    },
+    [addList.rejected]: (state) => {
       state.isLoading = false
-    })
+    },
 
     // removeList
-    builder.addCase(removeList.pending, (state, action) => {
+    [removeList.pending]: (state, action) => {
       const { listId } = action.meta.arg
       state.loadingLists[listId] = true
-    })
-    builder.addCase(removeList.fulfilled, (state, action) => {
+    },
+    [removeList.fulfilled]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
       state.lists = action.payload
-    })
-    builder.addCase(removeList.rejected, (state, action) => {
+    },
+    [removeList.rejected]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
-    })
+    },
 
     // renameList
-    builder.addCase(renameList.pending, (state, action) => {
+    [renameList.pending]: (state, action) => {
       const { listId } = action.meta.arg
       state.loadingLists[listId] = true
-    })
-    builder.addCase(renameList.fulfilled, (state, action) => {
+    },
+    [renameList.fulfilled]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
       state.lists = action.payload
-    })
-    builder.addCase(renameList.rejected, (state, action) => {
+    },
+    [renameList.rejected]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
-    })
+    },
 
     // toggleLocationInList
-    builder.addCase(toggleLocationInList.pending, (state, action) => {
+    [toggleLocationInList.pending]: (state, action) => {
       const { listId } = action.meta.arg
       state.loadingLists[listId] = true
-    })
-    builder.addCase(toggleLocationInList.fulfilled, (state, action) => {
+    },
+    [toggleLocationInList.fulfilled]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
       state.lists = action.payload
-    })
-    builder.addCase(toggleLocationInList.rejected, (state, action) => {
+    },
+    [toggleLocationInList.rejected]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
-    })
+    },
   },
 })
 
