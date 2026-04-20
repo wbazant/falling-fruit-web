@@ -91,14 +91,13 @@ const saveSlice = createSlice({
     [fetchLists.rejected]: (state, action) => {
       state.isLoading = false
       toast.error(
-        i18next.t('error_message.api.lists_fetch_failed', {
+        i18next.t('error_message.api.fetch_location_lists_failed', {
           message:
             action.error.message || i18next.t('error_message.unknown_error'),
         }),
       )
     },
 
-    // addList
     [addList.pending]: (state) => {
       state.isLoading = true
     },
@@ -109,14 +108,13 @@ const saveSlice = createSlice({
     [addList.rejected]: (state, action) => {
       state.isLoading = false
       toast.error(
-        i18next.t('error_message.api.list_add_failed', {
+        i18next.t('error_message.api.add_location_list_failed', {
           message:
             action.error.message || i18next.t('error_message.unknown_error'),
         }),
       )
     },
 
-    // removeList
     [removeList.pending]: (state, action) => {
       const { listId } = action.meta.arg
       state.loadingLists[listId] = true
@@ -130,14 +128,13 @@ const saveSlice = createSlice({
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
       toast.error(
-        i18next.t('error_message.api.list_remove_failed', {
+        i18next.t('error_message.api.remove_location_list_failed', {
           message:
             action.error.message || i18next.t('error_message.unknown_error'),
         }),
       )
     },
 
-    // renameList
     [renameList.pending]: (state, action) => {
       const { listId } = action.meta.arg
       state.loadingLists[listId] = true
@@ -151,14 +148,13 @@ const saveSlice = createSlice({
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
       toast.error(
-        i18next.t('error_message.api.list_rename_failed', {
+        i18next.t('error_message.api.rename_location_list_failed', {
           message:
             action.error.message || i18next.t('error_message.unknown_error'),
         }),
       )
     },
 
-    // toggleLocationInList
     [toggleLocationInList.pending]: (state, action) => {
       const { listId } = action.meta.arg
       state.loadingLists[listId] = true
