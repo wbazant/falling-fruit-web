@@ -169,7 +169,7 @@ const saveSlice = createSlice({
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
       toast.error(
-        i18next.t('error_message.api.list_add_location_failed', {
+        i18next.t('error_message.api.add_location_to_list_failed', {
           message:
             action.error.message || i18next.t('error_message.unknown_error'),
         }),
@@ -190,7 +190,7 @@ const saveSlice = createSlice({
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
       toast.error(
-        i18next.t('error_message.api.list_remove_location_failed', {
+        i18next.t('error_message.api.remove_location_from_list_failed', {
           message:
             action.error.message || i18next.t('error_message.unknown_error'),
         }),
