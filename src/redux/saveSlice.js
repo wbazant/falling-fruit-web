@@ -1,4 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import i18next from 'i18next'
+import { toast } from 'react-toastify'
 
 import {
   addList as apiAddList,
@@ -86,8 +88,14 @@ const saveSlice = createSlice({
       state.isLoading = false
       state.lists = action.payload
     },
-    [fetchLists.rejected]: (state) => {
+    [fetchLists.rejected]: (state, action) => {
       state.isLoading = false
+      toast.error(
+        i18next.t('error_message.api.lists_fetch_failed', {
+          message:
+            action.error.message || i18next.t('error_message.unknown_error'),
+        }),
+      )
     },
 
     // addList
@@ -98,8 +106,14 @@ const saveSlice = createSlice({
       state.isLoading = false
       state.lists = action.payload
     },
-    [addList.rejected]: (state) => {
+    [addList.rejected]: (state, action) => {
       state.isLoading = false
+      toast.error(
+        i18next.t('error_message.api.list_add_failed', {
+          message:
+            action.error.message || i18next.t('error_message.unknown_error'),
+        }),
+      )
     },
 
     // removeList
@@ -115,6 +129,12 @@ const saveSlice = createSlice({
     [removeList.rejected]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
+      toast.error(
+        i18next.t('error_message.api.list_remove_failed', {
+          message:
+            action.error.message || i18next.t('error_message.unknown_error'),
+        }),
+      )
     },
 
     // renameList
@@ -130,6 +150,12 @@ const saveSlice = createSlice({
     [renameList.rejected]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
+      toast.error(
+        i18next.t('error_message.api.list_rename_failed', {
+          message:
+            action.error.message || i18next.t('error_message.unknown_error'),
+        }),
+      )
     },
 
     // toggleLocationInList
@@ -145,6 +171,12 @@ const saveSlice = createSlice({
     [toggleLocationInList.rejected]: (state, action) => {
       const { listId } = action.meta.arg
       delete state.loadingLists[listId]
+      toast.error(
+        i18next.t('error_message.api.list_toggle_location_failed', {
+          message:
+            action.error.message || i18next.t('error_message.unknown_error'),
+        }),
+      )
     },
   },
 })
